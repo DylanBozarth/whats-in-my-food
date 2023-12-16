@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'example.dart';
 
 void main() {
   runApp(const MyApp());
@@ -9,9 +10,17 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    MyUtils.myFunction();
     return MaterialApp(
       home: Scaffold(
-        appBar: AppBar(title: const Text('Cheese')),
+        appBar: AppBar(
+            backgroundColor: Colors.green,
+            title: const Text("What's in my food?")),
+        body: Container(
+            color: Colors.greenAccent,
+            height: 100,
+            width: 100,
+            child: const Text('Is very good for you')),
       ),
     );
   }
