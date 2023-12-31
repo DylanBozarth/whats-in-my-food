@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'example.dart';
+import 'functions.dart';
 
 void main() {
   runApp(const MyApp());
@@ -16,11 +17,6 @@ class MyApp extends StatelessWidget {
         appBar: AppBar(
             backgroundColor: Colors.green,
             title: const Text("What's in my food?")),
-        body: Container(
-            color: Colors.greenAccent,
-            height: 100,
-            width: 100,
-            child: const Text('Is very good for you')),
       ),
     );
   }
