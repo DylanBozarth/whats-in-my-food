@@ -13,13 +13,35 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
-          title: const Text("What's in my food?"),
+          title: const Text(
+            'Whats in my food?',
+            style: TextStyle(
+                color: Colors.white,
+                fontStyle: FontStyle.italic,
+                fontWeight: FontWeight.bold,
+                fontFamily: 'Arial'),
+          ),
           centerTitle: true,
+          backgroundColor: Colors.deepOrangeAccent,
         ),
-        body: const Center(child: Text('Select ingredients')),
+        body: Container(
+          color: Colors.blue, // Set the background color here
+          child: const Center(
+            child: Text(
+              'What do you want to avoid?',
+              style: TextStyle(
+                fontSize: 24.0,
+                fontWeight: FontWeight.bold,
+                color: Colors.white, // Set the text color
+              ),
+            ),
+            // buttons here
+          ),
+        ),
         floatingActionButton: FloatingActionButton(
-          child: Text('SCAN'),
-          onPressed: () => null,
+          backgroundColor: Colors.red[600],
+          onPressed: () {},
+          child: const Text('SCAN'),
         ),
       ),
     );
