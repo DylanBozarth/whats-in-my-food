@@ -1,6 +1,5 @@
 void fetchBarcodeData() {
-  FoodData currentScan = FoodData();
-  print(currentScan);
+  // List currentScan = FoodData('cheese', 123, 'aaa');
 }
 
 // the first word is what the function should return
@@ -9,10 +8,13 @@ String returnSomething() {
 }
 
 class FoodData {
-  String name = 'food';
-  int barcodeNumber = 12323123;
+  String name = '';
+  int barcodeNumber = 0;
+  String ingredients = '';
 
-  void scanFood() {
-    print('FOOD SCAN');
+  FoodData(String name, int bn, String ing) {
+    name = name;
+    barcodeNumber = bn;
+    ingredients = ing;
   }
 }

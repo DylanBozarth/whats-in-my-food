@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'example.dart';
 import 'functions.dart';
 
 void main() {
@@ -11,12 +10,17 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    MyUtils.myFunction();
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
-            backgroundColor: Colors.green,
-            title: const Text("What's in my food?")),
+          title: const Text("What's in my food?"),
+          centerTitle: true,
+        ),
+        body: const Center(child: Text('Select ingredients')),
+        floatingActionButton: FloatingActionButton(
+          child: Text('SCAN'),
+          onPressed: () => null,
+        ),
       ),
     );
   }
