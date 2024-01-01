@@ -25,7 +25,7 @@ class MyApp extends StatelessWidget {
           backgroundColor: Colors.deepOrangeAccent,
         ),
         body: Container(
-          color: Colors.blue, // Set the background color here
+          color: Colors.black, // Set the background color here
           child: const Center(
             child: Text(
               'What do you want to avoid?',
@@ -38,11 +38,15 @@ class MyApp extends StatelessWidget {
             // buttons here
           ),
         ),
-        floatingActionButton: FloatingActionButton(
-          backgroundColor: Colors.red[600],
-          onPressed: () {},
-          child: const Text('SCAN'),
-        ),
+        floatingActionButton: Container(
+            width:
+                double.infinity, // Set width to occupy the entire screen width
+            margin: const EdgeInsets.all(16.0),
+            child: FloatingActionButton(
+              backgroundColor: Colors.green[600],
+              onPressed: () {},
+              child: const Text('SCAN'),
+            )),
       ),
     );
   }
