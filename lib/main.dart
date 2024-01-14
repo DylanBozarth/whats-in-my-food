@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'functions.dart';
+import 'openCamera.dart';
 
 void main() {
   runApp(const MyApp());

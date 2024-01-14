@@ -1,3 +1,5 @@
+// import 'package:camera/camera.dart';
+
 void fetchBarcodeData() {
   // List currentScan = FoodData('cheese', 123, 'aaa');
 }
