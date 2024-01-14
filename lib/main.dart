@@ -39,14 +39,33 @@ class MyApp extends StatelessWidget {
           ),
         ),
         floatingActionButton: Container(
-            width:
-                double.infinity, // Set width to occupy the entire screen width
-            margin: const EdgeInsets.all(16.0),
-            child: FloatingActionButton(
-              backgroundColor: Colors.green[600],
-              onPressed: () {},
-              child: const Text('SCAN'),
-            )),
+          width: double.infinity,
+          margin: const EdgeInsets.all(16.0),
+          child: FloatingActionButton.extended(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) {
+                    return FutureBuilder(
+                      future: takePhotoOfBarcode(),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState == ConnectionState.done) {
+                          return snapshot.data as Widget;
+                        } else {
+                          return const CircularProgressIndicator();
+                        }
+                      },
+                    );
+                  },
+                ),
+              );
+            },
+            label: const Text('SCAN'),
+            icon: const Icon(
+                Icons.barcode_reader), // You can customize the icon as needed
+          ),
+        ),
       ),
     );
   }

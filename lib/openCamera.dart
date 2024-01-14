@@ -4,7 +4,7 @@ import 'dart:io';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 
-Future<void> main() async {
+Future<Widget> takePhotoOfBarcode() async {
   // Ensure that plugin services are initialized so that `availableCameras()`
   // can be called before `runApp()`
   WidgetsFlutterBinding.ensureInitialized();
@@ -15,14 +15,17 @@ Future<void> main() async {
   // Get a specific camera from the list of available cameras.
   final firstCamera = cameras.first;
 
-  runApp(
-    MaterialApp(
-      theme: ThemeData.dark(),
-      home: TakePictureScreen(
-        // Pass the appropriate camera to the TakePictureScreen widget.
-        camera: firstCamera,
-      ),
-    ),
+  // Return a FutureBuilder that builds the TakePictureScreen widget when the future completes.
+  return FutureBuilder(
+    future: Future.value(TakePictureScreen(camera: firstCamera)),
+    builder: (context, snapshot) {
+      if (snapshot.connectionState == ConnectionState.done) {
+        return snapshot.data as Widget;
+      } else {
+        // You can return a loading indicator or placeholder widget here if needed.
+        return const CircularProgressIndicator();
+      }
+    },
   );
 }
 
