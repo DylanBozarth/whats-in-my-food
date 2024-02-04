@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'openCamera.dart';
+import 'open_camera.dart';
 
 void main() {
   runApp(const MyApp());
@@ -24,48 +24,32 @@ class MyApp extends StatelessWidget {
           centerTitle: true,
           backgroundColor: Colors.deepOrangeAccent,
         ),
-        body: Container(
-          color: Colors.black, // Set the background color here
-          child: const Center(
+        body: Column(// Set the background color here
+            children: [
+          const Center(
             child: Text(
               'What do you want to avoid?',
               style: TextStyle(
                 fontSize: 24.0,
                 fontWeight: FontWeight.bold,
-                color: Colors.white, // Set the text color
+                color: Colors.black, // Set the text color
               ),
             ),
             // buttons here
           ),
-        ),
-        floatingActionButton: Container(
-          width: double.infinity,
-          margin: const EdgeInsets.all(16.0),
-          child: FloatingActionButton.extended(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) {
-                    return FutureBuilder(
-                      future: takePhotoOfBarcode(),
-                      builder: (context, snapshot) {
-                        if (snapshot.connectionState == ConnectionState.done) {
-                          return snapshot.data as Widget;
-                        } else {
-                          return const CircularProgressIndicator();
-                        }
-                      },
-                    );
-                  },
-                ),
-              );
-            },
-            label: const Text('SCAN'),
-            icon: const Icon(
-                Icons.barcode_reader), // You can customize the icon as needed
-          ),
-        ),
+          Center(
+            child: ElevatedButton(
+              onPressed: () {
+                // Navigate to the second page
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => OpenCamera()),
+                );
+              },
+              child: Text('SCAN'),
+            ),
+          )
+        ]),
       ),
     );
   }
