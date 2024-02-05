@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'open_camera.dart';
 
 void main() {
   runApp(const MaterialApp(
@@ -51,27 +52,5 @@ class FirstRoute extends StatelessWidget {
             ),
           ],
         ));
-  }
-}
-
-class OpenCamera extends StatelessWidget {
-  const OpenCamera({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Second Route'),
-      ),
-      backgroundColor: Colors.black,
-      body: Center(
-        child: ElevatedButton(
-          onPressed: () {
-            Navigator.pop(context);
-          },
-          child: const Text('Go back!'),
-        ),
-      ),
-    );
   }
 }
