@@ -1,14 +1,21 @@
 import 'package:flutter/material.dart';
 
 class OpenCamera extends StatelessWidget {
+  const OpenCamera({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Second Page'),
+        title: const Text('First Route'),
       ),
       body: Center(
-        child: Text('This is the second page'),
+        child: ElevatedButton(
+          child: const Text('Open route'),
+          onPressed: () {
+            // Navigate to second route when tapped.
+          },
+        ),
       ),
     );
   }
