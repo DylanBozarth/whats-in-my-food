@@ -5,12 +5,13 @@ class OpenCamera extends StatefulWidget {
   const OpenCamera({Key? key}) : super(key: key);
 
   @override
-  _OpenCameraState createState() => _OpenCameraState();
+  OpenCameraState createState() => OpenCameraState();
 }
 
-class _OpenCameraState extends State<OpenCamera> {
+// broken
+class OpenCameraState extends State<OpenCamera> {
   String result = ''; // Add a variable to hold the result
-
+  void openBarCode() {}
   @override
   Widget build(BuildContext context) {
     return Scaffold(
