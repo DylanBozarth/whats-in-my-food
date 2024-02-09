@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'open_camera.dart';
+import 'package:simple_barcode_scanner/simple_barcode_scanner.dart';
 
 void main() {
   runApp(const MaterialApp(
@@ -29,8 +29,8 @@ class FirstRoute extends StatelessWidget {
         backgroundColor: Colors.black,
         body: Column(
           children: [
-            Container(
-              child: const Text(
+            const Center(
+              child: Text(
                 'What are you looking for?',
                 style: TextStyle(
                     color: Colors.white,
@@ -39,13 +39,17 @@ class FirstRoute extends StatelessWidget {
                     fontFamily: 'Arial'),
               ),
             ),
+            const Center(
+              child: Text('yeah'),
+            ),
             Center(
               child: ElevatedButton(
-                child: const Text('Open route'),
+                child: const Text('Open Scanner'),
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => const OpenCamera()),
+                    MaterialPageRoute(
+                        builder: (context) => const SimpleBarcodeScannerPage()),
                   );
                 },
               ),

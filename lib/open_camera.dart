@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:simple_barcode_scanner/simple_barcode_scanner.dart';
-import 'package:flutter/services.dart';
 
 class OpenCamera extends StatefulWidget {
   const OpenCamera({Key? key}) : super(key: key);
@@ -16,7 +15,7 @@ class _OpenCameraState extends State<OpenCamera> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Second Route'),
+        title: const Text('Scan item'),
       ),
       backgroundColor: Colors.black,
       body: Center(
