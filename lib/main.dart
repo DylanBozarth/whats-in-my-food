@@ -1,7 +1,7 @@
-import 'dart:ffi';
 
 import 'package:flutter/material.dart';
 import 'package:simple_barcode_scanner/simple_barcode_scanner.dart';
+import 'package:whatsinmyfood/api.dart';
 
 void main() {
   runApp(const MyApp());
@@ -74,6 +74,7 @@ class _HomePageState extends State<HomePage> {
                   if (res is String) {
                     barCodeScanResult = res;
                   }
+                  makeGetRequest(barCodeScanResult);
                 });
               },
               child: const Text(
