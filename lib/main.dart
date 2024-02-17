@@ -63,7 +63,7 @@ class _HomePageState extends State<HomePage> {
                     fontFamily: 'Arial'),
               ),
             ),
-            ElevatedButton(onPressed: makeGetRequest('barCodeScanResult'), child: const Text('TEST REQUEST')),
+            // ElevatedButton(onPressed: makeGetRequest('barCodeScanResult'), child: const Text('TEST REQUEST')),
             ElevatedButton(
               onPressed: () async {
                 var res = await Navigator.push(

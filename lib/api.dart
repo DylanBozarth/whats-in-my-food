@@ -1,25 +1,48 @@
-// https://us.openfoodfacts.org/api/v0/product/044000069223.json
-import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:http/http.dart' as http;
 
-var ingredientResults = "";
- makeGetRequest(barcode) async {
+class Product {
+  final String code;
+  final Map<String, dynamic> product;
+
+  Product({required this.code, required this.product});
+
+  factory Product.fromJson(Map<String, dynamic> json) {
+    return Product(
+      code: json['code'],
+      product: json['product'],
+    );
+  }
+}
+var ingredientResults = [];
+
+makeGetRequest(barcode) async {
   var url = Uri.parse('https://us.openfoodfacts.org/api/v0/product/$barcode.json');
-  // var url = Uri.parse('https://us.openfoodfacts.org/api/v0/product/044000069223.json');
   try {
-    // Sending a GET request
     var response = await http.get(url);
 
-    // Check if the request was successful (status code 200)
     if (response.statusCode == 200) {
-      // print('Response data: ${response.body}');
-      ingredientResults = response.body;
-       Map<String, dynamic> responseData = json.decode(ingredientResults);
-      print(responseData);
+      // Decode the JSON string into a Map<String, dynamic>
+      Map<String, dynamic> decodedJson = jsonDecode(response.body);
+
+      // Create a Product object from the decoded JSON
+      Product product = Product.fromJson(decodedJson);
+
+      // Access properties
+      ingredientResults = product.product["ingredients"];
+      findThingsInIngredients();
     } else {
       print('Failed to make GET request. Status code: ${response.statusCode}');
     }
   } catch (e) {
     print('Error during GET request: $e');
+  }
+}
+void findThingsInIngredients() {
+  bool containsCornSyrup = ingredientResults.any((item) => item['text'].toLowerCase().contains('corn syrup'));
+  if (containsCornSyrup) {
+    print('The data contains "Corn syrup".');
+  } else {
+    print('The data does not contain "Corn syrup".');
   }
 }
