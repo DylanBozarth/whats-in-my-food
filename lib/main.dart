@@ -86,6 +86,9 @@ class _HomePageState extends State<HomePage> {
               'Barcode: $barCodeScanResult',
               style: const TextStyle(color: Colors.white),
             ),
+            Text(
+              'Results: '
+            ),
           ],
         ),
       ),
