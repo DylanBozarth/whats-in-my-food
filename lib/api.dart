@@ -3,8 +3,9 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 var ingredientResults = "";
-void makeGetRequest(barcode) async {
+ makeGetRequest(barcode) async {
   var url = Uri.parse('https://us.openfoodfacts.org/api/v0/product/$barcode.json');
+  // var url = Uri.parse('https://us.openfoodfacts.org/api/v0/product/044000069223.json');
   try {
     // Sending a GET request
     var response = await http.get(url);

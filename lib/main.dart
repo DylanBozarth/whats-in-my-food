@@ -63,6 +63,7 @@ class _HomePageState extends State<HomePage> {
                     fontFamily: 'Arial'),
               ),
             ),
+            ElevatedButton(onPressed: makeGetRequest('barCodeScanResult'), child: const Text('TEST REQUEST')),
             ElevatedButton(
               onPressed: () async {
                 var res = await Navigator.push(
@@ -86,7 +87,7 @@ class _HomePageState extends State<HomePage> {
               'Barcode: $barCodeScanResult',
               style: const TextStyle(color: Colors.white),
             ),
-            Text(
+            const Text(
               'Results: '
             ),
           ],
