@@ -17,7 +17,7 @@ class Product {
 var ingredientResults = [];
 
 makeGetRequest(barcode) async {
-  var url = Uri.parse('https://us.openfoodfacts.org/api/v0/product/$barcode.json');
+  var url = Uri.parse('https://world.openfoodfacts.org/api/v0/product/$barcode.json');
   try {
     var response = await http.get(url);
 
