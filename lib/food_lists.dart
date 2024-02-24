@@ -139,3 +139,4 @@ List<String> nonVegan = [
   "Guanine (E175)",
   "Squalene",
 ];
+

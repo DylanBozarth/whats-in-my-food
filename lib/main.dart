@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:simple_barcode_scanner/simple_barcode_scanner.dart';
 import 'package:whatsinmyfood/api.dart';
@@ -33,6 +32,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   String barCodeScanResult = '';
   List<String> lookingForThings = [];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -40,37 +40,43 @@ class _HomePageState extends State<HomePage> {
         title: const Text(
           'Whats in my food?',
           style: TextStyle(
-              color: Colors.white,
-              fontStyle: FontStyle.italic,
-              fontWeight: FontWeight.bold,
-              fontFamily: 'Arial'),
+            color: Colors.white,
+            fontStyle: FontStyle.italic,
+            fontWeight: FontWeight.bold,
+            fontFamily: 'Arial',
+          ),
         ),
         centerTitle: true,
         backgroundColor: Colors.deepOrangeAccent,
       ),
       backgroundColor: Colors.black,
-      body: Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Center(
-              child: Text(
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          const Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
                 'What are you looking for?',
                 style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                    fontFamily: 'Arial'),
+                  color: Colors.white,
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  fontFamily: 'Arial',
+                ),
               ),
-            ),
-            // ElevatedButton(onPressed: makeGetRequest('barCodeScanResult'), child: const Text('TEST REQUEST')),
-            ElevatedButton(
+              // Add other widgets as needed
+            ],
+          ),
+          Center (
+            child: ElevatedButton(
               onPressed: () async {
                 var res = await Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const SimpleBarcodeScannerPage(),
-                    ));
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const SimpleBarcodeScannerPage(),
+                  ),
+                );
                 setState(() {
                   if (res is String) {
                     barCodeScanResult = res;
@@ -78,20 +84,17 @@ class _HomePageState extends State<HomePage> {
                   makeGetRequest(barCodeScanResult);
                 });
               },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.blue,
+                foregroundColor: Colors.white,
+              ),
               child: const Text(
                 'Open Scanner',
-                style: TextStyle(color: Colors.black),
+                style: TextStyle(color: Colors.white),
               ),
             ),
-            Text(
-              'Barcode: $barCodeScanResult',
-              style: const TextStyle(color: Colors.white),
-            ),
-            const Text(
-              'Results: '
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

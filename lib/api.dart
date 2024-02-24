@@ -39,7 +39,7 @@ makeGetRequest(barcode) async {
   }
 }
 void findThingsInIngredients() {
-  bool containsCornSyrup = ingredientResults.any((item) => item['text'].toLowerCase().contains('corn syrup'));
+  bool containsCornSyrup = ingredientResults.any((item) => item['text'].toLowerCase().contains());
   if (containsCornSyrup) {
     print('The data contains "Corn syrup".');
   } else {
