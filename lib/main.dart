@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:simple_barcode_scanner/simple_barcode_scanner.dart';
 import 'package:whatsinmyfood/api.dart';
+import 'toggles.dart';
 
 void main() {
   runApp(const MyApp());
@@ -31,7 +32,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   String barCodeScanResult = '';
-  List<String> lookingForThings = [];
+  List<bool> lookingForThings = [false, false, false];
 
   @override
   Widget build(BuildContext context) {
@@ -49,7 +50,7 @@ class _HomePageState extends State<HomePage> {
         centerTitle: true,
         backgroundColor: Colors.deepOrangeAccent,
       ),
-      backgroundColor: Colors.black,
+      backgroundColor: Colors.green,
       body: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -68,7 +69,12 @@ class _HomePageState extends State<HomePage> {
               // Add other widgets as needed
             ],
           ),
-          Center (
+          const Row(
+           children: [
+            ToggleButtonsExample()
+           ] 
+          ),
+          Center(
             child: ElevatedButton(
               onPressed: () async {
                 var res = await Navigator.push(
