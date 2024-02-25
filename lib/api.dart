@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import "toggles.dart";
 
 class Product {
   final String code;
@@ -39,10 +40,12 @@ makeGetRequest(barcode) async {
   }
 }
 void findThingsInIngredients() {
-  bool containsCornSyrup = ingredientResults.any((item) => item['text'].toLowerCase().contains());
+  print(userSelectedList);
+  /* bool containsCornSyrup = ingredientResults.any((item) => item['text'].toLowerCase().contains());
   if (containsCornSyrup) {
     print('The data contains "Corn syrup".');
   } else {
     print('The data does not contain "Corn syrup".');
   }
+  */
 }

@@ -1,15 +1,13 @@
 import 'package:flutter/material.dart';
 
-/// Flutter code sample for migrating from [ToggleButtons] to [SegmentedButton].
+enum LookingFor {seedOils, Bugs, medium, large, extraLarge }
 
-enum ShirtSize { extraSmall, small, medium, large, extraLarge }
-
-const List<(ShirtSize, String)> shirtSizeOptions = <(ShirtSize, String)>[
-  (ShirtSize.extraSmall, 'Seed oils'),
-  (ShirtSize.small, 'S'),
-  (ShirtSize.medium, 'M'),
-  (ShirtSize.large, 'L'),
-  (ShirtSize.extraLarge, 'XL'),
+const List<(LookingFor, String)> lookingForOptions = <(LookingFor, String)>[
+  (LookingFor.seedOils, 'Seed oils'),
+  (LookingFor.Bugs, 'Bugs'),
+  (LookingFor.medium, 'M'),
+  (LookingFor.large, 'L'),
+  (LookingFor.extraLarge, 'XL'),
 ];
 
 class ToggleButtonsExample extends StatefulWidget {
@@ -20,14 +18,17 @@ class ToggleButtonsExample extends StatefulWidget {
 }
 
 class _ToggleButtonsExampleState extends State<ToggleButtonsExample> {
-  Set<ShirtSize> _segmentedButtonSelection = <ShirtSize>{ShirtSize.medium};
+  Set<LookingFor> _userSelectedList = <LookingFor>{};
+
+  Set<LookingFor> get userSelectedList => _userSelectedList;
 
   @override
   Widget build(BuildContext context) {
     return Center(
       child: Column(
         children: <Widget>[
-          SegmentedButton<ShirtSize>(
+          
+          SegmentedButton<LookingFor>(
             // ToggleButtons above allows multiple or no selection.
             // Set `multiSelectionEnabled` and `emptySelectionAllowed` to true
             // to match the behavior of ToggleButtons.
@@ -36,21 +37,23 @@ class _ToggleButtonsExampleState extends State<ToggleButtonsExample> {
             // Hide the selected icon to match the behavior of ToggleButtons.
             showSelectedIcon: false,
             // SegmentedButton uses a Set<T> to track its selection state.
-            selected: _segmentedButtonSelection,
+            selected: _userSelectedList,
             // This callback updates the set of selected segment values.
-            onSelectionChanged: (Set<ShirtSize> newSelection) {
+            onSelectionChanged: (Set<LookingFor> newSelection) {
               setState(() {
-                _segmentedButtonSelection = newSelection;
+                _userSelectedList = newSelection;
+                print('Selected Parts: $_userSelectedList');
               });
             },
             // SegmentedButton uses a List<ButtonSegment<T>> to build its children
             // instead of a List<Widget> like ToggleButtons.
-            segments: shirtSizeOptions
-                .map<ButtonSegment<ShirtSize>>(((ShirtSize, String) shirt) {
-              return ButtonSegment<ShirtSize>(
+            segments: lookingForOptions
+                .map<ButtonSegment<LookingFor>>(((LookingFor, String) shirt) {
+              return ButtonSegment<LookingFor>(
                   value: shirt.$1, label: Text(shirt.$2));
             }).toList(),
           ),
+          ElevatedButton(onPressed: () => print(userSelectedList), child: Text('log state'))
         ],
       ),
     );

@@ -33,6 +33,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   String barCodeScanResult = '';
   List<bool> lookingForThings = [false, false, false];
+  
 
   @override
   Widget build(BuildContext context) {
