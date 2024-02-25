@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
-enum LookingFor {seedOils, Bugs, medium, large, extraLarge }
+enum LookingFor { seedOils, bugs, medium, large, extraLarge }
 
 const List<(LookingFor, String)> lookingForOptions = <(LookingFor, String)>[
   (LookingFor.seedOils, 'Seed oils'),
-  (LookingFor.Bugs, 'Bugs'),
+  (LookingFor.bugs, 'Bugs'),
   (LookingFor.medium, 'M'),
   (LookingFor.large, 'L'),
   (LookingFor.extraLarge, 'XL'),
@@ -19,6 +19,9 @@ class ToggleButtonsExample extends StatefulWidget {
 
 class _ToggleButtonsExampleState extends State<ToggleButtonsExample> {
   Set<LookingFor> _userSelectedList = <LookingFor>{};
+  Set<LookingFor> getUserSelectedList() {
+    return _userSelectedList;
+  }
 
   Set<LookingFor> get userSelectedList => _userSelectedList;
 
@@ -27,7 +30,6 @@ class _ToggleButtonsExampleState extends State<ToggleButtonsExample> {
     return Center(
       child: Column(
         children: <Widget>[
-          
           SegmentedButton<LookingFor>(
             // ToggleButtons above allows multiple or no selection.
             // Set `multiSelectionEnabled` and `emptySelectionAllowed` to true
@@ -53,7 +55,9 @@ class _ToggleButtonsExampleState extends State<ToggleButtonsExample> {
                   value: shirt.$1, label: Text(shirt.$2));
             }).toList(),
           ),
-          ElevatedButton(onPressed: () => print(userSelectedList), child: Text('log state'))
+          ElevatedButton(
+              onPressed: () => print(userSelectedList),
+              child: const Text('log state'))
         ],
       ),
     );

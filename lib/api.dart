@@ -1,11 +1,9 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import "toggles.dart";
 
 class Product {
   final String code;
   final Map<String, dynamic> product;
-
   Product({required this.code, required this.product});
 
   factory Product.fromJson(Map<String, dynamic> json) {
@@ -31,7 +29,7 @@ makeGetRequest(barcode) async {
 
       // Access properties
       ingredientResults = product.product["ingredients"];
-      findThingsInIngredients();
+      // findThingsInIngredients();
     } else {
       print('Failed to make GET request. Status code: ${response.statusCode}');
     }
@@ -39,13 +37,17 @@ makeGetRequest(barcode) async {
     print('Error during GET request: $e');
   }
 }
-void findThingsInIngredients() {
-  print(userSelectedList);
-  /* bool containsCornSyrup = ingredientResults.any((item) => item['text'].toLowerCase().contains());
+void findThingsInIngredients(userList) {
+  List<String> result = userList // change the list to remove lookingFor, and make it an array
+      .substring(1, userList.length - 1) // Remove curly braces
+      .split(', ') // Split by comma and space
+      .map((String item) => item.trim().replaceAll('LookingFor.', '')) // Remove "LookingFor." prefix
+      .toList();
+  bool containsCornSyrup = ingredientResults.any((item) => item['text'].toLowerCase().contains(result));
   if (containsCornSyrup) {
     print('The data contains "Corn syrup".');
   } else {
     print('The data does not contain "Corn syrup".');
   }
-  */
+  
 }
