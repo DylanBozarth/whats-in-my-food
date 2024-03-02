@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-
+// TEST https://world.openfoodfacts.org/api/v0/product/028400589864.json
 class Product {
   final String code;
   final Map<String, dynamic> product;
@@ -13,9 +13,9 @@ class Product {
     );
   }
 }
-var ingredientResults = [];
+List<String> ingredientResults = [];
 
-makeGetRequest(barcode) async {
+makeGetRequest(barcode, lookingForThings) async {
   var url = Uri.parse('https://world.openfoodfacts.org/api/v0/product/$barcode.json');
   try {
     var response = await http.get(url);
@@ -28,8 +28,9 @@ makeGetRequest(barcode) async {
       Product product = Product.fromJson(decodedJson);
 
       // Access properties
-      ingredientResults = product.product["ingredients"];
-      // findThingsInIngredients();
+      ingredientResults.add(product.product["ingredients"]); 
+      print(ingredientResults);
+      //findThingsInIngredients(ingredientResults, lookingForThings);
     } else {
       print('Failed to make GET request. Status code: ${response.statusCode}');
     }
@@ -37,17 +38,14 @@ makeGetRequest(barcode) async {
     print('Error during GET request: $e');
   }
 }
-void findThingsInIngredients(userList) {
-  List<String> result = userList // change the list to remove lookingFor, and make it an array
-      .substring(1, userList.length - 1) // Remove curly braces
-      .split(', ') // Split by comma and space
-      .map((String item) => item.trim().replaceAll('LookingFor.', '')) // Remove "LookingFor." prefix
+void findThingsInIngredients(List<Map<String, dynamic>> ingredientResults, lookingForThings) {
+  List<String> desiredStrings = lookingForThings;
+
+  List<Map<String, dynamic>> matchingIngredients = ingredientResults
+      .where((ingredient) =>
+          desiredStrings.any((desired) =>
+              ingredient['text'].toString().toLowerCase().contains(desired)))
       .toList();
-  bool containsCornSyrup = ingredientResults.any((item) => item['text'].toLowerCase().contains(result));
-  if (containsCornSyrup) {
-    print('The data contains "Corn syrup".');
-  } else {
-    print('The data does not contain "Corn syrup".');
-  }
-  
+
+  print(matchingIngredients);
 }

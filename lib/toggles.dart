@@ -21,9 +21,16 @@ class _ToggleSwitchState extends State<ToggleSwitch> {
     setState(() {
       isSwitched = value;
     });
-    widget.lookingForThings.add(widget.passedName);
+    if (value) {
+      // If the toggle is set to true, add the value to the array
+      widget.lookingForThings.add(widget.passedName);
+    } else {
+      // If the toggle is set to false, remove the value from the array
+      widget.lookingForThings.remove(widget.passedName);
+    }
     print(widget.lookingForThings);
   }
+
   @override
   Widget build(BuildContext context) {
     return Container(

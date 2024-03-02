@@ -72,7 +72,8 @@ class _HomePageState extends State<HomePage> {
           ),
           Column(
            children: [
-              ToggleSwitch(passedName: "Added Sugar", lookingForThings: lookingForThings,)
+              ToggleSwitch(passedName: "Added Sugar", lookingForThings: lookingForThings,),
+              ToggleSwitch(passedName: "Dairy", lookingForThings: lookingForThings,)
            ] 
           ),
           Center(
@@ -88,7 +89,7 @@ class _HomePageState extends State<HomePage> {
                   if (res is String) {
                     barCodeScanResult = res;
                   }
-                  makeGetRequest(barCodeScanResult);
+                  makeGetRequest(barCodeScanResult, lookingForThings);
                 });
               },
               style: ElevatedButton.styleFrom(
