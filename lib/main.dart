@@ -32,7 +32,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   String barCodeScanResult = '';
-  List<bool> lookingForThings = [false, false, false];
+  List<String> lookingForThings = ["home page state "];
   
 
   @override
@@ -70,9 +70,9 @@ class _HomePageState extends State<HomePage> {
               // Add other widgets as needed
             ],
           ),
-          const Row(
+          Column(
            children: [
-            ToggleButtonsExample()
+              ToggleSwitch(name: 'Seed oils',)
            ] 
           ),
           Center(
