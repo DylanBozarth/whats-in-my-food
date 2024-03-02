@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
 
 class ToggleSwitch extends StatefulWidget {
-  final String name; // New variable to be passed as an argument
+  final String passedName; // New variable to be passed as an argument
+  List<String> lookingForThings;
 
-  ToggleSwitch({Key? key, required this.name}) : super(key: key);
+  ToggleSwitch({
+    Key? key,
+    required this.passedName,
+    required this.lookingForThings,
+  }) : super(key: key);
 
   @override
   _ToggleSwitchState createState() => _ToggleSwitchState();
@@ -16,6 +21,8 @@ class _ToggleSwitchState extends State<ToggleSwitch> {
     setState(() {
       isSwitched = value;
     });
+    widget.lookingForThings.add(widget.passedName);
+    print(widget.lookingForThings);
   }
   @override
   Widget build(BuildContext context) {
@@ -29,8 +36,8 @@ class _ToggleSwitchState extends State<ToggleSwitch> {
             activeColor: Colors.green,
           ),
           Text(
-            isSwitched ? 'Switch is ON' : 'Switch is OFF',
-            style: TextStyle(
+            widget.passedName,
+            style: const TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
             ),
