@@ -16,10 +16,12 @@ class Product {
     );
   }
 }
+
 List<String> ingredientResults = [];
 
 makeGetRequest(barcode, lookingForThings) async {
-  var url = Uri.parse('https://world.openfoodfacts.org/api/v0/product/$barcode.json');
+  var url =
+      Uri.parse('https://world.openfoodfacts.org/api/v0/product/$barcode.json');
   try {
     var response = await http.get(url);
 
@@ -31,9 +33,10 @@ makeGetRequest(barcode, lookingForThings) async {
       Product product = Product.fromJson(decodedJson);
 
       // Access properties
-      ingredientResults.add(product.product["ingredients_text"]); 
+      ingredientResults.add(product.product["ingredients_text"]);
       // print(ingredientResults);
-      List<Map<String, dynamic>> filteredResults = ingredientResults.map((item) => {'key': item}).toList();
+      List<Map<String, dynamic>> filteredResults =
+          ingredientResults.map((item) => {'key': item}).toList();
       findThingsInIngredients(filteredResults, lookingForThings);
     } else {
       print('Failed to make GET request. Status code: ${response.statusCode}');
@@ -42,19 +45,34 @@ makeGetRequest(barcode, lookingForThings) async {
     print('Error during GET request: $e');
   }
 }
-void findThingsInIngredients(List<Map<String, dynamic>> ingredientResults, lookingForThings) {
+
+void findThingsInIngredients(List<Map<String, dynamic>> ingredientResults,
+    List<String> lookingForThings) {
   List<String> desiredStrings = lookingForThings;
-    if (desiredStrings.contains("Seed Oils")) {
+  List<String> matchedIngredients = [];
+
+  if (desiredStrings.contains("Seed Oils")) {
     desiredStrings.addAll(seedOils);
-    print('Desired Strings $desiredStrings');
+    // print('Desired Strings $desiredStrings');
   }
-  List<Map<String, dynamic>> matchingIngredients = ingredientResults
-      .where((ingredient) =>
-          desiredStrings.any((desired) =>
-              ingredient['text'].toString().toLowerCase().contains(desired)))
-      .toList();
+  print(ingredientResults);
 
-  print('Matching ingredients are $matchingIngredients');
+  for (Map<String, dynamic> ingredient in ingredientResults) {
+    String ingredientText = ingredient[''].toString().toLowerCase();
 
+    for (String desired in desiredStrings) {
+      if (ingredientText.contains(desired.toLowerCase())) {
+        matchedIngredients.add(ingredientText);
+        break; // Break the inner loop if a match is found
+      }
+    }
+  }
+  print('Matched ingredients: $matchedIngredients');
+
+  //Dump everything for next scan   known error: wipes the looking for array 
+  // desiredStrings.clear();
+  matchedIngredients.clear();
+  print(lookingForThings);
 }
+
 //image: image_url

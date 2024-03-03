@@ -1,26 +1,28 @@
 List<String> seedOils = [
-  "Sunflower oil",
-  "Sunflower lecithin",
-  "Sesame oil",
-  "Sesamin",
-  "Safflower oil",
-  "Safflower oleosomes",
-  "Grapeseed oil",
-  "Grapeseed extract",
-  "Flaxseed oil",
-  "Flaxseed meal",
-  "Chia seed oil",
-  "Chia seed gel",
-  "Pumpkin seed oil",
-  "Pumpkin seed protein",
-  "Hemp seed oil",
-  "Hemp seed protein",
-  "Poppy seed oil",
-  "Poppy seed paste",
-  "Mustard seed oil",
-  "Mustard seed powder",
-  "Cottonseed oil",
-  "Cottonseed meal",
+  "sunflower oil",
+  "sunflower lecithin",
+  "sesame oil",
+  "sesamin",
+  "safflower oil",
+  "safflower oleosomes",
+  "grapeseed oil",
+  "grapeseed extract",
+  "flaxseed oil",
+  "flaxseed meal",
+  "chia seed oil",
+  "chia seed gel",
+  "pumpkin seed oil",
+  "pumpkin seed protein",
+  "hemp seed oil",
+  "hemp seed protein",
+  "poppy seed oil",
+  "poppy seed paste",
+  "mustard seed oil",
+  "mustard seed powder",
+  "cottonseed oil",
+  "cottonseed meal",
+  "vegetable oil",
+  "canola oil"
 ];
 List<String> bugs = [
 "Crickets",
@@ -143,5 +145,8 @@ List<String> haram = [
 
 ];
 List <String> heavyMetals = [
+
+];
+List <String> dairy = [
 
 ];
