@@ -35,8 +35,9 @@ makeGetRequest(barcode, lookingForThings) async {
       // Access properties
       ingredientResults.add(product.product["ingredients_text"]);
       // print(ingredientResults);
-      List<Map<String, dynamic>> filteredResults =
-          ingredientResults.map((item) => {'key': item}).toList();
+       List<Map<String, dynamic>> filteredResults = ingredientResults
+      .map((item) => {'key': (item).toLowerCase()})
+      .toList();
       findThingsInIngredients(filteredResults, lookingForThings);
     } else {
       print('Failed to make GET request. Status code: ${response.statusCode}');
@@ -46,7 +47,7 @@ makeGetRequest(barcode, lookingForThings) async {
   }
 }
 
-void findThingsInIngredients(List<Map<String, dynamic>> ingredientResults,
+void findThingsInIngredients(List<Map<String, dynamic>> filteredResults,
     List<String> lookingForThings) {
   List<String> desiredStrings = lookingForThings;
   List<String> matchedIngredients = [];
@@ -55,24 +56,20 @@ void findThingsInIngredients(List<Map<String, dynamic>> ingredientResults,
     desiredStrings.addAll(seedOils);
     // print('Desired Strings $desiredStrings');
   }
-  print(ingredientResults);
+  print(filteredResults);
+  print(desiredStrings); // both are now lower case, now compare them 
+  Set<String> set1 = desiredStrings.toSet(); 
+  Set<Map<String, dynamic>> set2 = filteredResults.toSet();
 
-  for (Map<String, dynamic> ingredient in ingredientResults) {
-    String ingredientText = ingredient[''].toString().toLowerCase();
+  Set<Map<String, dynamic>> commonElements = set2.intersection(set1);
 
-    for (String desired in desiredStrings) {
-      if (ingredientText.contains(desired.toLowerCase())) {
-        matchedIngredients.add(ingredientText);
-        break; // Break the inner loop if a match is found
-      }
-    }
-  }
-  print('Matched ingredients: $matchedIngredients');
+  print('Common elements: $commonElements');
+  // print('Matched ingredients: $matchedIngredients');
 
   //Dump everything for next scan   known error: wipes the looking for array 
   // desiredStrings.clear();
   matchedIngredients.clear();
-  print(lookingForThings);
+  
 }
 
 //image: image_url
