@@ -1,5 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:whatsinmyfood/resultsPage.dart';
+
 // TEST https://world.openfoodfacts.org/api/v0/product/028400589864.json
 class Product {
   final String code;
@@ -28,9 +30,10 @@ makeGetRequest(barcode, lookingForThings) async {
       Product product = Product.fromJson(decodedJson);
 
       // Access properties
-      ingredientResults.add(product.product["ingredients"]); 
-      print(ingredientResults);
-      //findThingsInIngredients(ingredientResults, lookingForThings);
+      ingredientResults.add(product.product["ingredients_text"]); 
+      // print(ingredientResults);
+      List<Map<String, dynamic>> filteredResults = ingredientResults.map((item) => {'key': item}).toList();
+      findThingsInIngredients(filteredResults, lookingForThings);
     } else {
       print('Failed to make GET request. Status code: ${response.statusCode}');
     }
@@ -47,5 +50,7 @@ void findThingsInIngredients(List<Map<String, dynamic>> ingredientResults, looki
               ingredient['text'].toString().toLowerCase().contains(desired)))
       .toList();
 
-  print(matchingIngredients);
+  print('Matching ingredients are $matchingIngredients');
+
 }
+//image: image_url
