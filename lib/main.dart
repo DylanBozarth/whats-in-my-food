@@ -73,6 +73,7 @@ class _HomePageState extends State<HomePage> {
           Column(
            children: [
               ToggleSwitch(passedName: "Added Sugar", lookingForThings: lookingForThings,),
+              ToggleSwitch(passedName: "Seed Oils", lookingForThings: lookingForThings,),
               ToggleSwitch(passedName: "Dairy", lookingForThings: lookingForThings,)
            ] 
           ),

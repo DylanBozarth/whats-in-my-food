@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:whatsinmyfood/resultsPage.dart';
+import 'food_lists.dart';
 
 // TEST https://world.openfoodfacts.org/api/v0/product/028400589864.json
 class Product {
@@ -43,7 +44,10 @@ makeGetRequest(barcode, lookingForThings) async {
 }
 void findThingsInIngredients(List<Map<String, dynamic>> ingredientResults, lookingForThings) {
   List<String> desiredStrings = lookingForThings;
-
+    if (desiredStrings.contains("Seed Oils")) {
+    desiredStrings.addAll(seedOils);
+    print('Desired Strings $desiredStrings');
+  }
   List<Map<String, dynamic>> matchingIngredients = ingredientResults
       .where((ingredient) =>
           desiredStrings.any((desired) =>
