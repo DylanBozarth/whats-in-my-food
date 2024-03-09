@@ -33,6 +33,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   String barCodeScanResult = '';
   List<String> lookingForThings = ["Value from home page"];
+  List<String> foundThings = [];
   
 
   @override
@@ -90,7 +91,7 @@ class _HomePageState extends State<HomePage> {
                   if (res is String) {
                     barCodeScanResult = res;
                   }
-                  makeGetRequest(barCodeScanResult, lookingForThings);
+                  makeGetRequest(barCodeScanResult, lookingForThings, foundThings, context);
                 });
               },
               style: ElevatedButton.styleFrom(

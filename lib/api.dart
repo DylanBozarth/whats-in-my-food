@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:flutter/material.dart';
 import 'package:whatsinmyfood/resultsPage.dart';
 import 'food_lists.dart';
 
@@ -19,7 +20,7 @@ class Product {
 
 List<String> ingredientResults = [];
 
-makeGetRequest(barcode, lookingForThings) async {
+makeGetRequest(barcode, lookingForThings, foundThings, context) async {
   var url =
       Uri.parse('https://world.openfoodfacts.org/api/v0/product/$barcode.json');
   try {
@@ -38,7 +39,7 @@ makeGetRequest(barcode, lookingForThings) async {
       List<Map<String, dynamic>> filteredResults = ingredientResults
           .map((item) => {'key': (item).toLowerCase()})
           .toList();
-      findThingsInIngredients(filteredResults, lookingForThings);
+      findThingsInIngredients(filteredResults, lookingForThings, foundThings, context);
     } else {
       print('Failed to make GET request. Status code: ${response.statusCode}');
     }
@@ -48,30 +49,30 @@ makeGetRequest(barcode, lookingForThings) async {
 }
 
 void findThingsInIngredients(
-    List<Map<String, dynamic>> filteredResults, List<String> lookingForThings) {
+    List<Map<String, dynamic>> filteredResults, List<String> lookingForThings, List<String>foundThings, context) {
   List<String> desiredStrings = lookingForThings.map((s) => s.toLowerCase()).toList();
   List<String> matchedIngredients = [];
-
+  //TODO: make this match more than just 1 word 
   if (desiredStrings.contains("seed oils")) {
     desiredStrings.addAll(seedOils.map((s) => s.toLowerCase()));
   } else if (desiredStrings.contains("added sugar")) {
     desiredStrings.addAll(addedSugar.map((s) => s.toLowerCase()));
   }
 
-  print('filtered results $filteredResults');
+  // print('filtered results $filteredResults');
   print('desired Strings: $desiredStrings');
 
   // Print cleaned-up strings from filteredResults
   List<String> cleanedUpStrings = filteredResults
       .map((entry) => entry["key"].toString().toLowerCase())
-      .map((s) => s.replaceAll(RegExp(r'[^\w\s]'), ' '))
+      .map((s) => s.replaceAll(RegExp(r'[^\w\s,]'), ' ')) // Replace characters other than word characters, spaces, and commas
       .toList();
   print('Cleaned-up Strings: $cleanedUpStrings');
 
   // Split the cleaned-up strings into individual words
   Set<String> set1 = desiredStrings.toSet();
   Set<String> set2 = cleanedUpStrings
-      .expand((s) => s.split(' '))
+      .expand((s) => s.split(RegExp(r'[,\s]'))) // Split on both spaces and commas
       .map((s) => s.trim()) // Remove leading/trailing spaces
       .where((s) => s.isNotEmpty) // Remove empty strings
       .toSet();
@@ -80,7 +81,16 @@ void findThingsInIngredients(
 
   print('Common elements: $commonElements');
   // print('Matched ingredients: $matchedIngredients');
-
+  foundThings.addAll(commonElements);
   desiredStrings.clear();
   matchedIngredients.clear();
+   if (foundThings.isNotEmpty) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => AnotherPage(),
+      ),
+    );
+  }
 }
+
