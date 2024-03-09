@@ -35,9 +35,9 @@ makeGetRequest(barcode, lookingForThings) async {
       // Access properties
       ingredientResults.add(product.product["ingredients_text"]);
       // print(ingredientResults);
-       List<Map<String, dynamic>> filteredResults = ingredientResults
-      .map((item) => {'key': (item).toLowerCase()})
-      .toList();
+      List<Map<String, dynamic>> filteredResults = ingredientResults
+          .map((item) => {'key': (item).toLowerCase()})
+          .toList();
       findThingsInIngredients(filteredResults, lookingForThings);
     } else {
       print('Failed to make GET request. Status code: ${response.statusCode}');
@@ -47,9 +47,9 @@ makeGetRequest(barcode, lookingForThings) async {
   }
 }
 
-void findThingsInIngredients(List<Map<String, dynamic>> filteredResults,
-    List<String> lookingForThings) {
-  List<String> desiredStrings = lookingForThings;
+void findThingsInIngredients(
+    List<Map<String, dynamic>> filteredResults, List<String> lookingForThings) {
+  List<String> desiredStrings = lookingForThings.toList();
   List<String> matchedIngredients = [];
 
   if (desiredStrings.contains("Seed Oils")) {
@@ -57,8 +57,8 @@ void findThingsInIngredients(List<Map<String, dynamic>> filteredResults,
     // print('Desired Strings $desiredStrings');
   }
   print(filteredResults);
-  print(desiredStrings); // both are now lower case, now compare them 
-  Set<String> set1 = desiredStrings.toSet(); 
+  print(desiredStrings); // both are now lower case, now compare them
+  Set<String> set1 = desiredStrings.toSet();
   Set<Map<String, dynamic>> set2 = filteredResults.toSet();
 
   Set<Map<String, dynamic>> commonElements = set2.intersection(set1);
@@ -66,10 +66,9 @@ void findThingsInIngredients(List<Map<String, dynamic>> filteredResults,
   print('Common elements: $commonElements');
   // print('Matched ingredients: $matchedIngredients');
 
-  //Dump everything for next scan   known error: wipes the looking for array 
-  // desiredStrings.clear();
+  //Dump everything for next scan   known error: wipes the looking for array
+  desiredStrings.clear();
   matchedIngredients.clear();
-  
 }
 
 //image: image_url
