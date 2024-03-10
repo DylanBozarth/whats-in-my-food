@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
-import 'package:whatsinmyfood/resultsPage.dart';
+import 'package:whatsinmyfood/results_page.dart';
 import 'food_lists.dart';
 
 // TEST https://world.openfoodfacts.org/api/v0/product/028400589864.json
@@ -39,7 +39,8 @@ makeGetRequest(barcode, lookingForThings, foundThings, context) async {
       List<Map<String, dynamic>> filteredResults = ingredientResults
           .map((item) => {'key': (item).toLowerCase()})
           .toList();
-      findThingsInIngredients(filteredResults, lookingForThings, foundThings, context);
+      findThingsInIngredients(
+          filteredResults, lookingForThings, foundThings, context);
     } else {
       print('Failed to make GET request. Status code: ${response.statusCode}');
     }
@@ -48,49 +49,47 @@ makeGetRequest(barcode, lookingForThings, foundThings, context) async {
   }
 }
 
-void findThingsInIngredients(
-    List<Map<String, dynamic>> filteredResults, List<String> lookingForThings, List<String>foundThings, context) {
-  List<String> desiredStrings = lookingForThings.map((s) => s.toLowerCase()).toList();
-  List<String> matchedIngredients = [];
-  //TODO: make this match more than just 1 word 
+void findThingsInIngredients(List<Map<String, dynamic>> filteredResults,
+    List<String> lookingForThings, List<String> foundThings, context) {
+  List<String> desiredStrings =
+      lookingForThings.map((s) => s.toLowerCase()).toList();
+
   if (desiredStrings.contains("seed oils")) {
     desiredStrings.addAll(seedOils.map((s) => s.toLowerCase()));
   } else if (desiredStrings.contains("added sugar")) {
     desiredStrings.addAll(addedSugar.map((s) => s.toLowerCase()));
   }
 
-  // print('filtered results $filteredResults');
-  print('desired Strings: $desiredStrings');
+  //print('filtered results $filteredResults');
+  //print('desired Strings: $desiredStrings');
 
   // Print cleaned-up strings from filteredResults
   List<String> cleanedUpStrings = filteredResults
       .map((entry) => entry["key"].toString().toLowerCase())
-      .map((s) => s.replaceAll(RegExp(r'[^\w\s,]'), ' ')) // Replace characters other than word characters, spaces, and commas
+      .map((s) => s.replaceAll(RegExp(r'[^\w\s,]'),
+          ' ')) // Replace characters other than word characters, spaces, and commas
       .toList();
-  print('Cleaned-up Strings: $cleanedUpStrings');
+  //print('Cleaned-up Strings: $cleanedUpStrings');
 
-  // Split the cleaned-up strings into individual words
-  Set<String> set1 = desiredStrings.toSet();
-  Set<String> set2 = cleanedUpStrings
-      .expand((s) => s.split(RegExp(r'[,\s]'))) // Split on both spaces and commas
-      .map((s) => s.trim()) // Remove leading/trailing spaces
-      .where((s) => s.isNotEmpty) // Remove empty strings
-      .toSet();
+  Set<String> lowercaseSet1 =
+      cleanedUpStrings.map((e) => e.toLowerCase().trim()).toSet();
+  Set<String> lowercaseSet2 =
+      desiredStrings.map((e) => e.toLowerCase().trim()).toSet();
+  Set<String> commonElements = lowercaseSet1.intersection(lowercaseSet2);
 
-  Set<String> commonElements = set2.intersection(set1);
-
+  print(lowercaseSet1);
+  print(lowercaseSet2);
   print('Common elements: $commonElements');
-  // print('Matched ingredients: $matchedIngredients');
+
+
   foundThings.addAll(commonElements);
   desiredStrings.clear();
-  matchedIngredients.clear();
-   if (foundThings.isNotEmpty) {
+  if (foundThings.isNotEmpty) {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => AnotherPage(),
+        builder: (context) => ResultsPage(),
       ),
     );
   }
 }
-
