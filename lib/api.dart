@@ -64,7 +64,7 @@ void findThingsInIngredients(List<Map<String, dynamic>> filteredResults,
   //print('desired Strings: $desiredStrings');
 
   // Print cleaned-up strings from filteredResults
-  List<String> cleanedUpStrings = filteredResults
+  List<String> cleanedUpStrings = filteredResults.toList()
       .map((entry) => entry["key"].toString().toLowerCase())
       .map((s) => s.replaceAll(RegExp(r'[^\w\s,]'),
           ' ')) // Replace characters other than word characters, spaces, and commas
@@ -76,11 +76,16 @@ void findThingsInIngredients(List<Map<String, dynamic>> filteredResults,
   Set<String> lowercaseSet2 =
       desiredStrings.map((e) => e.toLowerCase().trim()).toSet();
   Set<String> commonElements = lowercaseSet1.intersection(lowercaseSet2);
+  for (var word in lowercaseSet1) {
+    if (lowercaseSet2.contains(word)) {
+      commonElements.add(word);
+    }
+  }
 
-  print(lowercaseSet1);
-  print(lowercaseSet2);
+  //print(lowercaseSet1);
+  //print(lowercaseSet2);
+  commonElements.add('Blah');
   print('Common elements: $commonElements');
-
 
   foundThings.addAll(commonElements);
   desiredStrings.clear();
@@ -88,7 +93,7 @@ void findThingsInIngredients(List<Map<String, dynamic>> filteredResults,
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => ResultsPage(),
+        builder: (context) => ResultsPage(passedResults: foundThings, context: context),
       ),
     );
   }
