@@ -70,8 +70,18 @@ void findThingsInIngredients(List<Map<String, dynamic>> filteredResults,
           ' ')) // Replace characters other than word characters, spaces, and commas
       .toList();
   //print('Cleaned-up Strings: $cleanedUpStrings');
+  List<String> commonElements = [];
+  for (String desiredString in desiredStrings) {
+    // Check if desiredString exists in any item of filterResult
+    bool matchFound = cleanedUpStrings.any((item) =>
+        item.contains(desiredString.toLowerCase()));
 
-  Set<String> lowercaseSet1 =
+    // If match found and not already in uniqueMatches, add it
+    if (matchFound && !commonElements.contains(desiredString)) {
+      commonElements.add(desiredString);
+    }
+  }
+  /*Set<String> lowercaseSet1 =
       cleanedUpStrings.map((e) => e.toLowerCase().trim()).toSet();
   Set<String> lowercaseSet2 =
       desiredStrings.map((e) => e.toLowerCase().trim()).toSet();
@@ -81,10 +91,9 @@ void findThingsInIngredients(List<Map<String, dynamic>> filteredResults,
       commonElements.add(word);
     }
   }
-
+  */
   //print(lowercaseSet1);
   //print(lowercaseSet2);
-  commonElements.add('Blah');
   print('Common elements: $commonElements');
 
   foundThings.addAll(commonElements);
