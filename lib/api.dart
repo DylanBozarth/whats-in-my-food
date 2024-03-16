@@ -53,23 +53,21 @@ void findThingsInIngredients(List<Map<String, dynamic>> filteredResults,
     List<String> lookingForThings, List<String> foundThings, context) {
   List<String> desiredStrings =
       lookingForThings.map((s) => s.toLowerCase()).toList();
-
+//TODO make this work with several things
   if (desiredStrings.contains("seed oils")) {
     desiredStrings.addAll(seedOils.map((s) => s.toLowerCase()));
   } else if (desiredStrings.contains("added sugar")) {
     desiredStrings.addAll(addedSugar.map((s) => s.toLowerCase()));
+  } else if (desiredStrings.contains("dairy")) {
+    desiredStrings.addAll(dairy.map((s) => s.toLowerCase()));
   }
 
-  //print('filtered results $filteredResults');
-  //print('desired Strings: $desiredStrings');
-
-  // Print cleaned-up strings from filteredResults
   List<String> cleanedUpStrings = filteredResults.toList()
       .map((entry) => entry["key"].toString().toLowerCase())
       .map((s) => s.replaceAll(RegExp(r'[^\w\s,]'),
           ' ')) // Replace characters other than word characters, spaces, and commas
       .toList();
-  //print('Cleaned-up Strings: $cleanedUpStrings');
+      
   List<String> commonElements = [];
   for (String desiredString in desiredStrings) {
     // Check if desiredString exists in any item of filterResult
@@ -81,19 +79,7 @@ void findThingsInIngredients(List<Map<String, dynamic>> filteredResults,
       commonElements.add(desiredString);
     }
   }
-  /*Set<String> lowercaseSet1 =
-      cleanedUpStrings.map((e) => e.toLowerCase().trim()).toSet();
-  Set<String> lowercaseSet2 =
-      desiredStrings.map((e) => e.toLowerCase().trim()).toSet();
-  Set<String> commonElements = lowercaseSet1.intersection(lowercaseSet2);
-  for (var word in lowercaseSet1) {
-    if (lowercaseSet2.contains(word)) {
-      commonElements.add(word);
-    }
-  }
-  */
-  //print(lowercaseSet1);
-  //print(lowercaseSet2);
+
   print('Common elements: $commonElements');
 
   foundThings.addAll(commonElements);
