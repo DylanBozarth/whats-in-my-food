@@ -54,15 +54,15 @@ void findThingsInIngredients(List<Map<String, dynamic>> filteredResults,
     List<String> lookingForThings, List<String> foundThings, context) {
   List<String> desiredStrings =
       lookingForThings.map((s) => s.toLowerCase()).toList();
-// Define a collection of maps containing the keyword and the corresponding list
+// This needs to match the toggles on the home page values 
   List<Map<String, List<String>>> keywordLists = [
     {"seed oils": seedOils},
     {"bugs": bugs},
-    {"bannedInEU": bannedInEU},
-    {"nonVegetarian": nonVegetarian},
-    {"nonVegan": nonVegan},
+    {"banned In EU": bannedInEU},
+    {"non Vegetarian": nonVegetarian},
+    {"non Vegan": nonVegan},
     {"haram": haram},
-    {"heavyMetals": heavyMetals},
+    {"heavy Metals": heavyMetals},
     {"added sugar": addedSugar},
     {"dairy": dairy},
   ];

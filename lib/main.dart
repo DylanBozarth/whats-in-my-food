@@ -76,6 +76,9 @@ class _HomePageState extends State<HomePage> {
               ToggleSwitch(passedName: "Added Sugar", lookingForThings: lookingForThings,),
               ToggleSwitch(passedName: "Seed Oils", lookingForThings: lookingForThings,),
               ToggleSwitch(passedName: "Dairy", lookingForThings: lookingForThings,)
+              ToggleSwitch(passedName: "Insect Parts", lookingForThings: lookingForThings,)
+              ToggleSwitch(passedName: "Dairy", lookingForThings: lookingForThings,)
+              ToggleSwitch(passedName: "Dairy", lookingForThings: lookingForThings,)
            ] 
           ),
           Center(
