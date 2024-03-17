@@ -3,6 +3,7 @@ import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:whatsinmyfood/results_page.dart';
 import 'food_lists.dart';
+import 'dart:io';
 
 // TEST https://world.openfoodfacts.org/api/v0/product/028400589864.json
 class Product {
@@ -53,26 +54,56 @@ void findThingsInIngredients(List<Map<String, dynamic>> filteredResults,
     List<String> lookingForThings, List<String> foundThings, context) {
   List<String> desiredStrings =
       lookingForThings.map((s) => s.toLowerCase()).toList();
-//TODO make this work with several things
-  if (desiredStrings.contains("seed oils")) {
-    desiredStrings.addAll(seedOils.map((s) => s.toLowerCase()));
-  } else if (desiredStrings.contains("added sugar")) {
-    desiredStrings.addAll(addedSugar.map((s) => s.toLowerCase()));
-  } else if (desiredStrings.contains("dairy")) {
-    desiredStrings.addAll(dairy.map((s) => s.toLowerCase()));
+// Define a collection of maps containing the keyword and the corresponding list
+  List<Map<String, List<String>>> keywordLists = [
+    {"seed oils": seedOils},
+    {"bugs": bugs},
+    {"bannedInEU": bannedInEU},
+    {"nonVegetarian": nonVegetarian},
+    {"nonVegan": nonVegan},
+    {"haram": haram},
+    {"heavyMetals": heavyMetals},
+    {"added sugar": addedSugar},
+    {"dairy": dairy},
+  ];
+
+// Iterate over the collection of maps
+  for (var entry in keywordLists) {
+    var keyword = entry.keys.first;
+    var list = entry.values.first;
+
+    // Check if desiredStrings contains the keyword
+    if (desiredStrings.contains(keyword)) {
+      // Add all elements from the list to desiredStrings
+      desiredStrings.addAll(list.map((s) => s.toLowerCase()));
+    }
   }
 
-  List<String> cleanedUpStrings = filteredResults.toList()
+  // Maybe this will work in the future
+  /* add wanted items variation to desired strings 
+  Map<String, String> mappedDesiredStrings = Map.fromIterable(desiredStrings, key: (item) => item, value: (item) => "");
+   // Strings to check
+  List<String> stringsToCheck = ['seed oils']; // CASE SENSITIVE
+  // Loop through the strings and check against the map
+  for (String str in stringsToCheck) {
+    if (mappedDesiredStrings.containsKey(str)) {
+      desiredStrings.add('$str');
+    }
+    print(desiredStrings);
+  }*/
+  print(desiredStrings);
+  List<String> cleanedUpStrings = filteredResults
+      .toList()
       .map((entry) => entry["key"].toString().toLowerCase())
       .map((s) => s.replaceAll(RegExp(r'[^\w\s,]'),
           ' ')) // Replace characters other than word characters, spaces, and commas
       .toList();
-      
+
   List<String> commonElements = [];
   for (String desiredString in desiredStrings) {
     // Check if desiredString exists in any item of filterResult
-    bool matchFound = cleanedUpStrings.any((item) =>
-        item.contains(desiredString.toLowerCase()));
+    bool matchFound = cleanedUpStrings
+        .any((item) => item.contains(desiredString.toLowerCase()));
 
     // If match found and not already in uniqueMatches, add it
     if (matchFound && !commonElements.contains(desiredString)) {
@@ -88,7 +119,8 @@ void findThingsInIngredients(List<Map<String, dynamic>> filteredResults,
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => ResultsPage(passedResults: foundThings, context: context),
+        builder: (context) =>
+            ResultsPage(passedResults: foundThings, context: context),
       ),
     );
   }

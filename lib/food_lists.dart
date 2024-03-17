@@ -285,8 +285,6 @@ List<String> dairy = [
   "Colostrum yogurt",
   "Colostrum ice cream",
 ];
-
-
 List<String> haram = [
 
 ];
