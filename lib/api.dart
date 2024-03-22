@@ -66,12 +66,12 @@ void findThingsInIngredients(List<Map<String, dynamic>> filteredResults,
     {"added sugar": addedSugar},
     {"dairy": dairy},
   ];
-
+  //print(desiredStrings);
 // Iterate over the collection of maps
   for (var entry in keywordLists) {
     var keyword = entry.keys.first;
     var list = entry.values.first;
-
+  
     // Check if desiredStrings contains the keyword
     if (desiredStrings.contains(keyword)) {
       // Add all elements from the list to desiredStrings
@@ -79,19 +79,6 @@ void findThingsInIngredients(List<Map<String, dynamic>> filteredResults,
     }
   }
 
-  // Maybe this will work in the future
-  /* add wanted items variation to desired strings 
-  Map<String, String> mappedDesiredStrings = Map.fromIterable(desiredStrings, key: (item) => item, value: (item) => "");
-   // Strings to check
-  List<String> stringsToCheck = ['seed oils']; // CASE SENSITIVE
-  // Loop through the strings and check against the map
-  for (String str in stringsToCheck) {
-    if (mappedDesiredStrings.containsKey(str)) {
-      desiredStrings.add('$str');
-    }
-    print(desiredStrings);
-  }*/
-  print(desiredStrings);
   List<String> cleanedUpStrings = filteredResults
       .toList()
       .map((entry) => entry["key"].toString().toLowerCase())
@@ -111,16 +98,16 @@ void findThingsInIngredients(List<Map<String, dynamic>> filteredResults,
     }
   }
 
-  print('Common elements: $commonElements');
+  // print('Common elements: $commonElements');
 
   foundThings.addAll(commonElements);
-  desiredStrings.clear();
+  //desiredStrings.clear();
   if (foundThings.isNotEmpty) {
     Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) =>
-            ResultsPage(passedResults: foundThings, context: context),
+            ResultsPage(passedResults: foundThings, context: context, lookingForThings: lookingForThings),
       ),
     );
   }

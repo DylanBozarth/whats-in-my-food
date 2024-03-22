@@ -6,6 +6,9 @@ import 'toggles.dart';
 void main() {
   runApp(const MyApp());
 }
+// TODO button to scan again from results page
+// TODO sort found ingredients by category 
+// TODO make it look nice 
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
@@ -32,7 +35,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   String barCodeScanResult = '';
-  List<String> lookingForThings = ["Value from home page"];
+  List<String> lookingForThings = [];
   List<String> foundThings = [];
   
 
@@ -73,12 +76,10 @@ class _HomePageState extends State<HomePage> {
           ),
           Column(
            children: [
-              ToggleSwitch(passedName: "Added Sugar", lookingForThings: lookingForThings,),
-              ToggleSwitch(passedName: "Seed Oils", lookingForThings: lookingForThings,),
-              ToggleSwitch(passedName: "Dairy", lookingForThings: lookingForThings,)
-              ToggleSwitch(passedName: "Insect Parts", lookingForThings: lookingForThings,)
-              ToggleSwitch(passedName: "Dairy", lookingForThings: lookingForThings,)
-              ToggleSwitch(passedName: "Dairy", lookingForThings: lookingForThings,)
+              ToggleSwitch(passedName: "Added Sugar", lookingForThings: lookingForThings),
+              ToggleSwitch(passedName: "Seed Oils", lookingForThings: lookingForThings),
+              ToggleSwitch(passedName: "Dairy", lookingForThings: lookingForThings),
+              ToggleSwitch(passedName: "Non Vegan", lookingForThings: lookingForThings),
            ] 
           ),
           Center(
