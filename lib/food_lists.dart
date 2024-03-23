@@ -1,3 +1,16 @@
+List<Map<String, List<String>>> keywordLists = [
+  // LIST THEM ALL HERE
+  {"seed oils": seedOils},
+  {"bugs": bugs},
+  {"banned In EU": bannedInEU},
+  {"non Vegetarian": nonVegetarian},
+  {"non Vegan": nonVegan},
+  {"haram": haram},
+  {"heavy Metals": heavyMetals},
+  {"added sugar": addedSugar},
+  {"dairy": dairy},
+];
+
 List<String> seedOils = [
   "sunflower oil",
   "sunflower lecithin",
@@ -25,7 +38,7 @@ List<String> seedOils = [
   "canola oil"
 ];
 List<String> bugs = [
-"Crickets",
+  "Crickets",
   "Cricket flour",
   "Mealworms",
   "Mealworm flour",
@@ -41,9 +54,9 @@ List<String> bugs = [
 List<String> bannedInEU = [
   "BHA (Butylated Hydroxyanisole)",
   "BHT (Butylated Hydroxytoluene)",
-    "Cyclamate (E952)",
+  "Cyclamate (E952)",
   "Aspartame (E951)",
-"Tartrazine (E102)",
+  "Tartrazine (E102)",
   "Quinoline Yellow (E104)",
   "Sunset Yellow FCF (E110)",
   "Allura Red AC (E129)",
@@ -95,7 +108,7 @@ List<String> nonVegetarian = [
   "Tongue",
   "Gelatin",
   "Broth (meat-based)",
-"Gelatin",
+  "Gelatin",
   "Broth (meat-based)",
   "Rennet",
   "Worcestershire sauce",
@@ -112,7 +125,7 @@ List<String> nonVegetarian = [
   "L-cysteine",
 ];
 List<String> nonVegan = [
-"Gelatin",
+  "Gelatin",
   "Honey",
   "Beeswax",
   "Carmine (E120)",
@@ -125,7 +138,7 @@ List<String> nonVegan = [
   "Schmaltz",
   "Ghee",
   "clarified butter"
-  "Cochineal (E120)",
+      "Cochineal (E120)",
   "Pepsin",
   "Collagen",
   "Elastin",
@@ -285,9 +298,5 @@ List<String> dairy = [
   "Colostrum yogurt",
   "Colostrum ice cream",
 ];
-List<String> haram = [
-
-];
-List <String> heavyMetals = [
-
-];
+List<String> haram = [];
+List<String> heavyMetals = [];

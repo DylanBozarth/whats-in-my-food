@@ -53,24 +53,13 @@ void findThingsInIngredients(List<Map<String, dynamic>> filteredResults,
     List<String> lookingForThings, List<String> foundThings, context) {
   List<String> desiredStrings =
       lookingForThings.map((s) => s.toLowerCase()).toList();
-// This needs to match the toggles on the home page values 
-  List<Map<String, List<String>>> keywordLists = [
-    {"seed oils": seedOils},
-    {"bugs": bugs},
-    {"banned In EU": bannedInEU},
-    {"non Vegetarian": nonVegetarian},
-    {"non Vegan": nonVegan},
-    {"haram": haram},
-    {"heavy Metals": heavyMetals},
-    {"added sugar": addedSugar},
-    {"dairy": dairy},
-  ];
-  //print(desiredStrings);
+// This needs to match the toggles on the home page values
+
 // Iterate over the collection of maps
   for (var entry in keywordLists) {
     var keyword = entry.keys.first;
     var list = entry.values.first;
-  
+
     // Check if desiredStrings contains the keyword
     if (desiredStrings.contains(keyword)) {
       // Add all elements from the list to desiredStrings
@@ -105,8 +94,10 @@ void findThingsInIngredients(List<Map<String, dynamic>> filteredResults,
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) =>
-            ResultsPage(passedResults: foundThings, context: context, lookingForThings: lookingForThings),
+        builder: (context) => ResultsPage(
+            passedResults: foundThings,
+            context: context,
+            lookingForThings: lookingForThings),
       ),
     );
   }
