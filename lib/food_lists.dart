@@ -170,7 +170,7 @@ List<String> addedSugar = [
   "Coconut sugar",
   "Confectioner's sugar",
   "Corn sweetener",
-  "Corn syrup",
+  "corn syrup",
   "Corn syrup solids",
   "Crystalline fructose",
   "Date sugar",

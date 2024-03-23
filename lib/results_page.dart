@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:whatsinmyfood/main.dart';
+import 'food_lists.dart';
 // import 'package:simple_barcode_scanner/simple_barcode_scanner.dart';
 
 class ResultsPage extends StatelessWidget {
@@ -13,6 +14,27 @@ class ResultsPage extends StatelessWidget {
     required this.lookingForThings,
   }) : super(key: key);
 
+  Map<String, List<String>> categorizeResults(List<String> passedResults) {
+    Map<String, List<String>> categorizedResults = {};
+
+    // Iterate over the collection of maps
+    for (var entry in keywordLists) {
+      var keyword = entry.keys.first;
+      var list = entry.values.first;
+
+      // Find elements in passedResults that match the list associated with the keyword
+      List<String> matchingElements =
+          passedResults.where((element) => list.contains(element)).toList();
+
+      // Add matching elements to categorizedResults under the keyword
+      if (matchingElements.isNotEmpty) {
+        categorizedResults[keyword] = matchingElements;
+      }
+    }
+    print(categorizedResults);
+    return categorizedResults;
+  }
+
   // Function to generate list data dynamically from lookingForThings
   List<Map<String, dynamic>> generateListData(
       List<String> lookingForThings, List<String> passedResults) {
@@ -23,7 +45,7 @@ class ResultsPage extends StatelessWidget {
           passedResults.where((result) => result.contains(item)).toList();
       listData.add({'title': item, 'sublist': matchingResults});
     }
-
+    categorizeResults(passedResults);
     return listData;
   }
 
