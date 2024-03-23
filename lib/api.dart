@@ -3,7 +3,6 @@ import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:whatsinmyfood/results_page.dart';
 import 'food_lists.dart';
-import 'dart:io';
 
 // TEST https://world.openfoodfacts.org/api/v0/product/028400589864.json
 class Product {
