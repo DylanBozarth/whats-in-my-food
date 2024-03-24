@@ -16,13 +16,16 @@ class ResultsPage extends StatelessWidget {
   Map<String, List<String>> categorizeResults(List<String> passedResults) {
     Map<String, List<String>> categorizedResults = {};
 
+    // Iterate over the collection of maps
     for (var entry in keywordLists) {
       var keyword = entry.keys.first;
       var list = entry.values.first;
 
+      // Find elements in passedResults that match the list associated with the keyword
       List<String> matchingElements =
           passedResults.where((element) => list.contains(element)).toList();
 
+      // Add matching elements to categorizedResults under the keyword
       if (matchingElements.isNotEmpty) {
         categorizedResults[keyword] = matchingElements;
       }
