@@ -13,22 +13,21 @@ class ResultsPage extends StatelessWidget {
     required BuildContext context,
   }) : super(key: key);
 
-  Map<String, List<String>> categorizeResults(List<String> passedResults) {
+  Map<String, List<String>> categorizeResults(List<String> passedResults,
+      List<Map<String, List<String>>> keywordLists) {
     Map<String, List<String>> categorizedResults = {};
-
-    // Iterate over the collection of maps
-    for (var entry in keywordLists) {
-      var keyword = entry.keys.first;
-      var list = entry.values.first;
-
-      // Find elements in passedResults that match the list associated with the keyword
-      List<String> matchingElements =
-          passedResults.where((element) => list.contains(element)).toList();
-
-      // Add matching elements to categorizedResults under the keyword
-      if (matchingElements.isNotEmpty) {
-        categorizedResults[keyword] = matchingElements;
-      }
+    keywordLists.forEach((map) {
+      map.forEach((key, _) => categorizedResults[key] = []);
+    });
+    for (String result in passedResults) {
+      keywordLists.forEach((keywordMap) {
+        keywordMap.forEach((keyword, list) {
+          if (list.any((element) =>
+              result.toLowerCase().contains(element.toLowerCase()))) {
+            categorizedResults[keyword]?.add(result);
+          }
+        });
+      });
     }
     print(categorizedResults);
     return categorizedResults;
@@ -37,7 +36,7 @@ class ResultsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Map<String, List<String>> categorizedResults =
-        categorizeResults(passedResults);
+        categorizeResults(passedResults, keywordLists);
 
     return Scaffold(
       appBar: AppBar(
@@ -47,7 +46,10 @@ class ResultsPage extends StatelessWidget {
         children: [
           Expanded(
             child: ListView(
-              children: categorizedResults.entries.map((entry) {
+              children: categorizedResults.entries
+                  .where((entry) =>
+                      entry.value.isNotEmpty) // Filter out empty lists
+                  .map((entry) {
                 var keyword = entry.key;
                 var matchingElements = entry.value;
 
@@ -57,7 +59,7 @@ class ResultsPage extends StatelessWidget {
                   children: [
                     ListView.builder(
                       shrinkWrap: true,
-                      itemCount: matchingElements!.length,
+                      itemCount: matchingElements.length,
                       itemBuilder: (context, index) {
                         return ListTile(
                           title:
