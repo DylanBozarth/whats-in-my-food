@@ -16,18 +16,18 @@ class ResultsPage extends StatelessWidget {
   Map<String, List<String>> categorizeResults(List<String> passedResults,
       List<Map<String, List<String>>> keywordLists) {
     Map<String, List<String>> categorizedResults = {};
-    keywordLists.forEach((map) {
+    for (var map in keywordLists) {
       map.forEach((key, _) => categorizedResults[key] = []);
-    });
+    }
     for (String result in passedResults) {
-      keywordLists.forEach((keywordMap) {
+      for (var keywordMap in keywordLists) {
         keywordMap.forEach((keyword, list) {
           if (list.any((element) =>
               result.toLowerCase().contains(element.toLowerCase()))) {
             categorizedResults[keyword]?.add(result);
           }
         });
-      });
+      }
     }
     print(categorizedResults);
     return categorizedResults;
@@ -40,7 +40,7 @@ class ResultsPage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Results Page'),
+        title: const Text('Results Page'),
       ),
       body: Column(
         children: [

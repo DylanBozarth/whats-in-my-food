@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+// ignore: must_be_immutable
 class ToggleSwitch extends StatefulWidget {
   final String passedName; // New variable to be passed as an argument
   List<String> lookingForThings;
@@ -11,6 +12,7 @@ class ToggleSwitch extends StatefulWidget {
   }) : super(key: key);
 
   @override
+  // ignore: library_private_types_in_public_api
   _ToggleSwitchState createState() => _ToggleSwitchState();
 }
 
@@ -28,7 +30,6 @@ class _ToggleSwitchState extends State<ToggleSwitch> {
       // If the toggle is set to false, remove the value from the array
       widget.lookingForThings.remove(widget.passedName);
     }
-    print(widget.lookingForThings);
   }
 
   @override

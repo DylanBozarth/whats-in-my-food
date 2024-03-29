@@ -1,19 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:simple_barcode_scanner/simple_barcode_scanner.dart';
 import 'package:whatsinmyfood/api.dart';
-import 'toggles.dart';
+import 'components/toggles.dart';
+import 'components/alert.dart';
 
 void main() {
   runApp(const MyApp());
 }
 // TODO button to scan again from results page
-// TODO sort found ingredients by category 
-// TODO make it look nice 
+// TODO Make selected items permenent
+// TODO Don't allow to scan with nothing selected
+
+// TODO make it look nice
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -37,7 +39,6 @@ class _HomePageState extends State<HomePage> {
   String barCodeScanResult = '';
   List<String> lookingForThings = [];
   List<String> foundThings = [];
-  
 
   @override
   Widget build(BuildContext context) {
@@ -74,30 +75,38 @@ class _HomePageState extends State<HomePage> {
               // Add other widgets as needed
             ],
           ),
-          Column(
-           children: [
-              ToggleSwitch(passedName: "Added Sugar", lookingForThings: lookingForThings),
-              ToggleSwitch(passedName: "Seed Oils", lookingForThings: lookingForThings),
-              ToggleSwitch(passedName: "Dairy", lookingForThings: lookingForThings),
-              ToggleSwitch(passedName: "Non Vegan", lookingForThings: lookingForThings),
-           ] 
-          ),
+          Column(children: [
+            ToggleSwitch(
+                passedName: "Added Sugar", lookingForThings: lookingForThings),
+            ToggleSwitch(
+                passedName: "Seed Oils", lookingForThings: lookingForThings),
+            ToggleSwitch(
+                passedName: "Dairy", lookingForThings: lookingForThings),
+            ToggleSwitch(
+                passedName: "Non Vegan", lookingForThings: lookingForThings),
+          ]),
           Center(
             child: ElevatedButton(
-              onPressed: () async {
-                var res = await Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const SimpleBarcodeScannerPage(),
-                  ),
-                );
-                setState(() {
-                  if (res is String) {
-                    barCodeScanResult = res;
-                  }
-                  makeGetRequest(barCodeScanResult, lookingForThings, foundThings, context);
-                });
-              },
+              onPressed: lookingForThings.isNotEmpty
+                  ? () async {
+                      var res = await Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              const SimpleBarcodeScannerPage(),
+                        ),
+                      );
+
+                      if (res is String) {
+                        setState(() {
+                          barCodeScanResult = res;
+                        });
+                      }
+                      makeGetRequest(barCodeScanResult, lookingForThings,
+                          foundThings, context);
+                    }
+                  : () => showAlert(context, "No items selected",
+                      "You need to select something to look for"),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.blue,
                 foregroundColor: Colors.white,

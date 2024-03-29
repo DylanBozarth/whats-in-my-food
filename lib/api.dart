@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
+import 'package:whatsinmyfood/all_clear_page.dart';
 import 'package:whatsinmyfood/results_page.dart';
 import 'food_lists.dart';
 
@@ -98,6 +99,14 @@ void findThingsInIngredients(List<Map<String, dynamic>> filteredResults,
             passedResults: foundThings,
             context: context,
             lookingForThings: lookingForThings),
+      ),
+    );
+  } else {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) =>
+            AllClearPage(context: context, lookingForThings: lookingForThings),
       ),
     );
   }
