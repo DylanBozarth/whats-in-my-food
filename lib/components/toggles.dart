@@ -1,35 +1,26 @@
 import 'package:flutter/material.dart';
+import 'global_variables.dart'; // Assuming this is where lookingForThings is defined as a global variable
 
-// ignore: must_be_immutable
 class ToggleSwitch extends StatefulWidget {
   final String passedName; // New variable to be passed as an argument
-  List<String> lookingForThings;
 
   ToggleSwitch({
     Key? key,
     required this.passedName,
-    required this.lookingForThings,
   }) : super(key: key);
 
   @override
-  // ignore: library_private_types_in_public_api
   _ToggleSwitchState createState() => _ToggleSwitchState();
 }
 
 class _ToggleSwitchState extends State<ToggleSwitch> {
   bool isSwitched = false;
 
-  void _toggleSwitch(bool value) {
-    setState(() {
-      isSwitched = value;
-    });
-    if (value) {
-      // If the toggle is set to true, add the value to the array
-      widget.lookingForThings.add(widget.passedName);
-    } else {
-      // If the toggle is set to false, remove the value from the array
-      widget.lookingForThings.remove(widget.passedName);
-    }
+  @override
+  void initState() {
+    super.initState();
+    // Check if lookingForThings contains passedName
+    isSwitched = lookingForThings.contains(widget.passedName);
   }
 
   @override
@@ -39,7 +30,17 @@ class _ToggleSwitchState extends State<ToggleSwitch> {
         children: [
           Switch(
             value: isSwitched,
-            onChanged: _toggleSwitch,
+            onChanged: (value) {
+              setState(() {
+                isSwitched = value;
+              });
+              if (value) {
+                lookingForThings.add(widget.passedName);
+              } else {
+                lookingForThings.remove(widget.passedName);
+              }
+              print(lookingForThings);
+            },
             activeTrackColor: Colors.lightGreenAccent,
             activeColor: Colors.green,
           ),

@@ -82,23 +82,43 @@ class ResultsPage extends StatelessWidget {
             ),
           ),
           Center(
-            child: ElevatedButton(
-              onPressed: () async {
-                await Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const HomePage(),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                ElevatedButton(
+                  onPressed: () async {
+                    await Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const HomePage(),
+                      ),
+                    );
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.blue,
+                    foregroundColor: Colors.white,
                   ),
-                );
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.blue,
-                foregroundColor: Colors.white,
-              ),
-              child: const Text(
-                'Scan again',
-                style: TextStyle(color: Colors.white),
-              ),
+                  child: const Text(
+                    'Scan again',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                ),
+                SizedBox(height: 16), // Add some spacing between the buttons
+                ElevatedButton(
+                  onPressed: () {
+                    // Add onPressed logic for the second button
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.red,
+                    foregroundColor: Colors.white,
+                  ),
+                  child: const Text(
+                    'Another Button',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                ),
+                // Add more children as needed
+              ],
             ),
           ),
         ],

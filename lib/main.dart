@@ -3,14 +3,14 @@ import 'package:simple_barcode_scanner/simple_barcode_scanner.dart';
 import 'package:whatsinmyfood/api.dart';
 import 'components/toggles.dart';
 import 'components/alert.dart';
+import 'components/global_variables.dart';
 
 void main() {
   runApp(const MyApp());
 }
 // TODO button to scan again from results page
 // TODO Make selected items permenent
-// TODO Don't allow to scan with nothing selected
-
+// TODO fix selection bug with #2 solution
 // TODO make it look nice
 
 class MyApp extends StatelessWidget {
@@ -37,7 +37,6 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   String barCodeScanResult = '';
-  List<String> lookingForThings = [];
   List<String> foundThings = [];
 
   @override
@@ -77,17 +76,21 @@ class _HomePageState extends State<HomePage> {
           ),
           Column(children: [
             ToggleSwitch(
-                passedName: "Added Sugar", lookingForThings: lookingForThings),
+              passedName: "Added Sugar",
+            ),
             ToggleSwitch(
-                passedName: "Seed Oils", lookingForThings: lookingForThings),
+              passedName: "Seed Oils",
+            ),
             ToggleSwitch(
-                passedName: "Dairy", lookingForThings: lookingForThings),
+              passedName: "Dairy",
+            ),
             ToggleSwitch(
-                passedName: "Non Vegan", lookingForThings: lookingForThings),
+              passedName: "Non Vegan",
+            ),
           ]),
           Center(
             child: ElevatedButton(
-              onPressed: lookingForThings.isNotEmpty
+              onPressed: lookingForThings.isEmpty
                   ? () async {
                       var res = await Navigator.push(
                         context,
