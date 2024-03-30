@@ -20,6 +20,7 @@ void handleBarcodeScan(
 
   if (res is String) {
     onUpdate(res); // Call the callback to update the state
+    // ignore: use_build_context_synchronously
     makeGetRequest(res, foundThings, context);
   }
 }

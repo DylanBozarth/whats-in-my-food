@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'global_variables.dart'; // Assuming this is where lookingForThings is defined as a global variable
+import 'global_variables.dart';
 
 class ToggleSwitch extends StatefulWidget {
   final String passedName; // New variable to be passed as an argument
 
-  ToggleSwitch({
+  const ToggleSwitch({
     Key? key,
     required this.passedName,
   }) : super(key: key);
@@ -19,9 +19,7 @@ class _ToggleSwitchState extends State<ToggleSwitch> {
   @override
   void initState() {
     super.initState();
-    // Check if lookingForThings contains passedName
     isSwitched = lookingForThings.contains(widget.passedName.toLowerCase());
-    print(lookingForThings);
   }
 
   @override

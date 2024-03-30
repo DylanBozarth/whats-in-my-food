@@ -10,6 +10,7 @@ void main() {
 }
 
 // TODO make it look nice
+// TODO Make non vegan work alone
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
@@ -72,7 +73,7 @@ class _HomePageState extends State<HomePage> {
               // Add other widgets as needed
             ],
           ),
-          Column(children: [
+          const Column(children: [
             ToggleSwitch(
               passedName: "Added Sugar",
             ),
@@ -103,6 +104,7 @@ class _HomePageState extends State<HomePage> {
                       barCodeScanResult = res;
                     });
                   }
+                  // ignore: use_build_context_synchronously
                   makeGetRequest(barCodeScanResult, foundThings, context);
                 } else {
                   Navigator.push(
