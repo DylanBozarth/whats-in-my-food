@@ -10,7 +10,7 @@ void main() {
 }
 
 // TODO make it look nice
-// TODO Make non vegan work alone
+// TODO Make two-word things work
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
