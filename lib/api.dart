@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:whatsinmyfood/all_clear_page.dart';
 import 'package:whatsinmyfood/results_page.dart';
 import 'food_lists.dart';
+import 'components/global_variables.dart';
 
 // TEST https://world.openfoodfacts.org/api/v0/product/028400589864.json
 class Product {
@@ -21,7 +22,7 @@ class Product {
 
 List<String> ingredientResults = [];
 
-makeGetRequest(barcode, lookingForThings, foundThings, context) async {
+makeGetRequest(barcode, foundThings, context) async {
   var url =
       Uri.parse('https://world.openfoodfacts.org/api/v0/product/$barcode.json');
   try {
@@ -40,8 +41,7 @@ makeGetRequest(barcode, lookingForThings, foundThings, context) async {
       List<Map<String, dynamic>> filteredResults = ingredientResults
           .map((item) => {'key': (item).toLowerCase()})
           .toList();
-      findThingsInIngredients(
-          filteredResults, lookingForThings, foundThings, context);
+      findThingsInIngredients(filteredResults, foundThings, context);
     } else {
       print('Failed to make GET request. Status code: ${response.statusCode}');
     }
@@ -51,7 +51,7 @@ makeGetRequest(barcode, lookingForThings, foundThings, context) async {
 }
 
 void findThingsInIngredients(List<Map<String, dynamic>> filteredResults,
-    List<String> lookingForThings, List<String> foundThings, context) {
+    List<String> foundThings, context) {
   List<String> desiredStrings =
       lookingForThings.map((s) => s.toLowerCase()).toList();
 // This needs to match the toggles on the home page values

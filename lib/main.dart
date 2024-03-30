@@ -8,9 +8,7 @@ import 'components/global_variables.dart';
 void main() {
   runApp(const MyApp());
 }
-// TODO button to scan again from results page
-// TODO Make selected items permenent
-// TODO fix selection bug with #2 solution
+
 // TODO make it look nice
 
 class MyApp extends StatelessWidget {
@@ -105,8 +103,7 @@ class _HomePageState extends State<HomePage> {
                       barCodeScanResult = res;
                     });
                   }
-                  makeGetRequest(barCodeScanResult, lookingForThings,
-                      foundThings, context);
+                  makeGetRequest(barCodeScanResult, foundThings, context);
                 } else {
                   // If lookingForThings is empty, show an alert
                   showAlert(context, "No items selected",

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:whatsinmyfood/components/scan_barcode.dart';
 import 'package:whatsinmyfood/main.dart';
 import 'food_lists.dart';
 import 'components/global_variables.dart';
@@ -31,6 +32,7 @@ class ResultsPage extends StatelessWidget {
       }
     }
     //print(categorizedResults);
+    passedResults.clear();
     return categorizedResults;
   }
 
@@ -101,8 +103,7 @@ class ResultsPage extends StatelessWidget {
                     height: 16), // Add some spacing between the buttons
                 ElevatedButton(
                   onPressed: () {
-                    // Add onPressed logic for the second button'
-                    print("scan again");
+                    handleBarcodeScan(context, (p0) {}, passedResults);
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.red,

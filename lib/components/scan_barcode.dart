@@ -9,7 +9,6 @@ typedef StateUpdateCallback = void Function(String);
 void handleBarcodeScan(
   BuildContext context,
   StateUpdateCallback onUpdate,
-  List<String> lookingForThings,
   List<String> foundThings,
 ) async {
   var res = await Navigator.push(
@@ -21,6 +20,6 @@ void handleBarcodeScan(
 
   if (res is String) {
     onUpdate(res); // Call the callback to update the state
-    makeGetRequest(res, lookingForThings, foundThings, context);
+    makeGetRequest(res, foundThings, context);
   }
 }
