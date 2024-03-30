@@ -105,9 +105,15 @@ class _HomePageState extends State<HomePage> {
                   }
                   makeGetRequest(barCodeScanResult, foundThings, context);
                 } else {
-                  // If lookingForThings is empty, show an alert
-                  showAlert(context, "No items selected",
-                      "You need to select something to look for");
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => showAlert(
+                              context,
+                              'No Items selected',
+                              "You need to select items to filter for",
+                            )),
+                  );
                 }
               },
               style: ElevatedButton.styleFrom(

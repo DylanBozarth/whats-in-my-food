@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 
+/* NOT IN USE
 class AllClearPage extends StatelessWidget {
-  final List<String> lookingForThings;
-
   const AllClearPage({
-    required this.lookingForThings,
     Key? key,
     required BuildContext context,
   }) : super(key: key);
@@ -22,7 +20,7 @@ class AllClearPage extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               Text(
-                "None of your selected ingredients were detected, you were searching for $lookingForThings",
+                "None of your selected ingredients were detected, you were searching for ",
                 textAlign: TextAlign.center,
               ),
             ],
@@ -32,3 +30,4 @@ class AllClearPage extends StatelessWidget {
     );
   }
 }
+*/

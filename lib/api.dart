@@ -1,10 +1,10 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
-import 'package:whatsinmyfood/all_clear_page.dart';
 import 'package:whatsinmyfood/results_page.dart';
 import 'food_lists.dart';
 import 'components/global_variables.dart';
+import 'components/alert.dart';
 
 // TEST https://world.openfoodfacts.org/api/v0/product/028400589864.json
 class Product {
@@ -43,10 +43,18 @@ makeGetRequest(barcode, foundThings, context) async {
           .toList();
       findThingsInIngredients(filteredResults, foundThings, context);
     } else {
-      print('Failed to make GET request. Status code: ${response.statusCode}');
+      showAlert(
+        context,
+        'Network error',
+        'Error in getting request, check your connection and try again',
+      );
     }
   } catch (e) {
-    print('Error during GET request: $e');
+    showAlert(
+      context,
+      'Network error',
+      'Error in getting request, check your connection and try again',
+    );
   }
 }
 
@@ -87,10 +95,7 @@ void findThingsInIngredients(List<Map<String, dynamic>> filteredResults,
     }
   }
 
-  // print('Common elements: $commonElements');
-
   foundThings.addAll(commonElements);
-  //desiredStrings.clear();
   if (foundThings.isNotEmpty) {
     Navigator.push(
       context,
@@ -105,9 +110,11 @@ void findThingsInIngredients(List<Map<String, dynamic>> filteredResults,
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) =>
-            AllClearPage(context: context, lookingForThings: lookingForThings),
-      ),
+          builder: (context) => showAlert(
+                context,
+                'No items found',
+                "This item does not contain any ingredients you're filtering for.",
+              )),
     );
   }
 }
