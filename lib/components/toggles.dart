@@ -20,7 +20,8 @@ class _ToggleSwitchState extends State<ToggleSwitch> {
   void initState() {
     super.initState();
     // Check if lookingForThings contains passedName
-    isSwitched = lookingForThings.contains(widget.passedName);
+    isSwitched = lookingForThings.contains(widget.passedName.toLowerCase());
+    print(lookingForThings);
   }
 
   @override
@@ -34,9 +35,9 @@ class _ToggleSwitchState extends State<ToggleSwitch> {
               isSwitched = value;
             });
             if (value) {
-              lookingForThings.add(widget.passedName);
+              lookingForThings.add(widget.passedName.toLowerCase());
             } else {
-              lookingForThings.remove(widget.passedName);
+              lookingForThings.remove(widget.passedName.toLowerCase());
             }
           },
           activeTrackColor: Colors.lightGreenAccent,

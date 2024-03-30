@@ -1,37 +1,36 @@
 import 'package:flutter/material.dart';
 import 'package:whatsinmyfood/main.dart';
 import 'food_lists.dart';
+import 'components/global_variables.dart';
 
 class ResultsPage extends StatelessWidget {
   final List<String> passedResults;
-  final List<String> lookingForThings;
 
   const ResultsPage({
     Key? key,
     required this.passedResults,
-    required this.lookingForThings,
     required BuildContext context,
   }) : super(key: key);
 
   Map<String, List<String>> categorizeResults(List<String> passedResults,
       List<Map<String, List<String>>> keywordLists) {
     Map<String, List<String>> categorizedResults = {};
-    categorizedResults.clear(); // prevent cacheing of categories
     for (var map in keywordLists) {
       map.forEach((key, _) => categorizedResults[key] = []);
     }
     for (String result in passedResults) {
       for (var keywordMap in keywordLists) {
         keywordMap.forEach((keyword, list) {
-          if (list.any((element) =>
-              result.toLowerCase().contains(element.toLowerCase()))) {
-            categorizedResults[keyword]?.add(result);
+          if (lookingForThings.contains(keyword.toLowerCase())) {
+            if (list.any((element) =>
+                result.toLowerCase().contains(element.toLowerCase()))) {
+              categorizedResults[keyword]?.add(result);
+            }
           }
         });
       }
     }
-    print(passedResults);
-    print(categorizedResults);
+    //print(categorizedResults);
     return categorizedResults;
   }
 

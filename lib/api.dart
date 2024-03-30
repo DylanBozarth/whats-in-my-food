@@ -96,9 +96,9 @@ void findThingsInIngredients(List<Map<String, dynamic>> filteredResults,
       context,
       MaterialPageRoute(
         builder: (context) => ResultsPage(
-            passedResults: foundThings,
-            context: context,
-            lookingForThings: lookingForThings),
+          passedResults: foundThings,
+          context: context,
+        ),
       ),
     );
   } else {
