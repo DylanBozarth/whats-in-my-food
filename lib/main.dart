@@ -90,26 +90,29 @@ class _HomePageState extends State<HomePage> {
           ]),
           Center(
             child: ElevatedButton(
-              onPressed: lookingForThings.isEmpty
-                  ? () async {
-                      var res = await Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) =>
-                              const SimpleBarcodeScannerPage(),
-                        ),
-                      );
+              onPressed: () async {
+                // Check the updated value of lookingForThings
+                if (lookingForThings.isNotEmpty) {
+                  var res = await Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const SimpleBarcodeScannerPage(),
+                    ),
+                  );
 
-                      if (res is String) {
-                        setState(() {
-                          barCodeScanResult = res;
-                        });
-                      }
-                      makeGetRequest(barCodeScanResult, lookingForThings,
-                          foundThings, context);
-                    }
-                  : () => showAlert(context, "No items selected",
-                      "You need to select something to look for"),
+                  if (res is String) {
+                    setState(() {
+                      barCodeScanResult = res;
+                    });
+                  }
+                  makeGetRequest(barCodeScanResult, lookingForThings,
+                      foundThings, context);
+                } else {
+                  // If lookingForThings is empty, show an alert
+                  showAlert(context, "No items selected",
+                      "You need to select something to look for");
+                }
+              },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.blue,
                 foregroundColor: Colors.white,

@@ -25,34 +25,31 @@ class _ToggleSwitchState extends State<ToggleSwitch> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: Column(
-        children: [
-          Switch(
-            value: isSwitched,
-            onChanged: (value) {
-              setState(() {
-                isSwitched = value;
-              });
-              if (value) {
-                lookingForThings.add(widget.passedName);
-              } else {
-                lookingForThings.remove(widget.passedName);
-              }
-              print(lookingForThings);
-            },
-            activeTrackColor: Colors.lightGreenAccent,
-            activeColor: Colors.green,
+    return Column(
+      children: [
+        Switch(
+          value: isSwitched,
+          onChanged: (value) {
+            setState(() {
+              isSwitched = value;
+            });
+            if (value) {
+              lookingForThings.add(widget.passedName);
+            } else {
+              lookingForThings.remove(widget.passedName);
+            }
+          },
+          activeTrackColor: Colors.lightGreenAccent,
+          activeColor: Colors.green,
+        ),
+        Text(
+          widget.passedName,
+          style: const TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
           ),
-          Text(
-            widget.passedName,
-            style: const TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }

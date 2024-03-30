@@ -16,6 +16,7 @@ class ResultsPage extends StatelessWidget {
   Map<String, List<String>> categorizeResults(List<String> passedResults,
       List<Map<String, List<String>>> keywordLists) {
     Map<String, List<String>> categorizedResults = {};
+    categorizedResults.clear(); // prevent cacheing of categories
     for (var map in keywordLists) {
       map.forEach((key, _) => categorizedResults[key] = []);
     }
@@ -29,6 +30,7 @@ class ResultsPage extends StatelessWidget {
         });
       }
     }
+    print(passedResults);
     print(categorizedResults);
     return categorizedResults;
   }
@@ -44,6 +46,24 @@ class ResultsPage extends StatelessWidget {
       ),
       body: Column(
         children: [
+          ElevatedButton(
+            onPressed: () async {
+              await Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const HomePage(),
+                ),
+              );
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.blue,
+              foregroundColor: Colors.white,
+            ),
+            child: const Text(
+              'Adjust filters',
+              style: TextStyle(color: Colors.white),
+            ),
+          ),
           Expanded(
             child: ListView(
               children: categorizedResults.entries
@@ -76,26 +96,17 @@ class ResultsPage extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text("Looking for: $lookingForThings"),
-                Text('YOUR RESULTS: $passedResults'),
-              ],
-            ),
-          ),
-          Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
+                //Text("Looking for: $lookingForThings"),
+                //Text('YOUR RESULTS: $passedResults'),
+                const SizedBox(
+                    height: 16), // Add some spacing between the buttons
                 ElevatedButton(
-                  onPressed: () async {
-                    await Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const HomePage(),
-                      ),
-                    );
+                  onPressed: () {
+                    // Add onPressed logic for the second button'
+                    print("scan again");
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.blue,
+                    backgroundColor: Colors.red,
                     foregroundColor: Colors.white,
                   ),
                   child: const Text(
@@ -103,21 +114,6 @@ class ResultsPage extends StatelessWidget {
                     style: TextStyle(color: Colors.white),
                   ),
                 ),
-                SizedBox(height: 16), // Add some spacing between the buttons
-                ElevatedButton(
-                  onPressed: () {
-                    // Add onPressed logic for the second button
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.red,
-                    foregroundColor: Colors.white,
-                  ),
-                  child: const Text(
-                    'Another Button',
-                    style: TextStyle(color: Colors.white),
-                  ),
-                ),
-                // Add more children as needed
               ],
             ),
           ),
