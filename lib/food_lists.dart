@@ -1,13 +1,13 @@
 List<Map<String, List<String>>> keywordLists = [
-  // LIST THEM ALL HERE
-  {"seed oils": seedOils},
+  // LIST THEM ALL HERE, lowercase and with kebab case
+  {"seed-oils": seedOils},
   {"bugs": bugs},
-  {"banned In EU": bannedInEU},
-  {"non Vegetarian": nonVegetarian},
-  {"non Vegan": nonVegan},
+  {"banned-in-eu": bannedInEU},
+  {"non-vegetarian": nonVegetarian},
+  {"non-vegan": nonVegan},
   {"haram": haram},
-  {"heavy Metals": heavyMetals},
-  {"added sugar": addedSugar},
+  {"heavy-metals": heavyMetals},
+  {"added-sugar": addedSugar},
   {"dairy": dairy},
 ];
 
@@ -35,7 +35,8 @@ List<String> seedOils = [
   "cottonseed oil",
   "cottonseed meal",
   "vegetable oil",
-  "canola oil"
+  "canola oil",
+  "palm oil"
 ];
 List<String> bugs = [
   "Crickets",

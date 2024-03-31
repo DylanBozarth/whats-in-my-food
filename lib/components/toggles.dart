@@ -19,7 +19,8 @@ class _ToggleSwitchState extends State<ToggleSwitch> {
   @override
   void initState() {
     super.initState();
-    isSwitched = lookingForThings.contains(widget.passedName.toLowerCase());
+    isSwitched = lookingForThings
+        .contains(widget.passedName.toLowerCase().replaceAll(' ', '-'));
   }
 
   @override
@@ -33,9 +34,11 @@ class _ToggleSwitchState extends State<ToggleSwitch> {
               isSwitched = value;
             });
             if (value) {
-              lookingForThings.add(widget.passedName.toLowerCase());
+              lookingForThings
+                  .add(widget.passedName.toLowerCase().replaceAll(' ', '-'));
             } else {
-              lookingForThings.remove(widget.passedName.toLowerCase());
+              lookingForThings
+                  .remove(widget.passedName.toLowerCase().replaceAll(' ', '-'));
             }
           },
           activeTrackColor: Colors.lightGreenAccent,

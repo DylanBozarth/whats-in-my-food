@@ -75,7 +75,9 @@ class ResultsPage extends StatelessWidget {
                 var matchingElements = entry.value;
 
                 return ExpansionTile(
-                  title: Text(keyword.toUpperCase()), // title is here
+                  title: Text(keyword
+                      .toUpperCase()
+                      .replaceAll('-', ' ')), // title is here
                   initiallyExpanded: true,
                   children: [
                     ListView.builder(
