@@ -85,6 +85,9 @@ class _HomePageState extends State<HomePage> {
             ToggleSwitch(
               passedName: "Non Vegan",
             ),
+            ToggleSwitch(
+              passedName: "Nuts",
+            ),
           ]),
           Center(
             child: ElevatedButton(
