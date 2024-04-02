@@ -10,6 +10,7 @@ void main() {
 }
 
 // TODO make it look nice
+// TODO add search bar for categories
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
@@ -23,6 +24,21 @@ class MyApp extends StatelessWidget {
       ),
       home: const HomePage(),
     );
+  }
+}
+
+List<String> _filteredNames = [];
+TextEditingController _searchController = TextEditingController();
+void _filterList(String query) {
+  List<String> filteredList = [];
+  if (query.isNotEmpty) {
+    for (String name in _toggleNames) {
+      if (name.toLowerCase().contains(query.toLowerCase())) {
+        filteredList.add(name);
+      }
+    }
+  } else {
+    filteredList.addAll(_toggleNames);
   }
 }
 
@@ -53,7 +69,7 @@ class _HomePageState extends State<HomePage> {
         centerTitle: true,
         backgroundColor: Colors.deepOrangeAccent,
       ),
-      backgroundColor: Colors.green,
+      backgroundColor: Colors.blueAccent,
       body: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -72,7 +88,15 @@ class _HomePageState extends State<HomePage> {
               // Add other widgets as needed
             ],
           ),
-          const Column(children: [
+          Column(children: [
+            TextField(
+                controller: _searchController,
+                onChanged: _filterList,
+                decoration: const InputDecoration(
+                  labelText: 'Search',
+                  hintText: 'Search for toggle',
+                  prefixIcon: Icon(Icons.search),
+                )),
             ToggleSwitch(
               passedName: "Added Sugar",
             ),
