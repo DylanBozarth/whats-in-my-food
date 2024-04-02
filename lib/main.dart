@@ -9,9 +9,6 @@ void main() {
   runApp(const MyApp());
 }
 
-// TODO make it look nice
-// TODO add search bar for categories
-
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
 
@@ -27,21 +24,6 @@ class MyApp extends StatelessWidget {
   }
 }
 
-List<String> _filteredNames = [];
-TextEditingController _searchController = TextEditingController();
-void _filterList(String query) {
-  List<String> filteredList = [];
-  if (query.isNotEmpty) {
-    for (String name in _toggleNames) {
-      if (name.toLowerCase().contains(query.toLowerCase())) {
-        filteredList.add(name);
-      }
-    }
-  } else {
-    filteredList.addAll(_toggleNames);
-  }
-}
-
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
 
@@ -51,7 +33,39 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   String barCodeScanResult = '';
+  final TextEditingController _searchController = TextEditingController();
+  final List<String> _toggleNames = [
+    "Added Sugar",
+    "Seed Oils",
+    "Dairy",
+    "Non Vegan",
+    "Nuts"
+  ];
+  final List<String> _filteredNames = [];
   List<String> foundThings = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _filteredNames.addAll(_toggleNames);
+  }
+
+  void _filterList(String query) {
+    List<String> filteredList = [];
+    if (query.isNotEmpty) {
+      for (String name in _toggleNames) {
+        if (name.toLowerCase().contains(query.toLowerCase())) {
+          filteredList.add(name);
+        }
+      }
+    } else {
+      filteredList.addAll(_toggleNames);
+    }
+    setState(() {
+      _filteredNames.clear();
+      _filteredNames.addAll(filteredList);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -90,27 +104,20 @@ class _HomePageState extends State<HomePage> {
           ),
           Column(children: [
             TextField(
-                controller: _searchController,
-                onChanged: _filterList,
-                decoration: const InputDecoration(
-                  labelText: 'Search',
-                  hintText: 'Search for toggle',
-                  prefixIcon: Icon(Icons.search),
-                )),
-            ToggleSwitch(
-              passedName: "Added Sugar",
+              controller: _searchController,
+              onChanged: _filterList,
+              decoration: const InputDecoration(
+                labelText: 'Search',
+                hintText: 'Search for toggle',
+                prefixIcon: Icon(Icons.search),
+              ),
             ),
-            ToggleSwitch(
-              passedName: "Seed Oils",
-            ),
-            ToggleSwitch(
-              passedName: "Dairy",
-            ),
-            ToggleSwitch(
-              passedName: "Non Vegan",
-            ),
-            ToggleSwitch(
-              passedName: "Nuts",
+            ListView.builder(
+              shrinkWrap: true,
+              itemCount: _filteredNames.length,
+              itemBuilder: (context, index) {
+                return ToggleSwitch(passedName: _filteredNames[index]);
+              },
             ),
           ]),
           Center(
