@@ -25,6 +25,9 @@ class _ToggleSwitchState extends State<ToggleSwitch> {
 
   @override
   Widget build(BuildContext context) {
+    isSwitched = lookingForThings
+        .contains(widget.passedName.toLowerCase().replaceAll(' ', '-'));
+
     return Column(
       children: [
         Switch(

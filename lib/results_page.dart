@@ -33,6 +33,7 @@ class ResultsPage extends StatelessWidget {
     }
     //print(categorizedResults);
     passedResults.clear();
+    print(lookingForThings);
     return categorizedResults;
   }
 
