@@ -34,36 +34,34 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   String barCodeScanResult = '';
   final TextEditingController _searchController = TextEditingController();
-  final List<String> _toggleNames = [
-    "Added Sugar",
-    "Seed Oils",
-    "Dairy",
-    "Non Vegan",
-    "Nuts"
-  ];
-  final List<String> _filteredNames = [];
+  final Map<String, List<String>> _toggleNames = {
+    'Added Sugar': ["Added Sugar", "Dairy"],
+    'Category 2': ["Seed Oils", "Non Vegan", "Nuts"],
+    'Meat Products': [],
+  };
+  List<String> _filteredNames = [];
   List<String> foundThings = [];
-
   @override
   void initState() {
     super.initState();
-    _filteredNames.addAll(_toggleNames);
+    _filteredNames.addAll(_toggleNames.values.expand((list) => list).toList());
   }
 
   void _filterList(String query) {
     List<String> filteredList = [];
     if (query.isNotEmpty) {
-      for (String name in _toggleNames) {
-        if (name.toLowerCase().contains(query.toLowerCase())) {
-          filteredList.add(name);
+      for (var category in _toggleNames.values) {
+        for (String name in category) {
+          if (name.toLowerCase().contains(query.toLowerCase())) {
+            filteredList.add(name);
+          }
         }
       }
     } else {
-      filteredList.addAll(_toggleNames);
+      filteredList.addAll(_toggleNames.values.expand((list) => list).toList());
     }
     setState(() {
-      _filteredNames.clear();
-      _filteredNames.addAll(filteredList);
+      _filteredNames = filteredList;
     });
   }
 
@@ -85,25 +83,23 @@ class _HomePageState extends State<HomePage> {
       ),
       backgroundColor: Colors.blueAccent,
       body: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          const Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                'What are you looking for?',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  fontFamily: 'Arial',
-                ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Text(
+              'What are you looking for?',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                fontFamily: 'Arial',
               ),
-              // Add other widgets as needed
-            ],
+            ),
           ),
-          Column(children: [
-            TextField(
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: TextField(
               controller: _searchController,
               onChanged: _filterList,
               decoration: const InputDecoration(
@@ -112,14 +108,42 @@ class _HomePageState extends State<HomePage> {
                 prefixIcon: Icon(Icons.search),
               ),
             ),
-            ListView.builder(
-              shrinkWrap: true,
-              itemCount: _filteredNames.length,
+          ),
+          Expanded(
+            child: ListView.builder(
+              itemCount: _toggleNames.length * 2 - 1, // for separators
               itemBuilder: (context, index) {
-                return ToggleSwitch(passedName: _filteredNames[index]);
+                if (index.isOdd) {
+                  return Divider(); // separator
+                }
+                final categoryIndex = index ~/ 2;
+                final categoryName = _toggleNames.keys.toList()[categoryIndex];
+                final toggleNames = _toggleNames.values.toList()[categoryIndex];
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 8),
+                      child: Text(
+                        categoryName,
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                    ...toggleNames
+                        .where((name) => _filteredNames.contains(name))
+                        .map((name) {
+                      return ToggleSwitch(passedName: name);
+                    }).toList(),
+                  ],
+                );
               },
             ),
-          ]),
+          ),
           Center(
             child: ElevatedButton(
               onPressed: () async {
@@ -143,11 +167,12 @@ class _HomePageState extends State<HomePage> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => showAlert(
-                              context,
-                              'No Items selected',
-                              "You need to select items to filter for",
-                            )),
+                      builder: (context) => showAlert(
+                        context,
+                        'No Items selected',
+                        "You need to select items to filter for",
+                      ),
+                    ),
                   );
                 }
               },
