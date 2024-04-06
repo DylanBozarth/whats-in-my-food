@@ -39,12 +39,16 @@ class _HomePageState extends State<HomePage> {
     'Category 2': ["Seed Oils", "Non Vegan", "Nuts"],
     'Meat Products': [],
   };
+  Map<String, bool> _isExpanded = {};
   List<String> _filteredNames = [];
   List<String> foundThings = [];
   @override
   void initState() {
     super.initState();
     _filteredNames.addAll(_toggleNames.values.expand((list) => list).toList());
+    _toggleNames.keys.forEach((category) {
+      _isExpanded[category] = false;
+    });
   }
 
   void _filterList(String query) {
@@ -85,8 +89,8 @@ class _HomePageState extends State<HomePage> {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
+          const Padding(
+            padding: EdgeInsets.all(8.0),
             child: Text(
               'What are you looking for?',
               style: TextStyle(
@@ -110,38 +114,39 @@ class _HomePageState extends State<HomePage> {
             ),
           ),
           Expanded(
-            child: ListView.builder(
-              itemCount: _toggleNames.length * 2 - 1, // for separators
-              itemBuilder: (context, index) {
-                if (index.isOdd) {
-                  return Divider(); // separator
-                }
-                final categoryIndex = index ~/ 2;
-                final categoryName = _toggleNames.keys.toList()[categoryIndex];
-                final toggleNames = _toggleNames.values.toList()[categoryIndex];
-                return Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 16, vertical: 8),
-                      child: Text(
-                        categoryName,
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
+            child: ListView(
+              children: _toggleNames.entries.map((entry) {
+                var categoryName = entry.key;
+                var toggleNames = entry.value;
+                var isExpanded = _isExpanded[categoryName] ?? false;
+
+                return ExpansionTile(
+                  title: Text(
+                    categoryName,
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
                     ),
-                    ...toggleNames
-                        .where((name) => _filteredNames.contains(name))
-                        .map((name) {
-                      return ToggleSwitch(passedName: name);
-                    }).toList(),
+                  ),
+                  initiallyExpanded: isExpanded,
+                  children: [
+                    ListView.builder(
+                      shrinkWrap: true,
+                      itemCount: toggleNames!.length,
+                      itemBuilder: (context, index) {
+                        var name = toggleNames[index];
+                        return ToggleSwitch(passedName: name);
+                      },
+                    ),
                   ],
+                  onExpansionChanged: (value) {
+                    setState(() {
+                      _isExpanded[categoryName] = value;
+                    });
+                  },
                 );
-              },
+              }).toList(),
             ),
           ),
           Center(
