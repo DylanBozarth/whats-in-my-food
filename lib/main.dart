@@ -39,7 +39,7 @@ class _HomePageState extends State<HomePage> {
     'Category 2': ["Seed Oils", "Non Vegan", "Nuts"],
     'Meat Products': [],
   };
-  Map<String, bool> _isExpanded = {};
+  final Map<String, bool> _isExpanded = {};
   List<String> _filteredNames = [];
   List<String> foundThings = [];
   @override
@@ -47,22 +47,30 @@ class _HomePageState extends State<HomePage> {
     super.initState();
     _filteredNames.addAll(_toggleNames.values.expand((list) => list).toList());
     _toggleNames.keys.forEach((category) {
-      _isExpanded[category] = false;
+      _isExpanded[category] = true;
     });
   }
 
   void _filterList(String query) {
     List<String> filteredList = [];
     if (query.isNotEmpty) {
-      for (var category in _toggleNames.values) {
-        for (String name in category) {
-          if (name.toLowerCase().contains(query.toLowerCase())) {
-            filteredList.add(name);
+      for (var entry in _toggleNames.entries) {
+        if (_isExpanded[entry.key] ?? false) {
+          // Only include toggle names from expanded categories
+          for (String name in entry.value) {
+            if (name.toLowerCase().contains(query.toLowerCase())) {
+              filteredList.add(name);
+            }
           }
         }
       }
     } else {
-      filteredList.addAll(_toggleNames.values.expand((list) => list).toList());
+      // If query is empty, include all toggle names from expanded categories
+      for (var entry in _toggleNames.entries) {
+        if (_isExpanded[entry.key] ?? false) {
+          filteredList.addAll(entry.value);
+        }
+      }
     }
     setState(() {
       _filteredNames = filteredList;
@@ -123,7 +131,7 @@ class _HomePageState extends State<HomePage> {
                 return ExpansionTile(
                   title: Text(
                     categoryName,
-                    style: TextStyle(
+                    style: const TextStyle(
                       color: Colors.white,
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
@@ -133,7 +141,7 @@ class _HomePageState extends State<HomePage> {
                   children: [
                     ListView.builder(
                       shrinkWrap: true,
-                      itemCount: toggleNames!.length,
+                      itemCount: toggleNames.length,
                       itemBuilder: (context, index) {
                         var name = toggleNames[index];
                         return ToggleSwitch(passedName: name);
