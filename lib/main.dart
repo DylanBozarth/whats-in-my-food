@@ -60,6 +60,7 @@ class _HomePageState extends State<HomePage> {
           for (String name in entry.value) {
             if (name.toLowerCase().contains(query.toLowerCase())) {
               filteredList.add(name);
+              print(filteredList);
             }
           }
         }
@@ -144,7 +145,12 @@ class _HomePageState extends State<HomePage> {
                       itemCount: toggleNames.length,
                       itemBuilder: (context, index) {
                         var name = toggleNames[index];
-                        return ToggleSwitch(passedName: name);
+                        if (_filteredNames.contains(name)) {
+                          // Check if name is in filtered names
+                          return ToggleSwitch(passedName: name);
+                        } else {
+                          return SizedBox(); // Return an empty SizedBox if name is not in filtered names
+                        }
                       },
                     ),
                   ],
