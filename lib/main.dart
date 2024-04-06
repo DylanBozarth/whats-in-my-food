@@ -132,10 +132,12 @@ class _HomePageState extends State<HomePage> {
                 return ExpansionTile(
                   title: Text(
                     categoryName,
-                    style: const TextStyle(
+                    style: TextStyle(
                       color: Colors.white,
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
+                      decoration:
+                          isExpanded ? null : TextDecoration.lineThrough,
                     ),
                   ),
                   initiallyExpanded: isExpanded,
@@ -149,7 +151,7 @@ class _HomePageState extends State<HomePage> {
                           // Check if name is in filtered names
                           return ToggleSwitch(passedName: name);
                         } else {
-                          return SizedBox(); // Return an empty SizedBox if name is not in filtered names
+                          return const SizedBox(); // Return an empty SizedBox if name is not in filtered names
                         }
                       },
                     ),
