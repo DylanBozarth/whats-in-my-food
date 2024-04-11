@@ -36,8 +36,17 @@ class _HomePageState extends State<HomePage> {
   final TextEditingController _searchController = TextEditingController();
   final Map<String, List<String>> _toggleNames = {
     'Added Sugar': ["Added Sugar", "Dairy"],
-    'Category 2': ["Seed Oils", "Non Vegan", "Nuts"],
+    'Inflamitory foods': ["Seed Oils", "Non Vegan", "Nuts"],
     'Meat Products': [],
+    'Common Alergens': [],
+    'Religious abstentions': [],
+    'High Environmental Impact': [],
+    'GMOs': [],
+    'Artificial colors and flavors': [],
+    'Cafinne': [], // if possible
+    'Internationally banned products': [],
+    'Heavy Metals': [],
+    'Vegetarian & Vegan': [],
   };
   final Map<String, bool> _isExpanded = {};
   List<String> _filteredNames = [];
@@ -51,6 +60,8 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
+//TODO make this include titles
+//TODO refresh when expanding/unexpanding
   void _filterList(String query) {
     List<String> filteredList = [];
     if (query.isNotEmpty) {
@@ -117,7 +128,7 @@ class _HomePageState extends State<HomePage> {
               onChanged: _filterList,
               decoration: const InputDecoration(
                 labelText: 'Search',
-                hintText: 'Search for toggle',
+                hintText: 'Search for ingredient',
                 prefixIcon: Icon(Icons.search),
               ),
             ),
@@ -134,7 +145,7 @@ class _HomePageState extends State<HomePage> {
                     categoryName,
                     style: TextStyle(
                       color: Colors.white,
-                      fontSize: 20,
+                      fontSize: 16,
                       fontWeight: FontWeight.bold,
                       decoration:
                           isExpanded ? null : TextDecoration.lineThrough,
