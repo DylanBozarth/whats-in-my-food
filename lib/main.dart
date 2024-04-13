@@ -36,36 +36,42 @@ class _HomePageState extends State<HomePage> {
   final TextEditingController _searchController = TextEditingController();
   final Map<String, List<String>> _toggleNames = {
     'Added Sugar': ["Added Sugar", "Dairy"],
-    'Inflamitory foods': ["Seed Oils", "Non Vegan", "Nuts"],
+    'Inflammatory foods': ["Seed Oils", "Non Vegan", "Nuts"],
     'Meat Products': [],
-    'Common Alergens': [],
+    'Common Allergens': [],
     'Religious abstentions': [],
     'High Environmental Impact': [],
     'GMOs': [],
     'Artificial colors and flavors': [],
-    'Cafinne': [], // if possible
+    'Caffeine': [], // if possible
     'Internationally banned products': [],
     'Heavy Metals': [],
     'Vegetarian & Vegan': [],
   };
   final Map<String, bool> _isExpanded = {};
+  final Map<String, bool> _isTitleVisible = {}; // Track visibility of titles
   List<String> _filteredNames = [];
   List<String> foundThings = [];
   @override
   void initState() {
     super.initState();
     _filteredNames.addAll(_toggleNames.values.expand((list) => list).toList());
-    _toggleNames.keys.forEach((category) {
+    for (var category in _toggleNames.keys) {
       _isExpanded[category] = true;
-    });
+      _isTitleVisible[category] = true; // Initialize title visibility
+    }
   }
 
-//TODO make this include titles
-//TODO refresh when expanding/unexpanding
+  // Modify the _filterList function to include title visibility logic
   void _filterList(String query) {
     List<String> filteredList = [];
     if (query.isNotEmpty) {
       for (var entry in _toggleNames.entries) {
+        bool isVisible = entry.key.toLowerCase().contains(query.toLowerCase());
+        _isTitleVisible[entry.key] = isVisible;
+        if (isVisible && !filteredList.contains(entry.key)) {
+          filteredList.add(entry.key);
+        }
         if (_isExpanded[entry.key] ?? false) {
           // Only include toggle names from expanded categories
           for (String name in entry.value) {
@@ -79,7 +85,9 @@ class _HomePageState extends State<HomePage> {
     } else {
       // If query is empty, include all toggle names from expanded categories
       for (var entry in _toggleNames.entries) {
+        _isTitleVisible[entry.key] = true;
         if (_isExpanded[entry.key] ?? false) {
+          filteredList.add(entry.key);
           filteredList.addAll(entry.value);
         }
       }
@@ -87,6 +95,15 @@ class _HomePageState extends State<HomePage> {
     setState(() {
       _filteredNames = filteredList;
     });
+  }
+
+// Modify the toggleTitleVisibility function to mirror filterList logic
+  void toggleTitleVisibility(String category) {
+    setState(() {
+      _isTitleVisible[category] = !_isTitleVisible[category]!;
+    });
+    // Re-filter the list when title visibility changes
+    _filterList(_searchController.text);
   }
 
   @override
@@ -105,7 +122,7 @@ class _HomePageState extends State<HomePage> {
         centerTitle: true,
         backgroundColor: Colors.deepOrangeAccent,
       ),
-      backgroundColor: Colors.blueAccent,
+      backgroundColor: Colors.grey,
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -121,6 +138,11 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
           ),
+          FloatingActionButton(
+              onPressed: () {
+                toggleTitleVisibility('Whats in my food?');
+              },
+              child: const Text("Show all categories")),
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: TextField(
