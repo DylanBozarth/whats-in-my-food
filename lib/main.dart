@@ -139,10 +139,11 @@ class _HomePageState extends State<HomePage> {
             ),
           ),
           FloatingActionButton(
-              onPressed: () {
-                toggleTitleVisibility('Whats in my food?');
-              },
-              child: const Text("Show all categories")),
+            onPressed: () {
+              toggleTitleVisibility('Whats in my food?');
+            },
+            child: const Text("Show all categories"),
+          ),
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: TextField(
@@ -163,16 +164,18 @@ class _HomePageState extends State<HomePage> {
                 var isExpanded = _isExpanded[categoryName] ?? false;
 
                 return ExpansionTile(
-                  title: Text(
-                    categoryName,
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      decoration:
-                          isExpanded ? null : TextDecoration.lineThrough,
-                    ),
-                  ),
+                  title: _isTitleVisible[categoryName] == true
+                      ? Text(
+                          categoryName,
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            decoration:
+                                isExpanded ? null : TextDecoration.lineThrough,
+                          ),
+                        )
+                      : Container(),
                   initiallyExpanded: isExpanded,
                   children: [
                     ListView.builder(
@@ -192,6 +195,8 @@ class _HomePageState extends State<HomePage> {
                   onExpansionChanged: (value) {
                     setState(() {
                       _isExpanded[categoryName] = value;
+                      _isTitleVisible[categoryName] =
+                          value; // Update title visibility
                     });
                   },
                 );
