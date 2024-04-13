@@ -63,21 +63,26 @@ class _HomePageState extends State<HomePage> {
   }
 
   // Modify the _filterList function to include title visibility logic
+// Modify the _filterList function to include category names matching the search query
+// Modify the _filterList function to include category names matching the search query
   void _filterList(String query) {
     List<String> filteredList = [];
     if (query.isNotEmpty) {
       for (var entry in _toggleNames.entries) {
-        bool isVisible = entry.key.toLowerCase().contains(query.toLowerCase());
+        bool isVisible =
+            entry.key.toLowerCase().contains(query.toLowerCase()) ||
+                entry.value.any(
+                    (name) => name.toLowerCase().contains(query.toLowerCase()));
         _isTitleVisible[entry.key] = isVisible;
         if (isVisible && !filteredList.contains(entry.key)) {
-          filteredList.add(entry.key);
+          filteredList.add(entry
+              .key); // Add category name to filtered list if it matches the search query or if any toggle name matches
         }
         if (_isExpanded[entry.key] ?? false) {
           // Only include toggle names from expanded categories
           for (String name in entry.value) {
             if (name.toLowerCase().contains(query.toLowerCase())) {
               filteredList.add(name);
-              print(filteredList);
             }
           }
         }
@@ -138,12 +143,14 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
           ),
+          /*
           FloatingActionButton(
             onPressed: () {
               toggleTitleVisibility('Whats in my food?');
             },
             child: const Text("Show all categories"),
           ),
+          */
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: TextField(
@@ -167,15 +174,21 @@ class _HomePageState extends State<HomePage> {
                   title: _isTitleVisible[categoryName] == true
                       ? Text(
                           categoryName,
-                          style: TextStyle(
+                          style: const TextStyle(
                             color: Colors.white,
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
-                            decoration:
-                                isExpanded ? null : TextDecoration.lineThrough,
                           ),
                         )
-                      : Container(),
+                      : Text(
+                          categoryName,
+                          style: const TextStyle(
+                            color: Colors.red,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            decoration: TextDecoration.lineThrough,
+                          ),
+                        ),
                   initiallyExpanded: isExpanded,
                   children: [
                     ListView.builder(
