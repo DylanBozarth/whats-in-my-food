@@ -28,33 +28,36 @@ class _ToggleSwitchState extends State<ToggleSwitch> {
     isSwitched = lookingForThings
         .contains(widget.passedName.toLowerCase().replaceAll(' ', '-'));
 
-    return Column(
-      children: [
-        Switch(
-          value: isSwitched,
-          onChanged: (value) {
-            setState(() {
-              isSwitched = value;
-            });
-            if (value) {
-              lookingForThings
-                  .add(widget.passedName.toLowerCase().replaceAll(' ', '-'));
-            } else {
-              lookingForThings
-                  .remove(widget.passedName.toLowerCase().replaceAll(' ', '-'));
-            }
-          },
-          activeTrackColor: Colors.lightGreenAccent,
-          activeColor: Colors.green,
-        ),
-        Text(
-          widget.passedName,
-          style: const TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
+    return Container(
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Switch(
+            value: isSwitched,
+            onChanged: (value) {
+              setState(() {
+                isSwitched = value;
+              });
+              if (value) {
+                lookingForThings
+                    .add(widget.passedName.toLowerCase().replaceAll(' ', '-'));
+              } else {
+                lookingForThings.remove(
+                    widget.passedName.toLowerCase().replaceAll(' ', '-'));
+              }
+            },
+            activeTrackColor: Colors.lightGreenAccent,
+            activeColor: Colors.green,
           ),
-        ),
-      ],
+          Text(
+            widget.passedName,
+            style: const TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

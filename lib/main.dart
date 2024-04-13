@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:simple_barcode_scanner/simple_barcode_scanner.dart';
 import 'package:whatsinmyfood/api.dart';
+import 'package:whatsinmyfood/food_lists.dart';
 import 'components/toggles.dart';
 import 'components/alert.dart';
 import 'components/global_variables.dart';
@@ -35,9 +36,9 @@ class _HomePageState extends State<HomePage> {
   String barCodeScanResult = '';
   final TextEditingController _searchController = TextEditingController();
   final Map<String, List<String>> _toggleNames = {
-    'Added Sugar': ["Added Sugar", "Dairy"],
-    'Inflammatory foods': ["Seed Oils", "Non Vegan", "Nuts"],
-    'Meat Products': [],
+    'Added Sugar': addedSugar,
+    'Inflammatory foods': seedOils,
+    'Meat Products': nonVegetarian,
     'Common Allergens': [],
     'Religious abstentions': [],
     'High Environmental Impact': [],
@@ -158,7 +159,7 @@ class _HomePageState extends State<HomePage> {
               onChanged: _filterList,
               decoration: const InputDecoration(
                 labelText: 'Search',
-                hintText: 'Search for ingredient',
+                hintText: 'Search',
                 prefixIcon: Icon(Icons.search),
               ),
             ),
@@ -197,10 +198,15 @@ class _HomePageState extends State<HomePage> {
                       itemBuilder: (context, index) {
                         var name = toggleNames[index];
                         if (_filteredNames.contains(name)) {
-                          // Check if name is in filtered names
-                          return ToggleSwitch(passedName: name);
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 8.0),
+                            child: ToggleSwitch(
+                                passedName:
+                                    name), // Use your ToggleSwitch component
+                          );
                         } else {
-                          return const SizedBox(); // Return an empty SizedBox if name is not in filtered names
+                          return const SizedBox
+                              .shrink(); // Return an empty SizedBox if name is not in filtered names
                         }
                       },
                     ),
