@@ -30,7 +30,6 @@ class _ToggleSwitchState extends State<ToggleSwitch> {
 
     return Container(
       child: Row(
-        mainAxisSize: MainAxisSize.min,
         children: [
           Switch(
             value: isSwitched,

@@ -31,6 +31,9 @@ class HomePage extends StatefulWidget {
   @override
   State<HomePage> createState() => _HomePageState();
 }
+//TODO when searching for title, allow the ability see everything in that cateogry
+//TODO Make the toggles double layered
+//TODO deselect all button
 
 class _HomePageState extends State<HomePage> {
   String barCodeScanResult = '';
@@ -50,7 +53,7 @@ class _HomePageState extends State<HomePage> {
     'Vegetarian & Vegan': [],
   };
   final Map<String, bool> _isExpanded = {};
-  final Map<String, bool> _isTitleVisible = {}; // Track visibility of titles
+  final Map<String, bool> _isTitleVisible = {};
   List<String> _filteredNames = [];
   List<String> foundThings = [];
   @override
@@ -63,9 +66,6 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-  // Modify the _filterList function to include title visibility logic
-// Modify the _filterList function to include category names matching the search query
-// Modify the _filterList function to include category names matching the search query
   void _filterList(String query) {
     List<String> filteredList = [];
     if (query.isNotEmpty) {
@@ -199,7 +199,7 @@ class _HomePageState extends State<HomePage> {
                         var name = toggleNames[index];
                         if (_filteredNames.contains(name)) {
                           return Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 8.0),
+                            padding: const EdgeInsets.symmetric(vertical: 2.0),
                             child: ToggleSwitch(
                                 passedName:
                                     name), // Use your ToggleSwitch component
