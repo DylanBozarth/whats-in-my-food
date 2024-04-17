@@ -1,6 +1,23 @@
 import 'package:flutter/material.dart';
 import 'global_variables.dart';
 
+class ToggleSwitchContainer extends StatefulWidget {
+  final Widget child;
+
+  const ToggleSwitchContainer({Key? key, required this.child})
+      : super(key: key);
+
+  @override
+  _ToggleSwitchContainerState createState() => _ToggleSwitchContainerState();
+}
+
+class _ToggleSwitchContainerState extends State<ToggleSwitchContainer> {
+  @override
+  Widget build(BuildContext context) {
+    return widget.child;
+  }
+}
+
 class ToggleSwitch extends StatefulWidget {
   final String passedName; // New variable to be passed as an argument
 
@@ -25,9 +42,6 @@ class _ToggleSwitchState extends State<ToggleSwitch> {
 
   @override
   Widget build(BuildContext context) {
-    isSwitched = lookingForThings
-        .contains(widget.passedName.toLowerCase().replaceAll(' ', '-'));
-
     return Container(
       child: Row(
         children: [

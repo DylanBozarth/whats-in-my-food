@@ -76,8 +76,7 @@ class _HomePageState extends State<HomePage> {
                     (name) => name.toLowerCase().contains(query.toLowerCase()));
         _isTitleVisible[entry.key] = isVisible;
         if (isVisible && !filteredList.contains(entry.key)) {
-          filteredList.add(entry
-              .key); // Add category name to filtered list if it matches the search query or if any toggle name matches
+          filteredList.add(entry.key);
         }
         if (_isExpanded[entry.key] ?? false) {
           // Only include toggle names from expanded categories
@@ -101,6 +100,10 @@ class _HomePageState extends State<HomePage> {
     setState(() {
       _filteredNames = filteredList;
     });
+  }
+
+  void clearAllToggles() {
+    lookingForThings.clear();
   }
 
 // Modify the toggleTitleVisibility function to mirror filterList logic
@@ -205,8 +208,16 @@ class _HomePageState extends State<HomePage> {
                                     name), // Use your ToggleSwitch component
                           );
                         } else {
-                          return const SizedBox
-                              .shrink(); // Return an empty SizedBox if name is not in filtered names
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 2.0),
+                            child: Visibility(
+                              visible: _filteredNames.contains(
+                                  name), // Set visibility based on whether the name is in the filtered list
+                              child: ToggleSwitch(
+                                passedName: name,
+                              ),
+                            ),
+                          );
                         }
                       },
                     ),
@@ -262,6 +273,12 @@ class _HomePageState extends State<HomePage> {
                 'Open Scanner',
                 style: TextStyle(color: Colors.white),
               ),
+            ),
+          ),
+          Center(
+            child: ElevatedButton(
+              onPressed: clearAllToggles,
+              child: const Text('Deselect All'),
             ),
           ),
         ],
