@@ -186,7 +186,7 @@ void _filterList(String query) {
                           ),
                         )
                       : Text(
-                          "${categoryName} Ignored",
+                          "${categoryName} Ignore",
                           style: const TextStyle(
                             color: Colors.red,
                             fontSize: 16,
