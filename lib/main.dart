@@ -31,8 +31,8 @@ class HomePage extends StatefulWidget {
   @override
   State<HomePage> createState() => _HomePageState();
 }
-//TODO when searching for title, allow the ability see everything in that cateogry
-//TODO Make the toggles double layered
+
+//TODO Change the toggle logic to reflect changes in the global variables 
 //TODO deselect all button
 
 class _HomePageState extends State<HomePage> {
@@ -65,42 +65,43 @@ class _HomePageState extends State<HomePage> {
       _isTitleVisible[category] = true; // Initialize title visibility
     }
   }
+void _filterList(String query) {
+  List<String> filteredList = [];
+  if (query.isNotEmpty) {
+    for (var entry in _toggleNames.entries) {
+      bool isVisible =
+          entry.key.toLowerCase().contains(query.toLowerCase()) ||
+          entry.value.any((name) => name.toLowerCase().contains(query.toLowerCase()));
 
-  void _filterList(String query) {
-    List<String> filteredList = [];
-    if (query.isNotEmpty) {
-      for (var entry in _toggleNames.entries) {
-        bool isVisible =
-            entry.key.toLowerCase().contains(query.toLowerCase()) ||
-                entry.value.any(
-                    (name) => name.toLowerCase().contains(query.toLowerCase()));
-        _isTitleVisible[entry.key] = isVisible;
-        if (isVisible && !filteredList.contains(entry.key)) {
-          filteredList.add(entry.key);
-        }
-        if (_isExpanded[entry.key] ?? false) {
-          // Only include toggle names from expanded categories
-          for (String name in entry.value) {
-            if (name.toLowerCase().contains(query.toLowerCase())) {
-              filteredList.add(name);
-            }
+      // Set the category to be visible and expanded if it contains matches
+      _isTitleVisible[entry.key] = isVisible;
+      _isExpanded[entry.key] = isVisible; // Auto-expand categories that have matches
+
+      if (isVisible && !filteredList.contains(entry.key)) {
+        filteredList.add(entry.key);
+      }
+      if (_isExpanded[entry.key] ?? false) {
+        // Include toggle names from expanded categories
+        for (String name in entry.value) {
+          if (name.toLowerCase().contains(query.toLowerCase())) {
+            filteredList.add(name);
           }
         }
       }
-    } else {
-      // If query is empty, include all toggle names from expanded categories
-      for (var entry in _toggleNames.entries) {
-        _isTitleVisible[entry.key] = true;
-        if (_isExpanded[entry.key] ?? false) {
-          filteredList.add(entry.key);
-          filteredList.addAll(entry.value);
-        }
-      }
     }
-    setState(() {
-      _filteredNames = filteredList;
-    });
+  } else {
+    // If query is empty, include all toggle names from categories
+    for (var entry in _toggleNames.entries) {
+      _isTitleVisible[entry.key] = true;
+      _isExpanded[entry.key] = true; // Keep all categories expanded if no search query
+      filteredList.add(entry.key);
+      filteredList.addAll(entry.value);
+    }
   }
+  setState(() {
+    _filteredNames = filteredList;
+  });
+}
 
   void clearAllToggles() {
     lookingForThings.clear();
@@ -185,12 +186,11 @@ class _HomePageState extends State<HomePage> {
                           ),
                         )
                       : Text(
-                          categoryName,
+                          "${categoryName} Ignored",
                           style: const TextStyle(
                             color: Colors.red,
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
-                            decoration: TextDecoration.lineThrough,
                           ),
                         ),
                   initiallyExpanded: isExpanded,
