@@ -34,6 +34,7 @@ class HomePage extends StatefulWidget {
 
 //TODO Change the toggle logic to reflect changes in the global variables
 //TODO deselect all button
+//TODO get scrolling to work with the toggles
 
 class _HomePageState extends State<HomePage> {
   String barCodeScanResult = '';

@@ -58,7 +58,7 @@ makeGetRequest(barcode, foundThings, context) async {
   }
 }
 
-void findThingsInIngredients(List<Map<String, dynamic>> filteredResults,
+void findThingsInIngredients(List<Map<String, dynamic>> filteredResults, 
     List<String> foundThings, context) {
   List<String> desiredStrings =
       lookingForThings.map((s) => s.toLowerCase()).toList();
