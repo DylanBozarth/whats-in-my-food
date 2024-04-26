@@ -32,7 +32,7 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
-//TODO Change the toggle logic to reflect changes in the global variables 
+//TODO Change the toggle logic to reflect changes in the global variables
 //TODO deselect all button
 
 class _HomePageState extends State<HomePage> {
@@ -65,43 +65,47 @@ class _HomePageState extends State<HomePage> {
       _isTitleVisible[category] = true; // Initialize title visibility
     }
   }
-void _filterList(String query) {
-  List<String> filteredList = [];
-  if (query.isNotEmpty) {
-    for (var entry in _toggleNames.entries) {
-      bool isVisible =
-          entry.key.toLowerCase().contains(query.toLowerCase()) ||
-          entry.value.any((name) => name.toLowerCase().contains(query.toLowerCase()));
 
-      // Set the category to be visible and expanded if it contains matches
-      _isTitleVisible[entry.key] = isVisible;
-      _isExpanded[entry.key] = isVisible; // Auto-expand categories that have matches
+  void _filterList(String query) {
+    List<String> filteredList = [];
+    if (query.isNotEmpty) {
+      for (var entry in _toggleNames.entries) {
+        bool isVisible =
+            entry.key.toLowerCase().contains(query.toLowerCase()) ||
+                entry.value.any(
+                    (name) => name.toLowerCase().contains(query.toLowerCase()));
 
-      if (isVisible && !filteredList.contains(entry.key)) {
-        filteredList.add(entry.key);
-      }
-      if (_isExpanded[entry.key] ?? false) {
-        // Include toggle names from expanded categories
-        for (String name in entry.value) {
-          if (name.toLowerCase().contains(query.toLowerCase())) {
-            filteredList.add(name);
+        // Set the category to be visible and expanded if it contains matches
+        _isTitleVisible[entry.key] = isVisible;
+        _isExpanded[entry.key] =
+            isVisible; // Auto-expand categories that have matches
+
+        if (isVisible && !filteredList.contains(entry.key)) {
+          filteredList.add(entry.key);
+        }
+        if (_isExpanded[entry.key] ?? false) {
+          // Include toggle names from expanded categories
+          for (String name in entry.value) {
+            if (name.toLowerCase().contains(query.toLowerCase())) {
+              filteredList.add(name);
+            }
           }
         }
       }
+    } else {
+      // If query is empty, include all toggle names from categories
+      for (var entry in _toggleNames.entries) {
+        _isTitleVisible[entry.key] = true;
+        _isExpanded[entry.key] =
+            true; // Keep all categories expanded if no search query
+        filteredList.add(entry.key);
+        filteredList.addAll(entry.value);
+      }
     }
-  } else {
-    // If query is empty, include all toggle names from categories
-    for (var entry in _toggleNames.entries) {
-      _isTitleVisible[entry.key] = true;
-      _isExpanded[entry.key] = true; // Keep all categories expanded if no search query
-      filteredList.add(entry.key);
-      filteredList.addAll(entry.value);
-    }
+    setState(() {
+      _filteredNames = filteredList;
+    });
   }
-  setState(() {
-    _filteredNames = filteredList;
-  });
-}
 
   void clearAllToggles() {
     lookingForThings.clear();
@@ -186,7 +190,7 @@ void _filterList(String query) {
                           ),
                         )
                       : Text(
-                          "${categoryName} Ignore",
+                          "$categoryName Ignore",
                           style: const TextStyle(
                             color: Colors.red,
                             fontSize: 16,
@@ -233,54 +237,72 @@ void _filterList(String query) {
               }).toList(),
             ),
           ),
-          Center(
-            child: ElevatedButton(
-              onPressed: () async {
-                // Check the updated value of lookingForThings
-                if (lookingForThings.isNotEmpty) {
-                  var res = await Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const SimpleBarcodeScannerPage(),
+          Align(
+            alignment: Alignment.bottomCenter,
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment
+                    .spaceEvenly, // This centers the buttons horizontally
+                children: <Widget>[
+                  Expanded(
+                    // Wrap each button in an Expanded widget to use available horizontal space equally
+                    child: ElevatedButton(
+                      onPressed: clearAllToggles,
+                      child: const Text('Deselect All'),
                     ),
-                  );
+                  ),
+                  Expanded(
+                    // Wrap each button in an Expanded widget to use available horizontal space equally
+                    child: ElevatedButton(
+                      onPressed: () async {
+                        // Check the updated value of lookingForThings
+                        if (lookingForThings.isNotEmpty) {
+                          var res = await Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  const SimpleBarcodeScannerPage(),
+                            ),
+                          );
 
-                  if (res is String) {
-                    setState(() {
-                      barCodeScanResult = res;
-                    });
-                  }
-                  // ignore: use_build_context_synchronously
-                  makeGetRequest(barCodeScanResult, foundThings, context);
-                } else {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => showAlert(
-                        context,
-                        'No Items selected',
-                        "You need to select items to filter for",
+                          if (res is String) {
+                            setState(() {
+                              barCodeScanResult = res;
+                            });
+                          }
+                          // ignore: use_build_context_synchronously
+                          makeGetRequest(
+                              barCodeScanResult, foundThings, context);
+                        } else {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => showAlert(
+                                context,
+                                'No Items selected',
+                                "You need to select items to filter for",
+                              ),
+                            ),
+                          );
+                        }
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.blue,
+                        foregroundColor: Colors.white,
+                      ),
+                      child: const Text(
+                        'Open Scanner',
+                        style: TextStyle(color: Colors.white),
                       ),
                     ),
-                  );
-                }
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.blue,
-                foregroundColor: Colors.white,
-              ),
-              child: const Text(
-                'Open Scanner',
-                style: TextStyle(color: Colors.white),
+                  ),
+                  
+                  
+                ],
               ),
             ),
-          ),
-          Center(
-            child: ElevatedButton(
-              onPressed: clearAllToggles,
-              child: const Text('Deselect All'),
-            ),
-          ),
+          )
         ],
       ),
     );
