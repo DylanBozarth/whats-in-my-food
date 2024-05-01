@@ -34,7 +34,10 @@ class HomePage extends StatefulWidget {
 
 //TODO Change the toggle logic to reflect changes in the global variables
 //TODO deselect all button
-//TODO get scrolling to work with the toggles
+//TODO Show which category youre scrolling through
+//TODO show that a switch is highlighted if the category is ignored 
+//TODO add snazzy logo and style to be the same style
+//TODO add ability to look for all things in categories 
 
 class _HomePageState extends State<HomePage> {
   String barCodeScanResult = '';
@@ -68,45 +71,47 @@ class _HomePageState extends State<HomePage> {
   }
 
   void _filterList(String query) {
-    List<String> filteredList = [];
-    if (query.isNotEmpty) {
-      for (var entry in _toggleNames.entries) {
-        bool isVisible =
-            entry.key.toLowerCase().contains(query.toLowerCase()) ||
-                entry.value.any(
-                    (name) => name.toLowerCase().contains(query.toLowerCase()));
+  List<String> filteredList = [];
+  String cleanQuery = query.replaceAll(' ', '').toLowerCase();  // Remove spaces and convert to lower case
 
-        // Set the category to be visible and expanded if it contains matches
-        _isTitleVisible[entry.key] = isVisible;
-        _isExpanded[entry.key] =
-            isVisible; // Auto-expand categories that have matches
+  if (cleanQuery.isNotEmpty) {
+    for (var entry in _toggleNames.entries) {
+      // Check both key and value lists after removing spaces
+      bool isVisible =
+          entry.key.replaceAll(' ', '').toLowerCase().contains(cleanQuery) ||
+          entry.value.any(
+              (name) => name.replaceAll(' ', '').toLowerCase().contains(cleanQuery));
 
-        if (isVisible && !filteredList.contains(entry.key)) {
-          filteredList.add(entry.key);
-        }
-        if (_isExpanded[entry.key] ?? false) {
-          // Include toggle names from expanded categories
-          for (String name in entry.value) {
-            if (name.toLowerCase().contains(query.toLowerCase())) {
-              filteredList.add(name);
-            }
+      // Set the category to be visible and expanded if it contains matches
+      _isTitleVisible[entry.key] = isVisible;
+      _isExpanded[entry.key] = isVisible;  // Auto-expand categories that have matches
+
+      if (isVisible && !filteredList.contains(entry.key)) {
+        filteredList.add(entry.key);
+      }
+      if (_isExpanded[entry.key] ?? false) {
+        // Include toggle names from expanded categories
+        for (String name in entry.value) {
+          if (name.replaceAll(' ', '').toLowerCase().contains(cleanQuery)) {
+            filteredList.add(name);
           }
         }
       }
-    } else {
-      // If query is empty, include all toggle names from categories
-      for (var entry in _toggleNames.entries) {
-        _isTitleVisible[entry.key] = true;
-        _isExpanded[entry.key] =
-            true; // Keep all categories expanded if no search query
-        filteredList.add(entry.key);
-        filteredList.addAll(entry.value);
-      }
     }
-    setState(() {
-      _filteredNames = filteredList;
-    });
+  } else {
+    // If query is empty, include all toggle names from categories
+    for (var entry in _toggleNames.entries) {
+      _isTitleVisible[entry.key] = true;
+      _isExpanded[entry.key] = true;  // Keep all categories expanded if no search query
+      filteredList.add(entry.key);
+      filteredList.addAll(entry.value);
+    }
   }
+  setState(() {
+    _filteredNames = filteredList;
+  });
+}
+
 
   void clearAllToggles() {
     lookingForThings.clear();
@@ -141,18 +146,7 @@ class _HomePageState extends State<HomePage> {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          const Padding(
-            padding: EdgeInsets.all(8.0),
-            child: Text(
-              'What are you looking for?',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                fontFamily: 'Arial',
-              ),
-            ),
-          ),
+          
           /*
           FloatingActionButton(
             onPressed: () {
@@ -203,14 +197,24 @@ class _HomePageState extends State<HomePage> {
                     ListView.builder(
                       shrinkWrap: true,
                       itemCount: toggleNames.length,
+                      physics:const NeverScrollableScrollPhysics(),
                       itemBuilder: (context, index) {
                         var name = toggleNames[index];
                         if (_filteredNames.contains(name)) {
-                          return Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 2.0),
-                            child: ToggleSwitch(
-                                passedName:
-                                    name), // Use your ToggleSwitch component
+                          return Center(
+                            child: Container(
+                              // You can add padding, margin, decoration, etc., as needed here
+                              padding:
+                                  const EdgeInsets.all(8.0), // Example padding
+                              decoration: BoxDecoration(
+                                //color: Colors.white, 
+                                borderRadius: BorderRadius.circular(
+                                    10), // Example border radius
+                              ),
+                              child: ToggleSwitch(
+                                  passedName:
+                                      name), // Your ToggleSwitch component
+                            ),
                           );
                         } else {
                           return Padding(
@@ -298,8 +302,6 @@ class _HomePageState extends State<HomePage> {
                       ),
                     ),
                   ),
-                  
-                  
                 ],
               ),
             ),
