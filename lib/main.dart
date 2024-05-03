@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:simple_barcode_scanner/simple_barcode_scanner.dart';
+import 'package:sticky_headers/sticky_headers/widget.dart';
 import 'package:whatsinmyfood/api.dart';
 import 'package:whatsinmyfood/food_lists.dart';
 import 'components/toggles.dart';
@@ -34,7 +35,7 @@ class HomePage extends StatefulWidget {
 
 //TODO Change the toggle logic to reflect changes in the global variables
 //TODO deselect all button
-//TODO Show which category youre scrolling through
+//TODO fix result page
 //TODO show that a switch is highlighted if the category is ignored 
 //TODO add snazzy logo and style to be the same style
 //TODO add ability to look for all things in categories 
@@ -126,188 +127,131 @@ class _HomePageState extends State<HomePage> {
     _filterList(_searchController.text);
   }
 
-  @override
-  Widget build(BuildContext context) {
+@override
+Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          'Whats in my food?',
-          style: TextStyle(
-            color: Colors.white,
-            fontStyle: FontStyle.italic,
-            fontWeight: FontWeight.bold,
-            fontFamily: 'Arial',
-          ),
+        appBar: AppBar(
+            title: const Text(
+                'Whats in my food?',
+                style: TextStyle(
+                    color: Colors.white,
+                    fontStyle: FontStyle.italic,
+                    fontWeight: FontWeight.bold,
+                    fontFamily: 'Arial',
+                ),
+            ),
+            centerTitle: true,
+            backgroundColor: Colors.deepOrangeAccent,
         ),
-        centerTitle: true,
-        backgroundColor: Colors.deepOrangeAccent,
-      ),
-      backgroundColor: Colors.grey,
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          
-          /*
-          FloatingActionButton(
-            onPressed: () {
-              toggleTitleVisibility('Whats in my food?');
-            },
-            child: const Text("Show all categories"),
-          ),
-          */
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: TextField(
-              controller: _searchController,
-              onChanged: _filterList,
-              decoration: const InputDecoration(
-                labelText: 'Search',
-                hintText: 'Search',
-                prefixIcon: Icon(Icons.search),
-              ),
-            ),
-          ),
-          Expanded(
-            child: ListView(
-              children: _toggleNames.entries.map((entry) {
-                var categoryName = entry.key;
-                var toggleNames = entry.value;
-                var isExpanded = _isExpanded[categoryName] ?? false;
-
-                return ExpansionTile(
-                  title: _isTitleVisible[categoryName] == true
-                      ? Text(
-                          categoryName,
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        )
-                      : Text(
-                          "$categoryName Ignore",
-                          style: const TextStyle(
-                            color: Colors.red,
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
+        backgroundColor: Colors.grey,
+        body: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+                Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: TextField(
+                        controller: _searchController,
+                        onChanged: _filterList,
+                        decoration: const InputDecoration(
+                            labelText: 'Search',
+                            hintText: 'Search',
+                            prefixIcon: Icon(Icons.search),
                         ),
-                  initiallyExpanded: isExpanded,
-                  children: [
-                    ListView.builder(
-                      shrinkWrap: true,
-                      itemCount: toggleNames.length,
-                      physics:const NeverScrollableScrollPhysics(),
-                      itemBuilder: (context, index) {
-                        var name = toggleNames[index];
-                        if (_filteredNames.contains(name)) {
-                          return Center(
-                            child: Container(
-                              // You can add padding, margin, decoration, etc., as needed here
-                              padding:
-                                  const EdgeInsets.all(8.0), // Example padding
-                              decoration: BoxDecoration(
-                                //color: Colors.white, 
-                                borderRadius: BorderRadius.circular(
-                                    10), // Example border radius
-                              ),
-                              child: ToggleSwitch(
-                                  passedName:
-                                      name), // Your ToggleSwitch component
-                            ),
-                          );
-                        } else {
-                          return Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 2.0),
-                            child: Visibility(
-                              visible: _filteredNames.contains(
-                                  name), // Set visibility based on whether the name is in the filtered list
-                              child: ToggleSwitch(
-                                passedName: name,
-                              ),
-                            ),
-                          );
-                        }
-                      },
                     ),
-                  ],
-                  onExpansionChanged: (value) {
-                    setState(() {
-                      _isExpanded[categoryName] = value;
-                      _isTitleVisible[categoryName] =
-                          value; // Update title visibility
-                    });
-                  },
-                );
-              }).toList(),
-            ),
-          ),
-          Align(
-            alignment: Alignment.bottomCenter,
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment
-                    .spaceEvenly, // This centers the buttons horizontally
-                children: <Widget>[
-                  Expanded(
-                    // Wrap each button in an Expanded widget to use available horizontal space equally
-                    child: ElevatedButton(
-                      onPressed: clearAllToggles,
-                      child: const Text('Deselect All'),
+                ),
+                Expanded(
+                    child: ListView.builder(
+                        itemCount: _toggleNames.keys.length,
+                        itemBuilder: (context, index) {
+                            String categoryName = _toggleNames.keys.elementAt(index);
+                            List<String> toggleNames = _toggleNames[categoryName]!;
+                            bool isVisible = _isTitleVisible[categoryName] ?? true;
+                            return isVisible ? StickyHeader(
+                                header: Container(
+                                    height: 50.0,
+                                    color: Colors.blueGrey[700],
+                                    padding: EdgeInsets.symmetric(horizontal: 16.0),
+                                    alignment: Alignment.centerLeft,
+                                    child: Text(
+                                        categoryName,
+                                        style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+                                    ),
+                                ),
+                                content: Column(
+                                    children: toggleNames.map((name) {
+                                        return Visibility(
+                                            visible: _filteredNames.contains(name),
+                                            child: ToggleSwitch(
+                                                passedName: name,
+                                            ),
+                                        );
+                                    }).toList(),
+                                ),
+                            ) : SizedBox.shrink();
+                        },
                     ),
-                  ),
-                  Expanded(
-                    // Wrap each button in an Expanded widget to use available horizontal space equally
-                    child: ElevatedButton(
-                      onPressed: () async {
-                        // Check the updated value of lookingForThings
-                        if (lookingForThings.isNotEmpty) {
-                          var res = await Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) =>
-                                  const SimpleBarcodeScannerPage(),
-                            ),
-                          );
+                ),
+                Align(
+                    alignment: Alignment.bottomCenter,
+                    child: Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: <Widget>[
+                                Expanded(
+                                    child: ElevatedButton(
+                                        onPressed: clearAllToggles,
+                                        child: const Text('Deselect All'),
+                                    ),
+                                ),
+                                Expanded(
+                                    child: ElevatedButton(
+                                        onPressed: () async {
+                                            if (lookingForThings.isNotEmpty) {
+                                                var res = await Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                        builder: (context) =>
+                                                            const SimpleBarcodeScannerPage(),
+                                                    ),
+                                                );
 
-                          if (res is String) {
-                            setState(() {
-                              barCodeScanResult = res;
-                            });
-                          }
-                          // ignore: use_build_context_synchronously
-                          makeGetRequest(
-                              barCodeScanResult, foundThings, context);
-                        } else {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => showAlert(
-                                context,
-                                'No Items selected',
-                                "You need to select items to filter for",
-                              ),
-                            ),
-                          );
-                        }
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.blue,
-                        foregroundColor: Colors.white,
-                      ),
-                      child: const Text(
-                        'Open Scanner',
-                        style: TextStyle(color: Colors.white),
-                      ),
+                                                if (res is String) {
+                                                    setState(() {
+                                                        barCodeScanResult = res;
+                                                    });
+                                                    makeGetRequest(
+                                                        barCodeScanResult, foundThings, context);
+                                                }
+                                            } else {
+                                                Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                        builder: (context) => showAlert(
+                                                            context,
+                                                            'No Items selected',
+                                                            "You need to select items to filter for",
+                                                        ),
+                                                    ),
+                                                );
+                                            }
+                                        },
+                                        style: ElevatedButton.styleFrom(
+                                            backgroundColor: Colors.blue,
+                                            foregroundColor: Colors.white,
+                                        ),
+                                        child: const Text(
+                                            'Open Scanner',
+                                            style: TextStyle(color: Colors.white),
+                                        ),
+                                    ),
+                                ),
+                            ],
+                        ),
                     ),
-                  ),
-                ],
-              ),
-            ),
-          )
-        ],
-      ),
+                )
+            ],
+        ),
     );
-  }
+}
 }
