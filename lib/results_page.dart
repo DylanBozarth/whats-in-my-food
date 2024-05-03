@@ -33,7 +33,7 @@ class ResultsPage extends StatelessWidget {
     }
     //print(categorizedResults);
     passedResults.clear();
-    print(lookingForThings);
+    print(" results page $lookingForThings");
     return categorizedResults;
   }
 
@@ -101,7 +101,7 @@ class ResultsPage extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 //Text("Looking for: $lookingForThings"),
-                //Text('YOUR RESULTS: $passedResults'),
+                Text('YOUR RESULTS: $passedResults'),
                 const SizedBox(
                     height: 16), // Add some spacing between the buttons
                 ElevatedButton(

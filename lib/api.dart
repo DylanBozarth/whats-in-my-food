@@ -63,7 +63,7 @@ void findThingsInIngredients(List<Map<String, dynamic>> filteredResults,
   List<String> desiredStrings =
       lookingForThings.map((s) => s.toLowerCase()).toList();
 // This needs to match the toggles on the home page values
-  print(filteredResults);
+  //print(filteredResults);
 // Iterate over the collection of maps
   for (var entry in keywordLists) {
     var keyword = entry.keys.first;
@@ -94,7 +94,7 @@ void findThingsInIngredients(List<Map<String, dynamic>> filteredResults,
       commonElements.add(desiredString);
     }
   }
-
+print(commonElements);
   foundThings.addAll(commonElements);
   if (foundThings.isNotEmpty) {
     Navigator.push(
