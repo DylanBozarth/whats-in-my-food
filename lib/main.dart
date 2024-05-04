@@ -47,15 +47,23 @@ class _HomePageState extends State<HomePage> {
     'Added Sugar': addedSugar,
     'Inflammatory foods': seedOils,
     'Meat Products': nonVegetarian,
-    'Common Allergens': [],
+    'Common Allergens': commonAllergens,
     'Religious abstentions': [],
     'High Environmental Impact': [],
     'GMOs': [],
     'Artificial colors and flavors': [],
     'Caffeine': [], // if possible
-    'Internationally banned products': [],
+    'Internationally banned products': bannedInEU,
     'Heavy Metals': [],
     'Vegetarian & Vegan': [],
+    'Heavy Metals 2': [],
+    'Vegetarian & Vegan 2': [],
+    'Heavy Metals 3': [],
+    'Vegetarian & Vegan 3': [],
+    'Heavy Metals 5453': [],
+    'Vegetarian & Vegan 5': [],
+    'Heavy Metals 4': [],
+    'Vegetarian & Vegan 4': [],
   };
   final Map<String, bool> _isExpanded = {};
   final Map<String, bool> _isTitleVisible = {};
@@ -170,7 +178,9 @@ class _HomePageState extends State<HomePage> {
               itemBuilder: (context, index) {
                 String categoryName = _toggleNames.keys.elementAt(index);
                 List<String> toggleNames = _toggleNames[categoryName]!;
-                bool isVisible = _isTitleVisible[categoryName] ?? true;
+                int toggleCount =
+                    toggleNames.length; // Count of toggle switches contained
+
                 return StickyHeader(
                   header: GestureDetector(
                     onTap: () {
@@ -188,7 +198,9 @@ class _HomePageState extends State<HomePage> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            categoryName,
+                            _filteredNames.isEmpty
+                                ? categoryName
+                                : '$categoryName ($toggleCount results)',
                             style: const TextStyle(
                               color: Colors.white,
                               fontSize: 16,
