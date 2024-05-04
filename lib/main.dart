@@ -36,9 +36,9 @@ class HomePage extends StatefulWidget {
 //TODO Change the toggle logic to reflect changes in the global variables
 //TODO deselect all button
 //TODO fix result page
-//TODO show that a switch is highlighted if the category is ignored 
+//TODO show that a switch is highlighted if the category is ignored
 //TODO add snazzy logo and style to be the same style
-//TODO add ability to look for all things in categories 
+//TODO add ability to look for all things in categories
 
 class _HomePageState extends State<HomePage> {
   String barCodeScanResult = '';
@@ -72,47 +72,52 @@ class _HomePageState extends State<HomePage> {
   }
 
   void _filterList(String query) {
-  List<String> filteredList = [];
-  String cleanQuery = query.replaceAll(' ', '').toLowerCase();  // Remove spaces and convert to lower case
+    List<String> filteredList = [];
+    String cleanQuery = query
+        .replaceAll(' ', '')
+        .toLowerCase(); // Remove spaces and convert to lower case
 
-  if (cleanQuery.isNotEmpty) {
-    for (var entry in _toggleNames.entries) {
-      // Check both key and value lists after removing spaces
-      bool isVisible =
-          entry.key.replaceAll(' ', '').toLowerCase().contains(cleanQuery) ||
-          entry.value.any(
-              (name) => name.replaceAll(' ', '').toLowerCase().contains(cleanQuery));
+    if (cleanQuery.isNotEmpty) {
+      for (var entry in _toggleNames.entries) {
+        // Check both key and value lists after removing spaces
+        bool isVisible = entry.key
+                .replaceAll(' ', '')
+                .toLowerCase()
+                .contains(cleanQuery) ||
+            entry.value.any((name) =>
+                name.replaceAll(' ', '').toLowerCase().contains(cleanQuery));
 
-      // Set the category to be visible and expanded if it contains matches
-      _isTitleVisible[entry.key] = isVisible;
-      _isExpanded[entry.key] = isVisible;  // Auto-expand categories that have matches
+        // Set the category to be visible and expanded if it contains matches
+        _isTitleVisible[entry.key] = isVisible;
+        _isExpanded[entry.key] =
+            isVisible; // Auto-expand categories that have matches
 
-      if (isVisible && !filteredList.contains(entry.key)) {
-        filteredList.add(entry.key);
-      }
-      if (_isExpanded[entry.key] ?? false) {
-        // Include toggle names from expanded categories
-        for (String name in entry.value) {
-          if (name.replaceAll(' ', '').toLowerCase().contains(cleanQuery)) {
-            filteredList.add(name);
+        if (isVisible && !filteredList.contains(entry.key)) {
+          filteredList.add(entry.key);
+        }
+        if (_isExpanded[entry.key] ?? false) {
+          // Include toggle names from expanded categories
+          for (String name in entry.value) {
+            if (name.replaceAll(' ', '').toLowerCase().contains(cleanQuery)) {
+              filteredList.add(name);
+            }
           }
         }
       }
+    } else {
+      // If query is empty, include all toggle names from categories
+      for (var entry in _toggleNames.entries) {
+        _isTitleVisible[entry.key] = true;
+        _isExpanded[entry.key] =
+            true; // Keep all categories expanded if no search query
+        filteredList.add(entry.key);
+        filteredList.addAll(entry.value);
+      }
     }
-  } else {
-    // If query is empty, include all toggle names from categories
-    for (var entry in _toggleNames.entries) {
-      _isTitleVisible[entry.key] = true;
-      _isExpanded[entry.key] = true;  // Keep all categories expanded if no search query
-      filteredList.add(entry.key);
-      filteredList.addAll(entry.value);
-    }
+    setState(() {
+      _filteredNames = filteredList;
+    });
   }
-  setState(() {
-    _filteredNames = filteredList;
-  });
-}
-
 
   void clearAllToggles() {
     lookingForThings.clear();
@@ -127,131 +132,156 @@ class _HomePageState extends State<HomePage> {
     _filterList(_searchController.text);
   }
 
-@override
-Widget build(BuildContext context) {
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-            title: const Text(
-                'Whats in my food?',
-                style: TextStyle(
-                    color: Colors.white,
-                    fontStyle: FontStyle.italic,
-                    fontWeight: FontWeight.bold,
-                    fontFamily: 'Arial',
-                ),
+      appBar: AppBar(
+        title: const Text(
+          'Whats in my food?',
+          style: TextStyle(
+            color: Colors.white,
+            fontStyle: FontStyle.italic,
+            fontWeight: FontWeight.bold,
+            fontFamily: 'Arial',
+          ),
+        ),
+        centerTitle: true,
+        backgroundColor: Colors.deepOrangeAccent,
+      ),
+      backgroundColor: Colors.grey,
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: TextField(
+              controller: _searchController,
+              onChanged: _filterList,
+              decoration: const InputDecoration(
+                labelText: 'Search',
+                hintText: 'Search',
+                prefixIcon: Icon(Icons.search),
+              ),
             ),
-            centerTitle: true,
-            backgroundColor: Colors.deepOrangeAccent,
-        ),
-        backgroundColor: Colors.grey,
-        body: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-                Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: TextField(
-                        controller: _searchController,
-                        onChanged: _filterList,
-                        decoration: const InputDecoration(
-                            labelText: 'Search',
-                            hintText: 'Search',
-                            prefixIcon: Icon(Icons.search),
-                        ),
+          ),
+          Expanded(
+            child: ListView.builder(
+              itemCount: _toggleNames.keys.length,
+              itemBuilder: (context, index) {
+                String categoryName = _toggleNames.keys.elementAt(index);
+                List<String> toggleNames = _toggleNames[categoryName]!;
+                bool isVisible = _isTitleVisible[categoryName] ?? true;
+                return StickyHeader(
+                  header: GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        _isTitleVisible[categoryName] =
+                            !_isTitleVisible[categoryName]!;
+                      });
+                    },
+                    child: Container(
+                      height: 50.0,
+                      color: Colors.blueGrey[700],
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      alignment: Alignment.centerLeft,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            categoryName,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          Icon(
+                            _isTitleVisible[categoryName]!
+                                ? Icons.arrow_drop_up
+                                : Icons.arrow_drop_down,
+                            color: Colors.white,
+                          ),
+                        ],
+                      ),
                     ),
-                ),
-                Expanded(
-                    child: ListView.builder(
-                        itemCount: _toggleNames.keys.length,
-                        itemBuilder: (context, index) {
-                            String categoryName = _toggleNames.keys.elementAt(index);
-                            List<String> toggleNames = _toggleNames[categoryName]!;
-                            bool isVisible = _isTitleVisible[categoryName] ?? true;
-                            return isVisible ? StickyHeader(
-                                header: Container(
-                                    height: 50.0,
-                                    color: Colors.blueGrey[700],
-                                    padding: EdgeInsets.symmetric(horizontal: 16.0),
-                                    alignment: Alignment.centerLeft,
-                                    child: Text(
-                                        categoryName,
-                                        style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
-                                    ),
-                                ),
-                                content: Column(
-                                    children: toggleNames.map((name) {
-                                        return Visibility(
-                                            visible: _filteredNames.contains(name),
-                                            child: ToggleSwitch(
-                                                passedName: name,
-                                            ),
-                                        );
-                                    }).toList(),
-                                ),
-                            ) : SizedBox.shrink();
-                        },
+                  ),
+                  content: _isTitleVisible[categoryName]!
+                      ? Column(
+                          children: toggleNames.map((name) {
+                            return Visibility(
+                              visible: _filteredNames.contains(name),
+                              child: ToggleSwitch(
+                                passedName: name,
+                              ),
+                            );
+                          }).toList(),
+                        )
+                      : SizedBox.shrink(),
+                );
+              },
+            ),
+          ),
+          Align(
+            alignment: Alignment.bottomCenter,
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: <Widget>[
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: clearAllToggles,
+                      child: const Text('Deselect All'),
                     ),
-                ),
-                Align(
-                    alignment: Alignment.bottomCenter,
-                    child: Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: <Widget>[
-                                Expanded(
-                                    child: ElevatedButton(
-                                        onPressed: clearAllToggles,
-                                        child: const Text('Deselect All'),
-                                    ),
-                                ),
-                                Expanded(
-                                    child: ElevatedButton(
-                                        onPressed: () async {
-                                            if (lookingForThings.isNotEmpty) {
-                                                var res = await Navigator.push(
-                                                    context,
-                                                    MaterialPageRoute(
-                                                        builder: (context) =>
-                                                            const SimpleBarcodeScannerPage(),
-                                                    ),
-                                                );
+                  ),
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: () async {
+                        if (lookingForThings.isNotEmpty) {
+                          var res = await Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  const SimpleBarcodeScannerPage(),
+                            ),
+                          );
 
-                                                if (res is String) {
-                                                    setState(() {
-                                                        barCodeScanResult = res;
-                                                    });
-                                                    makeGetRequest(
-                                                        barCodeScanResult, foundThings, context);
-                                                }
-                                            } else {
-                                                Navigator.push(
-                                                    context,
-                                                    MaterialPageRoute(
-                                                        builder: (context) => showAlert(
-                                                            context,
-                                                            'No Items selected',
-                                                            "You need to select items to filter for",
-                                                        ),
-                                                    ),
-                                                );
-                                            }
-                                        },
-                                        style: ElevatedButton.styleFrom(
-                                            backgroundColor: Colors.blue,
-                                            foregroundColor: Colors.white,
-                                        ),
-                                        child: const Text(
-                                            'Open Scanner',
-                                            style: TextStyle(color: Colors.white),
-                                        ),
-                                    ),
-                                ),
-                            ],
-                        ),
+                          if (res is String) {
+                            setState(() {
+                              barCodeScanResult = res;
+                            });
+                            makeGetRequest(
+                                barCodeScanResult, foundThings, context);
+                          }
+                        } else {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => showAlert(
+                                context,
+                                'No Items selected',
+                                "You need to select items to filter for",
+                              ),
+                            ),
+                          );
+                        }
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.blue,
+                        foregroundColor: Colors.white,
+                      ),
+                      child: const Text(
+                        'Open Scanner',
+                        style: TextStyle(color: Colors.white),
+                      ),
                     ),
-                )
-            ],
-        ),
+                  ),
+                ],
+              ),
+            ),
+          )
+        ],
+      ),
     );
-}
+  }
 }
