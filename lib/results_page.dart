@@ -16,24 +16,41 @@ class ResultsPage extends StatelessWidget {
   Map<String, List<String>> categorizeResults(List<String> passedResults,
       List<Map<String, List<String>>> keywordLists) {
     Map<String, List<String>> categorizedResults = {};
+
+    // Convert all keywords and elements in keyword lists to lowercase
     for (var map in keywordLists) {
-      map.forEach((key, _) => categorizedResults[key] = []);
+      Map<String, List<String>> lowercaseMap = {};
+      map.forEach((key, value) {
+        List<String> lowercaseList =
+            value.map((element) => element.toLowerCase()).toList();
+        lowercaseMap[key.toLowerCase()] = lowercaseList;
+      });
+      categorizedResults.addAll(lowercaseMap);
     }
+
     for (String result in passedResults) {
+      print("Processing result: $result");
       for (var keywordMap in keywordLists) {
         keywordMap.forEach((keyword, list) {
           if (lookingForThings.contains(keyword.toLowerCase())) {
             if (list.any((element) =>
                 result.toLowerCase().contains(element.toLowerCase()))) {
-              categorizedResults[keyword]?.add(result);
+              // Check if the result is present in passedResults
+              print("Checking if result is in passedResults: $result");
+              if (passedResults.contains(result)) {
+                // Add the result only if it matches a keyword and is in passedResults
+                categorizedResults.putIfAbsent(keyword, () => []);
+                categorizedResults[keyword]?.add(result);
+              }
             }
           }
         });
       }
     }
-    //print(categorizedResults);
+
+    print(categorizedResults); // currently all of the keywords
     passedResults.clear();
-    print(" results page $lookingForThings");
+    print(lookingForThings);
     return categorizedResults;
   }
 

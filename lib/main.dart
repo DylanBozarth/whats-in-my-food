@@ -33,8 +33,8 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
-//TODO Change the toggle logic to reflect changes in the global variables
-//TODO deselect all button
+//TODO Change the toggle logic to reflect changes in the global variables -- maybe not
+//TODO deselect all button/show all selected items
 //TODO fix result page
 //TODO show that a switch is highlighted if the category is ignored
 //TODO add snazzy logo and style to be the same style
@@ -43,6 +43,8 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   String barCodeScanResult = '';
   final TextEditingController _searchController = TextEditingController();
+  GlobalKey<ScaffoldState> _scaffoldKey =
+      GlobalKey<ScaffoldState>(); // to allow re-render of search bar
   final Map<String, List<String>> _toggleNames = {
     'Added Sugar': addedSugar,
     'Inflammatory foods': seedOils,
@@ -77,6 +79,7 @@ class _HomePageState extends State<HomePage> {
       _isExpanded[category] = true;
       _isTitleVisible[category] = true; // Initialize title visibility
     }
+    //_searchController.addListener(_onSearchTextChanged);
   }
 
   void _filterList(String query) {
@@ -131,6 +134,12 @@ class _HomePageState extends State<HomePage> {
     lookingForThings.clear();
   }
 
+/* Does not work, doesn't update UI 
+  void _onSearchTextChanged() {
+    // Call setState to trigger a UI re-render
+    _scaffoldKey.currentState?.setState(() {});
+  }
+ */
 // Modify the toggleTitleVisibility function to mirror filterList logic
   void toggleTitleVisibility(String category) {
     setState(() {
@@ -144,6 +153,7 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        key: _scaffoldKey,
         title: const Text(
           'Whats in my food?',
           style: TextStyle(
@@ -191,16 +201,16 @@ class _HomePageState extends State<HomePage> {
                     },
                     child: Container(
                       height: 50.0,
-                      color: Colors.blueGrey[700],
+                      color: Colors.green[700],
                       padding: const EdgeInsets.symmetric(horizontal: 16.0),
                       alignment: Alignment.centerLeft,
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            _filteredNames.isEmpty
+                            _searchController.text.isEmpty
                                 ? categoryName
-                                : '$categoryName ($toggleCount results)',
+                                : '$categoryName', // ($toggleCount results)
                             style: const TextStyle(
                               color: Colors.white,
                               fontSize: 16,
