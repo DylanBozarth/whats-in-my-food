@@ -18,7 +18,7 @@ List<String> seedOils = [
   "sunflower oil",
   "palm oil",
   "palm kernel oil",
-  "soybean oil",  
+  "soybean oil",
   "cottonseed oil",
   "safflower oil",
   "sesame oil",
@@ -226,7 +226,7 @@ List<String> nonVegan = [
   ...dairy
 ]; // Poor fucking vegans lol
 List<String> addedSugar = [
-  "Sugar",  // Commonly just referred to as sugar in ingredients.
+  "Sugar", // Commonly just referred to as sugar in ingredients.
   "High-fructose corn syrup",
   "Honey",
   "Maple syrup",
@@ -238,7 +238,7 @@ List<String> addedSugar = [
   "Molasses",
   "Fructose",
   "Glucose",
-  "Syrup",
+  "syrup",
   "Dextrose",
   "Sucrose",
   "Corn sweetener",

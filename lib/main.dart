@@ -33,9 +33,8 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
-//TODO Change the toggle logic to reflect changes in the global variables -- maybe not
 //TODO deselect all button/show all selected items
-//TODO fix result page
+//TODO Allow multiple word results
 //TODO show that a switch is highlighted if the category is ignored
 //TODO add snazzy logo and style to be the same style
 //TODO add ability to look for all things in categories
