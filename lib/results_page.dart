@@ -13,8 +13,10 @@ class ResultsPage extends StatelessWidget {
     required BuildContext context,
   }) : super(key: key);
 
-  Map<String, List<String>> categorizeResults(List<String> passedResults,
-      List<Map<String, List<String>>> keywordLists) {
+  Map<String, List<String>> categorizeResults(
+      List<String> passedResults,
+      List<Map<String, List<String>>> keywordLists,
+      List<String> lookingForThings) {
     Map<String, List<String>> categorizedResults = {};
 
     // Convert all keywords and elements in keyword lists to lowercase
@@ -28,20 +30,27 @@ class ResultsPage extends StatelessWidget {
       categorizedResults.addAll(lowercaseMap);
     }
 
+    // Filter the categorizedResults to include only the keys from lookingForThings
+    categorizedResults = categorizedResults.map((key, value) {
+      if (lookingForThings.contains(key.toLowerCase())) {
+        return MapEntry(key, value);
+      } else {
+        return MapEntry(key, []);
+      }
+    });
+
     for (String result in passedResults) {
       print("Processing result: $result");
       for (var keywordMap in keywordLists) {
         keywordMap.forEach((keyword, list) {
-          if (lookingForThings.contains(keyword.toLowerCase())) {
-            if (list.any((element) =>
-                result.toLowerCase().contains(element.toLowerCase()))) {
-              // Check if the result is present in passedResults
-              print("Checking if result is in passedResults: $result");
-              if (passedResults.contains(result)) {
-                // Add the result only if it matches a keyword and is in passedResults
-                categorizedResults.putIfAbsent(keyword, () => []);
-                categorizedResults[keyword]?.add(result);
-              }
+          if (list.any((element) =>
+              result.toLowerCase().contains(element.toLowerCase()))) {
+            // Check if the result is present in passedResults
+            print("Checking if result is in passedResults: $result");
+            if (passedResults.contains(result)) {
+              // Add the result only if it matches a keyword and is in passedResults
+              categorizedResults.putIfAbsent(keyword, () => []);
+              categorizedResults[keyword]?.add(result);
             }
           }
         });
@@ -57,7 +66,7 @@ class ResultsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Map<String, List<String>> categorizedResults =
-        categorizeResults(passedResults, keywordLists);
+        categorizeResults(passedResults, keywordLists, lookingForThings);
 
     return Scaffold(
       appBar: AppBar(
