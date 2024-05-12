@@ -43,6 +43,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   String barCodeScanResult = '';
   final TextEditingController _searchController = TextEditingController();
+  Map<String, bool> toggleStates = {};
   GlobalKey<ScaffoldState> _scaffoldKey =
       GlobalKey<ScaffoldState>(); // to allow re-render of search bar
   final Map<String, List<String>> _toggleNames = {
@@ -132,6 +133,43 @@ class _HomePageState extends State<HomePage> {
 
   void clearAllToggles() {
     lookingForThings.clear();
+  }
+
+  // Show active selectors
+  List<String> getActiveToggles() {
+    List<String> activeToggles = [];
+    toggleStates.forEach((key, value) {
+      if (value) {
+        // Check if the toggle is on
+        activeToggles.add(key);
+      }
+    });
+    return activeToggles;
+  }
+
+  void _showActiveToggles() {
+    var activeToggles = getActiveToggles(); // Get the list of active toggles
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Active Toggles"),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: activeToggles.map((item) => Text(item)).toList(),
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: Text('Close'),
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
 /* Does not work, doesn't update UI 
@@ -234,6 +272,22 @@ class _HomePageState extends State<HomePage> {
                               visible: _filteredNames.contains(name),
                               child: ToggleSwitch(
                                 passedName: name,
+                                isHighlighted: toggleStates[name] ?? false,
+                                onChanged: (bool newValue) {
+                                  setState(() {
+                                    toggleStates[name] = newValue;
+                                  });
+                                  // Handle adding to or removing from 'lookingForThings' or any other logic here.
+                                  if (newValue) {
+                                    lookingForThings.add(name
+                                        .toLowerCase()
+                                        .replaceAll(' ', '-'));
+                                  } else {
+                                    lookingForThings.remove(name
+                                        .toLowerCase()
+                                        .replaceAll(' ', '-'));
+                                  }
+                                },
                               ),
                             );
                           }).toList(),
@@ -252,8 +306,8 @@ class _HomePageState extends State<HomePage> {
                 children: <Widget>[
                   Expanded(
                     child: ElevatedButton(
-                      onPressed: clearAllToggles,
-                      child: const Text('Deselect All'),
+                      onPressed: _showActiveToggles,
+                      child: const Text('Show all selected'),
                     ),
                   ),
                   Expanded(

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'global_variables.dart';
+
+// Assuming global_variables.dart contains a list of active items:
+// List<String> lookingForThings;
 
 class ToggleSwitchContainer extends StatefulWidget {
   final Widget child;
@@ -19,11 +21,15 @@ class _ToggleSwitchContainerState extends State<ToggleSwitchContainer> {
 }
 
 class ToggleSwitch extends StatefulWidget {
-  final String passedName; // New variable to be passed as an argument
+  final String passedName;
+  final bool isHighlighted; // Indicates if the switch should be highlighted
+  final Function(bool) onChanged; // Callback to handle changes
 
   const ToggleSwitch({
     Key? key,
     required this.passedName,
+    required this.isHighlighted,
+    required this.onChanged,
   }) : super(key: key);
 
   @override
@@ -31,13 +37,13 @@ class ToggleSwitch extends StatefulWidget {
 }
 
 class _ToggleSwitchState extends State<ToggleSwitch> {
-  bool isSwitched = false;
+  late bool isSwitched; // State managed by the parent now
 
   @override
   void initState() {
     super.initState();
-    isSwitched = lookingForThings
-        .contains(widget.passedName.toLowerCase().replaceAll(' ', '-'));
+    // Initialize the switch state based on the passed value
+    isSwitched = widget.isHighlighted;
   }
 
   @override
@@ -49,15 +55,9 @@ class _ToggleSwitchState extends State<ToggleSwitch> {
             value: isSwitched,
             onChanged: (value) {
               setState(() {
-                isSwitched = value;
+                isSwitched = value; // Update the local state
               });
-              if (value) {
-                lookingForThings
-                    .add(widget.passedName.toLowerCase().replaceAll(' ', '-'));
-              } else {
-                lookingForThings.remove(
-                    widget.passedName.toLowerCase().replaceAll(' ', '-'));
-              }
+              widget.onChanged(value); // Call the passed callback function
             },
             activeTrackColor: Colors.lightGreenAccent,
             activeColor: Colors.green,
