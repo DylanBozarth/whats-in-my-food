@@ -38,6 +38,7 @@ class HomePage extends StatefulWidget {
 //TODO show that a switch is highlighted if the category is ignored
 //TODO add snazzy logo and style to be the same style
 //TODO add ability to look for all things in categories
+//TODO camera stopped working randomly
 
 class _HomePageState extends State<HomePage> {
   String barCodeScanResult = '';
