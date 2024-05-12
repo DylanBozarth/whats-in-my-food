@@ -33,9 +33,8 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
-//TODO deselect all button/show all selected items
+//TODO deselect all button/show all selected items DONE, JUST MAKE IT TOGGLEABLE
 //TODO Allow multiple word results
-//TODO show that a switch is highlighted if the category is ignored
 //TODO add snazzy logo and style to be the same style
 //TODO add ability to look for all things in categories
 //TODO camera stopped working randomly
@@ -148,28 +147,33 @@ class _HomePageState extends State<HomePage> {
   }
 
   void _showActiveToggles() {
-    var activeToggles = getActiveToggles(); // Get the list of active toggles
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text("Active Toggles"),
-          content: SingleChildScrollView(
-            child: ListBody(
-              children: activeToggles.map((item) => Text(item)).toList(),
-            ),
-          ),
-          actions: <Widget>[
-            TextButton(
-              child: Text('Close'),
-              onPressed: () {
-                Navigator.of(context).pop(); // Close the dialog
-              },
-            ),
-          ],
-        );
-      },
-    );
+    setState(() {
+      _filteredNames.clear();
+      toggleStates.forEach((key, value) {
+        if (value) {
+          // Check if the toggle is on
+          _filteredNames
+              .add(key); // Add only active toggles to the filtered list
+          _isTitleVisible[key] = true; // Make sure the category is visible
+          _isExpanded[key] = true; // Make sure the category is expanded
+        } else {
+          _isTitleVisible[key] = false; // Hide the category
+        }
+      });
+    });
+  }
+
+  void _handleToggleChange(String itemName, bool newValue) {
+    setState(() {
+      toggleStates[itemName] = newValue; // Update the toggle state
+    });
+    // Here, you can also handle any additional logic needed when a toggle changes
+    // For example, adding or removing items from a list that tracks active toggles
+    if (newValue) {
+      lookingForThings.add(itemName.toLowerCase().replaceAll(' ', '-'));
+    } else {
+      lookingForThings.remove(itemName.toLowerCase().replaceAll(' ', '-'));
+    }
   }
 
 /* Does not work, doesn't update UI 
@@ -225,16 +229,16 @@ class _HomePageState extends State<HomePage> {
               itemCount: _toggleNames.keys.length,
               itemBuilder: (context, index) {
                 String categoryName = _toggleNames.keys.elementAt(index);
-                List<String> toggleNames = _toggleNames[categoryName]!;
-                int toggleCount =
-                    toggleNames.length; // Count of toggle switches contained
+                if (!(_isTitleVisible[categoryName] ?? false))
+                  return SizedBox.shrink(); // Skip rendering if not visible
 
+                List<String> toggleNames = _toggleNames[categoryName]!;
                 return StickyHeader(
                   header: GestureDetector(
                     onTap: () {
                       setState(() {
                         _isTitleVisible[categoryName] =
-                            !_isTitleVisible[categoryName]!;
+                            !(_isTitleVisible[categoryName] ?? false);
                       });
                     },
                     child: Container(
@@ -246,9 +250,7 @@ class _HomePageState extends State<HomePage> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            _searchController.text.isEmpty
-                                ? categoryName
-                                : '$categoryName', // ($toggleCount results)
+                            categoryName,
                             style: const TextStyle(
                               color: Colors.white,
                               fontSize: 16,
@@ -256,7 +258,7 @@ class _HomePageState extends State<HomePage> {
                             ),
                           ),
                           Icon(
-                            _isTitleVisible[categoryName]!
+                            (_isTitleVisible[categoryName] ?? false)
                                 ? Icons.arrow_drop_up
                                 : Icons.arrow_drop_down,
                             color: Colors.white,
@@ -265,7 +267,7 @@ class _HomePageState extends State<HomePage> {
                       ),
                     ),
                   ),
-                  content: _isTitleVisible[categoryName]!
+                  content: (_isTitleVisible[categoryName] ?? false)
                       ? Column(
                           children: toggleNames.map((name) {
                             return Visibility(
@@ -274,19 +276,8 @@ class _HomePageState extends State<HomePage> {
                                 passedName: name,
                                 isHighlighted: toggleStates[name] ?? false,
                                 onChanged: (bool newValue) {
-                                  setState(() {
-                                    toggleStates[name] = newValue;
-                                  });
-                                  // Handle adding to or removing from 'lookingForThings' or any other logic here.
-                                  if (newValue) {
-                                    lookingForThings.add(name
-                                        .toLowerCase()
-                                        .replaceAll(' ', '-'));
-                                  } else {
-                                    lookingForThings.remove(name
-                                        .toLowerCase()
-                                        .replaceAll(' ', '-'));
-                                  }
+                                  _handleToggleChange(name,
+                                      newValue); // Update state when toggled
                                 },
                               ),
                             );
