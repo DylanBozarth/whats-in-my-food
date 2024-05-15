@@ -33,15 +33,14 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
-//TODO deselect all button/show all selected items DONE, JUST MAKE IT TOGGLEABLE
 //TODO Allow multiple word results
 //TODO add snazzy logo and style to be the same style
 //TODO add ability to look for all things in categories
-//TODO camera stopped working randomly
 
 class _HomePageState extends State<HomePage> {
   String barCodeScanResult = '';
   final TextEditingController _searchController = TextEditingController();
+  bool showAllSelected = false;
   Map<String, bool> toggleStates = {};
   GlobalKey<ScaffoldState> _scaffoldKey =
       GlobalKey<ScaffoldState>(); // to allow re-render of search bar
@@ -134,7 +133,7 @@ class _HomePageState extends State<HomePage> {
     lookingForThings.clear();
   }
 
-  // Show active selectors
+  // Show which ingredients are selected
   List<String> getActiveToggles() {
     List<String> activeToggles = [];
     toggleStates.forEach((key, value) {
@@ -149,17 +148,28 @@ class _HomePageState extends State<HomePage> {
   void _showActiveToggles() {
     setState(() {
       _filteredNames.clear();
-      toggleStates.forEach((key, value) {
-        if (value) {
-          // Check if the toggle is on
-          _filteredNames
-              .add(key); // Add only active toggles to the filtered list
-          _isTitleVisible[key] = true; // Make sure the category is visible
-          _isExpanded[key] = true; // Make sure the category is expanded
-        } else {
-          _isTitleVisible[key] = false; // Hide the category
-        }
-      });
+      if (showAllSelected) {
+        // If showAllSelected is true, include all toggle names
+        _toggleNames.forEach((category, toggleNames) {
+          _filteredNames.add(category);
+          _filteredNames.addAll(toggleNames);
+          _isTitleVisible[category] = true;
+          _isExpanded[category] = true;
+        });
+        showAllSelected = false;
+      } else {
+        // If showAllSelected is false, include only active toggles
+        toggleStates.forEach((key, value) {
+          if (value) {
+            _filteredNames.add(key);
+            _isTitleVisible[key] = true;
+            _isExpanded[key] = true;
+          } else {
+            _isTitleVisible[key] = false;
+          }
+        });
+        showAllSelected = true;
+      }
     });
   }
 
@@ -298,7 +308,9 @@ class _HomePageState extends State<HomePage> {
                   Expanded(
                     child: ElevatedButton(
                       onPressed: _showActiveToggles,
-                      child: const Text('Show all selected'),
+                      child: Text(showAllSelected
+                          ? 'Show everything'
+                          : 'Show All Selected'),
                     ),
                   ),
                   Expanded(
