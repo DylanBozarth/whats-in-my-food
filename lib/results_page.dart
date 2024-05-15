@@ -19,7 +19,7 @@ class ResultsPage extends StatelessWidget {
       List<String> lookingForThings) {
     // Convert lookingForThings to lowercase and replace hyphens with spaces
     List<String> lowercaseLookingForThings = lookingForThings
-        .map((item) => item.toLowerCase().replaceAll('-', ' '))
+        .map((item) => item.toLowerCase().replaceAll(' ', '-'))
         .toList();
 
     Map<String, List<String>> categorizedResults = {};
@@ -29,9 +29,9 @@ class ResultsPage extends StatelessWidget {
       Map<String, List<String>> lowercaseMap = {};
       map.forEach((key, value) {
         List<String> lowercaseList = value
-            .map((element) => element.toLowerCase().replaceAll('-', ' '))
+            .map((element) => element.toLowerCase().replaceAll(' ', '-'))
             .toList();
-        lowercaseMap[key.toLowerCase().replaceAll('-', ' ')] = lowercaseList;
+        lowercaseMap[key.toLowerCase().replaceAll(' ', '-')] = lowercaseList;
       });
       categorizedResults.addAll(lowercaseMap);
     }
@@ -46,13 +46,13 @@ class ResultsPage extends StatelessWidget {
     });
 
     for (String result in passedResults) {
-      String lowercaseResult = result.toLowerCase().replaceAll('-', ' ');
+      String lowercaseResult = result.toLowerCase().replaceAll(' ', '-');
       print("Processing result: $lowercaseResult");
       for (var keywordMap in keywordLists) {
         keywordMap.forEach((keyword, list) {
-          String lowercaseKeyword = keyword.toLowerCase().replaceAll('-', ' ');
+          String lowercaseKeyword = keyword.toLowerCase().replaceAll(' ', '-');
           if (list.any((element) => lowercaseResult
-              .contains(element.toLowerCase().replaceAll('-', ' ')))) {
+              .contains(element.toLowerCase().replaceAll(' ', '-')))) {
             // Check if the result is present in passedResults
             print("Checking if result is in passedResults: $lowercaseResult");
             if (passedResults.contains(result)) {

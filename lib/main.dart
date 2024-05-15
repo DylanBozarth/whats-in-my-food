@@ -34,8 +34,12 @@ class HomePage extends StatefulWidget {
 }
 
 //TODO Allow multiple word results
+// TODO Make the title minimize not hide
 //TODO add snazzy logo and style to be the same style
 //TODO add ability to look for all things in categories
+
+//lesser todo
+// TODO make categories that aren't being filtered for not show up in results page
 
 class _HomePageState extends State<HomePage> {
   String barCodeScanResult = '';
@@ -129,10 +133,6 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
-  void clearAllToggles() {
-    lookingForThings.clear();
-  }
-
   // Show which ingredients are selected
   List<String> getActiveToggles() {
     List<String> activeToggles = [];
@@ -192,7 +192,7 @@ class _HomePageState extends State<HomePage> {
     _scaffoldKey.currentState?.setState(() {});
   }
  */
-// Modify the toggleTitleVisibility function to mirror filterList logic
+
   void toggleTitleVisibility(String category) {
     setState(() {
       _isTitleVisible[category] = !_isTitleVisible[category]!;
@@ -277,6 +277,7 @@ class _HomePageState extends State<HomePage> {
                       ),
                     ),
                   ),
+                  // switches inside the titles
                   content: (_isTitleVisible[categoryName] ?? false)
                       ? Column(
                           children: toggleNames.map((name) {
@@ -284,7 +285,10 @@ class _HomePageState extends State<HomePage> {
                               visible: _filteredNames.contains(name),
                               child: ToggleSwitch(
                                 passedName: name,
-                                isHighlighted: toggleStates[name] ?? false,
+                                isHighlighted: toggleStates[name] ??
+                                    lookingForThings.contains(name
+                                        .toLowerCase()
+                                        .replaceAll(' ', '-')),
                                 onChanged: (bool newValue) {
                                   _handleToggleChange(name,
                                       newValue); // Update state when toggled

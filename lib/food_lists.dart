@@ -14,7 +14,7 @@ List<Map<String, List<String>>> keywordLists = [
 // idea- high blood pressure
 List<String> seedOils = [
   "vegetable oil",
-  "canola oil",
+  "canola-oil",
   "sunflower oil",
   "palm oil",
   "palm kernel oil",

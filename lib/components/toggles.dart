@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
 
-// Assuming global_variables.dart contains a list of active items:
-// List<String> lookingForThings;
-
 class ToggleSwitchContainer extends StatefulWidget {
   final Widget child;
 
