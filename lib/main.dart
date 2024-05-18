@@ -87,9 +87,7 @@ class _HomePageState extends State<HomePage> {
 
   void _filterList(String query) {
     List<String> filteredList = [];
-    String cleanQuery = query
-        .replaceAll(' ', '')
-        .toLowerCase(); // Remove spaces and convert to lower case
+    String cleanQuery = query.replaceAll(' ', '').toLowerCase();
 
     if (cleanQuery.isNotEmpty) {
       for (var entry in _toggleNames.entries) {
@@ -238,9 +236,32 @@ class _HomePageState extends State<HomePage> {
             child: ListView.builder(
               itemCount: _toggleNames.keys.length,
               itemBuilder: (context, index) {
+                // the titles that collapse
                 String categoryName = _toggleNames.keys.elementAt(index);
                 if (!(_isTitleVisible[categoryName] ?? false))
-                  return SizedBox.shrink(); // Skip rendering if not visible
+                  return Container(
+                    height: 50.0,
+                    color: Colors.green[700],
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    alignment: Alignment.centerLeft,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          categoryName,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const Icon(
+                          Icons.arrow_drop_down,
+                          color: Colors.white,
+                        ),
+                      ],
+                    ),
+                  ); // Skip rendering if not visible
 
                 List<String> toggleNames = _toggleNames[categoryName]!;
                 return StickyHeader(
@@ -267,10 +288,8 @@ class _HomePageState extends State<HomePage> {
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-                          Icon(
-                            (_isTitleVisible[categoryName] ?? false)
-                                ? Icons.arrow_drop_up
-                                : Icons.arrow_drop_down,
+                          const Icon(
+                            Icons.arrow_drop_down,
                             color: Colors.white,
                           ),
                         ],
@@ -290,14 +309,15 @@ class _HomePageState extends State<HomePage> {
                                         .toLowerCase()
                                         .replaceAll(' ', '-')),
                                 onChanged: (bool newValue) {
-                                  _handleToggleChange(name,
+                                  _handleToggleChange(
+                                      name.toLowerCase().replaceAll(' ', '-'),
                                       newValue); // Update state when toggled
                                 },
                               ),
                             );
                           }).toList(),
                         )
-                      : SizedBox.shrink(),
+                      : const SizedBox.shrink(),
                 );
               },
             ),
