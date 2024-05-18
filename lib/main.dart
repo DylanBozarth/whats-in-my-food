@@ -34,7 +34,6 @@ class HomePage extends StatefulWidget {
 }
 
 //TODO Allow multiple word results
-// TODO Make the title minimize not hide
 //TODO add snazzy logo and style to be the same style
 //TODO add ability to look for all things in categories
 
@@ -220,6 +219,7 @@ class _HomePageState extends State<HomePage> {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
+          // Search bar
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: TextField(
@@ -232,38 +232,49 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
           ),
+          // Titles
           Expanded(
             child: ListView.builder(
               itemCount: _toggleNames.keys.length,
               itemBuilder: (context, index) {
-                // the titles that collapse
+                // Collapsed title
                 String categoryName = _toggleNames.keys.elementAt(index);
-                if (!(_isTitleVisible[categoryName] ?? false))
-                  return Container(
-                    height: 50.0,
-                    color: Colors.green[700],
-                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                    alignment: Alignment.centerLeft,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          categoryName,
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
+                if (!(_isTitleVisible[categoryName] ?? false)) {
+                  return GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        _isTitleVisible[categoryName] =
+                            !(_isTitleVisible[categoryName] ?? false);
+                      });
+                    },
+                    child: Container(
+                      height: 50.0,
+                      color: Colors.red[500],
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      alignment: Alignment.centerLeft,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            categoryName,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
-                        ),
-                        const Icon(
-                          Icons.arrow_drop_down,
-                          color: Colors.white,
-                        ),
-                      ],
+                          const Icon(
+                            Icons.arrow_drop_up,
+                            color: Colors.white,
+                          ),
+                        ],
+                      ),
                     ),
-                  ); // Skip rendering if not visible
+                  );
+                }
 
                 List<String> toggleNames = _toggleNames[categoryName]!;
+                // Expanded title
                 return StickyHeader(
                   header: GestureDetector(
                     onTap: () {
