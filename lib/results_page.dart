@@ -17,15 +17,21 @@ class ResultsPage extends StatelessWidget {
       List<String> passedResults,
       List<Map<String, List<String>>> keywordLists,
       List<String> lookingForThings) {
-    // Convert lookingForThings to lowercase and replace hyphens with spaces
+    // Convert lookingForThings to lowercase and replace spaces with hyphens
     List<String> lowercaseLookingForThings = lookingForThings
+        .map((item) => item.toLowerCase().replaceAll(' ', '-'))
+        .toList();
+
+    // Convert passedResults to lowercase and replace spaces with hyphens
+    List<String> lowercasePassedResults = passedResults
         .map((item) => item.toLowerCase().replaceAll(' ', '-'))
         .toList();
 
     Map<String, List<String>> categorizedResults = {};
 
-    // Convert all keywords and elements in keyword lists to lowercase and replace hyphens with spaces
-    for (var map in keywordLists) {
+    // Convert all keywords and elements in keyword lists to lowercase and replace spaces with hyphens
+    List<Map<String, List<String>>> lowercaseKeywordLists =
+        keywordLists.map((map) {
       Map<String, List<String>> lowercaseMap = {};
       map.forEach((key, value) {
         List<String> lowercaseList = value
@@ -33,30 +39,35 @@ class ResultsPage extends StatelessWidget {
             .toList();
         lowercaseMap[key.toLowerCase().replaceAll(' ', '-')] = lowercaseList;
       });
-      categorizedResults.addAll(lowercaseMap);
+      return lowercaseMap;
+    }).toList();
+
+    // Add all keyword maps to categorizedResults
+    for (var map in lowercaseKeywordLists) {
+      categorizedResults.addAll(map);
     }
 
-    // Filter the categorizedResults to include only the keys from lowercaseLookingForThings
-    categorizedResults = categorizedResults.map((key, value) {
-      if (lowercaseLookingForThings.contains(key)) {
-        return MapEntry(key, value);
-      } else {
-        return MapEntry(key, []);
-      }
-    });
+    // Debug print to check categorizedResults before filtering
+    //print('Categorized results before filtering: $categorizedResults');
 
-    for (String result in passedResults) {
-      String lowercaseResult = result.toLowerCase().replaceAll(' ', '-');
-      print("Processing result: $lowercaseResult");
-      for (var keywordMap in keywordLists) {
+    // Filter the categorizedResults to include only the keys from lowercaseLookingForThings
+    categorizedResults = Map.fromEntries(categorizedResults.entries
+        .where((entry) => lowercaseLookingForThings.contains(entry.key)));
+
+    // Debug print to check categorizedResults after filtering
+    //print('Categorized results after filtering: $categorizedResults');
+
+    print('Looking for things: $lowercaseLookingForThings');
+    print('Passed results: $lowercasePassedResults');
+    print('Keyword Lists: $lowercaseKeywordLists');
+
+    for (String result in lowercasePassedResults) {
+      for (var keywordMap in lowercaseKeywordLists) {
         keywordMap.forEach((keyword, list) {
           String lowercaseKeyword = keyword.toLowerCase().replaceAll(' ', '-');
-          if (list.any((element) => lowercaseResult
-              .contains(element.toLowerCase().replaceAll(' ', '-')))) {
-            // Check if the result is present in passedResults
-            print("Checking if result is in passedResults: $lowercaseResult");
-            if (passedResults.contains(result)) {
-              // Add the result only if it matches a keyword and is in passedResults
+          if (list.any((element) =>
+              result.contains(element.toLowerCase().replaceAll(' ', '-')))) {
+            if (lowercasePassedResults.contains(result)) {
               categorizedResults.putIfAbsent(lowercaseKeyword, () => []);
               categorizedResults[lowercaseKeyword]?.add(result);
             }
@@ -64,10 +75,8 @@ class ResultsPage extends StatelessWidget {
         });
       }
     }
-
-    print(categorizedResults); // currently all of the keywords
     passedResults.clear();
-    print(lowercaseLookingForThings);
+    print('Final categorizedResults: $categorizedResults');
     return categorizedResults;
   }
 

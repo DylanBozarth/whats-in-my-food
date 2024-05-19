@@ -14,7 +14,7 @@ List<Map<String, List<String>>> keywordLists = [
 // idea- high blood pressure
 List<String> seedOils = [
   "vegetable oil",
-  "canola-oil",
+  "canola oil",
   "sunflower oil",
   "palm oil",
   "palm kernel oil",
@@ -215,7 +215,7 @@ List<String> onlyVegan = [
   "Diglyceride",
   "Stearic Acid",
   "Magnesium Stearate",
-  "Omega-3 Fatty Acids",
+  "Omega3 Fatty Acids",
   "Cysteine",
   "Guanine",
   "Squalene",
@@ -226,8 +226,8 @@ List<String> nonVegan = [
   ...dairy
 ]; // Poor fucking vegans lol
 List<String> addedSugar = [
-  "Sugar", // Commonly just referred to as sugar in ingredients.
-  "High-fructose corn syrup",
+  "Sugar",
+  "High fructose corn syrup",
   "Honey",
   "Maple syrup",
   "Corn syrup",
@@ -328,8 +328,8 @@ List<String> dairy = [
   "Water buffalo milk",
   "A2 milk",
   "Skim milk",
-  "Low-fat milk",
-  "Full-fat milk",
+  "Low fat milk",
+  "Full fat milk",
   "Flavored milk",
   "Chocolate milk",
   "Strawberry milk",
@@ -422,20 +422,20 @@ List<String> nuts = [
   "Praline",
   "Nougat",
   "Gianduja",
-  "Hazelnut-chocolate spread",
+  "Hazelnut chocolate spread",
   "Nut granola/granola bars",
   "Nut cookies/baked goods",
   "Nut ice cream/frozen desserts",
   "Nut toppings",
   "Nut salad dressings",
-  "Nut-based sauces",
+  "Nut based sauces",
   "Pesto",
   "Nut stuffing",
   "Nut garnishes",
-  "Nut-based spreads/dips",
-  "Nut-infused beverages",
-  "Nut-filled chocolates/truffles",
-  "Nut-based condiments",
+  "Nut based spreads/dips",
+  "Nut infused beverages",
+  "Nut filled chocolates/truffles",
+  "Nut based condiments",
   "Nut mustard",
 ];
 List<String> haram = ["Alcohol"];

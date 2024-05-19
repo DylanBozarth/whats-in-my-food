@@ -38,7 +38,7 @@ class HomePage extends StatefulWidget {
 //TODO add ability to look for all things in categories
 
 //lesser todo
-// TODO make categories that aren't being filtered for not show up in results page
+// TODO make categories that aren't being filtered for not show up in results page IE: honey
 
 class _HomePageState extends State<HomePage> {
   String barCodeScanResult = '';
@@ -178,6 +178,7 @@ class _HomePageState extends State<HomePage> {
     // For example, adding or removing items from a list that tracks active toggles
     if (newValue) {
       lookingForThings.add(itemName.toLowerCase().replaceAll(' ', '-'));
+      print('Looking for things from the main: $lookingForThings');
     } else {
       lookingForThings.remove(itemName.toLowerCase().replaceAll(' ', '-'));
     }
