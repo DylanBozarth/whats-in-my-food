@@ -6,11 +6,13 @@ import 'components/global_variables.dart';
 
 class ResultsPage extends StatelessWidget {
   final List<String> passedResults;
+  final Function(String) updateScanResult;
 
   const ResultsPage({
     Key? key,
     required this.passedResults,
     required BuildContext context,
+    required this.updateScanResult,
   }) : super(key: key);
 
   Map<String, List<String>> categorizeResults(
@@ -149,7 +151,11 @@ class ResultsPage extends StatelessWidget {
                     height: 16), // Add some spacing between the buttons
                 ElevatedButton(
                   onPressed: () {
-                    handleBarcodeScan(context, (p0) {}, passedResults);
+                    handleBarcodeScan(
+                      context,
+                      lookingForThings,
+                      updateScanResult,
+                    );
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.red,

@@ -58,7 +58,7 @@ makeGetRequest(barcode, foundThings, context) async {
   }
 }
 
-void findThingsInIngredients(List<Map<String, dynamic>> filteredResults, 
+void findThingsInIngredients(List<Map<String, dynamic>> filteredResults,
     List<String> foundThings, context) {
   List<String> desiredStrings =
       lookingForThings.map((s) => s.toLowerCase()).toList();
@@ -94,7 +94,7 @@ void findThingsInIngredients(List<Map<String, dynamic>> filteredResults,
       commonElements.add(desiredString);
     }
   }
-print(commonElements);
+  print(commonElements);
   foundThings.addAll(commonElements);
   if (foundThings.isNotEmpty) {
     Navigator.push(

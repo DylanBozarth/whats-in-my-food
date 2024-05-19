@@ -1,26 +1,36 @@
 import 'package:flutter/material.dart';
 import 'package:simple_barcode_scanner/simple_barcode_scanner.dart';
-import '../api.dart';
+import 'package:whatsinmyfood/api.dart';
+import 'package:whatsinmyfood/components/alert.dart';
 
-// Declare a function type for the state update callback
-typedef StateUpdateCallback = void Function(String);
-
-// Function to handle barcode scanning and API request
-void handleBarcodeScan(
+Future<void> handleBarcodeScan(
   BuildContext context,
-  StateUpdateCallback onUpdate,
+  List<String> lookingForThings,
+  Function(String) onScanResult,
   List<String> foundThings,
 ) async {
-  var res = await Navigator.push(
-    context,
-    MaterialPageRoute(
-      builder: (context) => const SimpleBarcodeScannerPage(),
-    ),
-  );
+  if (lookingForThings.isNotEmpty) {
+    var res = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const SimpleBarcodeScannerPage(),
+      ),
+    );
 
-  if (res is String) {
-    onUpdate(res); // Call the callback to update the state
-    // ignore: use_build_context_synchronously
-    makeGetRequest(res, foundThings, context);
+    if (res is String) {
+      onScanResult(res);
+      makeGetRequest(res, foundThings, context);
+    }
+  } else {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => showAlert(
+          context,
+          'No Items selected',
+          "You need to select items to filter for",
+        ),
+      ),
+    );
   }
 }

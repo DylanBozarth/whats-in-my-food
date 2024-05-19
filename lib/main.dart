@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:simple_barcode_scanner/simple_barcode_scanner.dart';
 import 'package:sticky_headers/sticky_headers/widget.dart';
 import 'package:whatsinmyfood/api.dart';
+import 'package:whatsinmyfood/components/scan_barcode.dart';
 import 'package:whatsinmyfood/food_lists.dart';
 import 'components/toggles.dart';
 import 'components/alert.dart';
@@ -199,6 +200,12 @@ class _HomePageState extends State<HomePage> {
     _filterList(_searchController.text);
   }
 
+  void updateScanResult(String res) {
+    setState(() {
+      barCodeScanResult = res;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -353,21 +360,16 @@ class _HomePageState extends State<HomePage> {
                     child: ElevatedButton(
                       onPressed: () async {
                         if (lookingForThings.isNotEmpty) {
-                          var res = await Navigator.push(
+                          handleBarcodeScan(
                             context,
-                            MaterialPageRoute(
-                              builder: (context) =>
-                                  const SimpleBarcodeScannerPage(),
-                            ),
+                            lookingForThings,
+                            (res) {
+                              setState(() {
+                                barCodeScanResult = res;
+                              });
+                            },
+                            foundThings,
                           );
-
-                          if (res is String) {
-                            setState(() {
-                              barCodeScanResult = res;
-                            });
-                            makeGetRequest(
-                                barCodeScanResult, foundThings, context);
-                          }
                         } else {
                           Navigator.push(
                             context,
