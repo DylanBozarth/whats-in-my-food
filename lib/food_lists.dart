@@ -13,7 +13,6 @@ List<Map<String, List<String>>> keywordLists = [
 ];
 // idea- high blood pressure
 List<String> seedOils = [
-  "toggle all",
   "vegetable oil",
   "canola oil",
   "sunflower oil",
@@ -43,7 +42,6 @@ List<String> seedOils = [
 ];
 
 List<String> bugs = [
-  "toggle all",
   "Crickets",
   "Cricket flour",
   "Mealworms",

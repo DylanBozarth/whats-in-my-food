@@ -34,10 +34,11 @@ class HomePage extends StatefulWidget {
 }
 
 //TODO add snazzy logo and style to be the same style
+// TODO going back to adjust filters will clear the toggles
 
 //lesser todo
-// TODO make categories that aren't being filtered for not show up in results page IE: honey
-// TODO show that the app is thinking when it scans 
+// TODO make categories that aren't being filtered for not show up in results page IE: honey -- only happens when 2 or more categories are searched
+// TODO show that the app is thinking when it scans
 
 class _HomePageState extends State<HomePage> {
   String barCodeScanResult = '';
@@ -178,13 +179,23 @@ class _HomePageState extends State<HomePage> {
         showAllSelected = false;
       } else {
         // If showAllSelected is false, include only active toggles
-        toggleStates.forEach((key, value) {
-          if (value) {
-            _filteredNames.add(key);
-            _isTitleVisible[key] = true;
-            _isExpanded[key] = true;
+        _toggleNames.forEach((category, toggleNames) {
+          bool categoryHasActiveToggles = false;
+          List<String> activeToggles = [];
+          for (var toggleName in toggleNames) {
+            if (toggleStates[toggleName.toLowerCase().replaceAll(' ', '-')] ??
+                false) {
+              activeToggles.add(toggleName);
+              categoryHasActiveToggles = true;
+            }
+          }
+          if (categoryHasActiveToggles) {
+            _filteredNames.add(category); // Add the category name first
+            _filteredNames.addAll(activeToggles); // Then add the active toggles
+            _isTitleVisible[category] = true;
+            _isExpanded[category] = true;
           } else {
-            _isTitleVisible[key] = false;
+            _isTitleVisible[category] = false;
           }
         });
         showAllSelected = true;
@@ -200,7 +211,8 @@ class _HomePageState extends State<HomePage> {
     // For example, adding or removing items from a list that tracks active toggles
     if (newValue) {
       lookingForThings.add(itemName.toLowerCase().replaceAll(' ', '-'));
-      //print('Looking for things from the main: $lookingForThings');
+      print(
+          'Looking for things from the main: $toggleStates'); // log lookingforthings
     } else {
       lookingForThings.remove(itemName.toLowerCase().replaceAll(' ', '-'));
     }
@@ -338,10 +350,17 @@ class _HomePageState extends State<HomePage> {
                               return CheckboxListTile(
                                 title: Text('Find all $categoryName'),
                                 value: toggleNames.skip(1).every((item) =>
-                                    toggleStates[item.toLowerCase().replaceAll(' ', '-')] ?? false),
+                                    toggleStates.containsKey(item
+                                        .toLowerCase()
+                                        .replaceAll(' ', '-')) &&
+                                    (toggleStates[item
+                                            .toLowerCase()
+                                            .replaceAll(' ', '-')] ??
+                                        false)), // check if the value is already being searched for
                                 onChanged: (bool? newValue) {
                                   if (newValue != null) {
-                                    _toggleAllItemsInCategory(categoryName, newValue);
+                                    _toggleAllItemsInCategory(
+                                        categoryName, newValue);
                                   }
                                 },
                               );
@@ -350,7 +369,10 @@ class _HomePageState extends State<HomePage> {
                                 visible: _filteredNames.contains(name),
                                 child: ToggleSwitch(
                                   passedName: name,
-                                  isHighlighted: toggleStates[name.toLowerCase().replaceAll(' ', '-')] ?? false,
+                                  isHighlighted: toggleStates[name
+                                          .toLowerCase()
+                                          .replaceAll(' ', '-')] ??
+                                      false,
                                   onChanged: (bool newValue) {
                                     _handleToggleChange(
                                         name.toLowerCase().replaceAll(' ', '-'),
