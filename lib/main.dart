@@ -33,7 +33,6 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
-//TODO Allow multiple word results
 //TODO add snazzy logo and style to be the same style
 //TODO add ability to look for all things in categories
 

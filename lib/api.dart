@@ -58,7 +58,7 @@ makeGetRequest(barcode, foundThings, context) async {
   }
 }
 
-void findThingsInIngredients(List<Map<String, dynamic>> filteredResults, 
+void findThingsInIngredients(List<Map<String, dynamic>> filteredResults,
     List<String> foundThings, context) {
   List<String> desiredStrings =
       lookingForThings.map((s) => s.toLowerCase()).toList();
@@ -79,10 +79,9 @@ void findThingsInIngredients(List<Map<String, dynamic>> filteredResults,
   List<String> cleanedUpStrings = filteredResults
       .toList()
       .map((entry) => entry["key"].toString().toLowerCase())
-      .map((s) => s.replaceAll(RegExp(r'[^\w\s,]'),
-          ' ')) // Replace characters other than word characters, spaces, and commas
+      .map((s) => s.replaceAll(RegExp(r'\s+'), '-')) // Replace spaces
       .toList();
-
+  print('Filtered results: $cleanedUpStrings');
   List<String> commonElements = [];
   for (String desiredString in desiredStrings) {
     // Check if desiredString exists in any item of filterResult
@@ -94,7 +93,7 @@ void findThingsInIngredients(List<Map<String, dynamic>> filteredResults,
       commonElements.add(desiredString);
     }
   }
-print(commonElements);
+// print(commonElements);
   foundThings.addAll(commonElements);
   if (foundThings.isNotEmpty) {
     Navigator.push(

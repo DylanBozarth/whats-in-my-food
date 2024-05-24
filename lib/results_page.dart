@@ -57,9 +57,9 @@ class ResultsPage extends StatelessWidget {
     // Debug print to check categorizedResults after filtering
     //print('Categorized results after filtering: $categorizedResults');
 
-    print('Looking for things: $lowercaseLookingForThings');
-    print('Passed results: $lowercasePassedResults');
-    print('Keyword Lists: $lowercaseKeywordLists');
+    //print('Looking for things: $lowercaseLookingForThings');
+    //print('Passed results: $lowercasePassedResults');
+    //print('Keyword Lists: $lowercaseKeywordLists');
 
     for (String result in lowercasePassedResults) {
       for (var keywordMap in lowercaseKeywordLists) {
@@ -129,8 +129,8 @@ class ResultsPage extends StatelessWidget {
                       itemCount: matchingElements.length,
                       itemBuilder: (context, index) {
                         return ListTile(
-                          title:
-                              Text(matchingElements[index]), // sublist is here
+                          title: Text(matchingElements[index]
+                              .replaceAll('-', ' ')), // sublist is here
                         );
                       },
                     ),
