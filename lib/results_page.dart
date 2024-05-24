@@ -85,86 +85,84 @@ class ResultsPage extends StatelessWidget {
     Map<String, List<String>> categorizedResults =
         categorizeResults(passedResults, keywordLists, lookingForThings);
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Results Page'),
-      ),
-      body: Column(
-        children: [
-          ElevatedButton(
-            onPressed: () async {
-              await Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const HomePage(),
-                ),
-              );
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.blue,
-              foregroundColor: Colors.white,
-            ),
-            child: const Text(
-              'Adjust filters',
-              style: TextStyle(color: Colors.white),
-            ),
+   return Scaffold(
+  appBar: AppBar(
+    title: const Text('Results Page'),
+  ),
+  body: Container(
+    decoration: BoxDecoration(
+      color: Colors.lightGreen[400], // Set your desired background color here
+    ),
+    child: Column(
+      children: [
+        ElevatedButton(
+          onPressed: () async {
+            await Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const HomePage(),
+              ),
+            );
+          },
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.blue,
+            foregroundColor: Colors.white,
           ),
-          Expanded(
-            child: ListView(
-              children: categorizedResults.entries
-                  .where((entry) =>
-                      entry.value.isNotEmpty) // Filter out empty lists
-                  .map((entry) {
-                var keyword = entry.key;
-                var matchingElements = entry.value;
+          child: const Text(
+            'Adjust filters',
+            style: TextStyle(color: Colors.white),
+          ),
+        ),
+        Expanded(
+          child: ListView(
+            children: categorizedResults.entries
+                .where((entry) => entry.value.isNotEmpty) // Filter out empty lists
+                .map((entry) {
+              var keyword = entry.key;
+              var matchingElements = entry.value;
 
-                return ExpansionTile(
-                  title: Text(keyword
-                      .toUpperCase()
-                      .replaceAll('-', ' ')), // title is here
-                  initiallyExpanded: true,
-                  children: [
-                    ListView.builder(
-                      shrinkWrap: true,
-                      itemCount: matchingElements.length,
-                      itemBuilder: (context, index) {
-                        return ListTile(
-                          title: Text(matchingElements[index]
-                              .replaceAll('-', ' ')), // sublist is here
-                        );
-                      },
-                    ),
-                  ],
-                );
-              }).toList(),
-            ),
+              return ExpansionTile(
+                title: Text(keyword.toUpperCase().replaceAll('-', ' ')), // title is here
+                initiallyExpanded: true,
+                children: [
+                  ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: matchingElements.length,
+                    itemBuilder: (context, index) {
+                      return ListTile(
+                        title: Text(matchingElements[index].replaceAll('-', ' ')), // sublist is here
+                      );
+                    },
+                  ),
+                ],
+              );
+            }).toList(),
           ),
-          Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                //Text("Looking for: $lookingForThings"),
-                Text('YOUR RESULTS: $passedResults'),
-                const SizedBox(
-                    height: 16), // Add some spacing between the buttons
-                ElevatedButton(
-                  onPressed: () {
-                    handleBarcodeScan(context, (p0) {}, passedResults);
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.red,
-                    foregroundColor: Colors.white,
-                  ),
-                  child: const Text(
-                    'Scan again',
-                    style: TextStyle(color: Colors.white),
-                  ),
+        ),
+        Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const SizedBox(height: 16), // Add some spacing between the buttons
+              ElevatedButton(
+                onPressed: () {
+                  handleBarcodeScan(context, (p0) {}, passedResults);
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.red,
+                  foregroundColor: Colors.white,
                 ),
-              ],
-            ),
+                child: const Text(
+                  'Scan again',
+                  style: TextStyle(color: Colors.white),
+                ),
+              ),
+            ],
           ),
-        ],
-      ),
-    );
+        ),
+      ],
+    ),
+  ),
+);
   }
 }
