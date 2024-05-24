@@ -33,6 +33,12 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
+//TODO add snazzy logo and style to be the same style
+
+//lesser todo
+// TODO make categories that aren't being filtered for not show up in results page IE: honey
+// TODO show that the app is thinking when it scans 
+
 class _HomePageState extends State<HomePage> {
   String barCodeScanResult = '';
   final TextEditingController _searchController = TextEditingController();
@@ -41,16 +47,17 @@ class _HomePageState extends State<HomePage> {
   GlobalKey<ScaffoldState> _scaffoldKey =
       GlobalKey<ScaffoldState>(); // to allow re-render of search bar
   final Map<String, List<String>> _toggleNames = {
-    'Added Sugar': ['All added sugar', ...addedSugar],
+    'Added Sugar': ['Toggle All', ...addedSugar], // Include "Toggle All"
     'Inflammatory foods': ['Toggle All', ...seedOils],
     'Meat Products': ['Toggle All', ...nonVegetarian],
     'Common Allergens': ['Toggle All', ...commonAllergens],
+    // Add other categories similarly
     'Religious abstentions': [],
     'High Environmental Impact': [],
     'GMOs': [],
     'Artificial colors and flavors': [],
     'Caffeine': [], // if possible
-    'Internationally banned products': ['Toggle All', ...bannedInEU],
+    'Internationally banned products': bannedInEU,
     'Heavy Metals': [],
     'Vegetarian & Vegan': [],
     'Heavy Metals 2': [],
@@ -83,6 +90,7 @@ class _HomePageState extends State<HomePage> {
 
     if (cleanQuery.isNotEmpty) {
       for (var entry in _toggleNames.entries) {
+        // Check both key and value lists after removing spaces
         bool isVisible = entry.key
                 .replaceAll(' ', '')
                 .toLowerCase()
@@ -90,13 +98,16 @@ class _HomePageState extends State<HomePage> {
             entry.value.any((name) =>
                 name.replaceAll(' ', '').toLowerCase().contains(cleanQuery));
 
+        // Set the category to be visible and expanded if it contains matches
         _isTitleVisible[entry.key] = isVisible;
-        _isExpanded[entry.key] = isVisible;
+        _isExpanded[entry.key] =
+            isVisible; // Auto-expand categories that have matches
 
         if (isVisible && !filteredList.contains(entry.key)) {
           filteredList.add(entry.key);
         }
         if (_isExpanded[entry.key] ?? false) {
+          // Include toggle names from expanded categories
           for (String name in entry.value) {
             if (name.replaceAll(' ', '').toLowerCase().contains(cleanQuery)) {
               filteredList.add(name);
@@ -105,15 +116,18 @@ class _HomePageState extends State<HomePage> {
         }
       }
 
+      // Toggle all items in the matched category
       for (var category in _toggleNames.keys) {
         if (category.replaceAll(' ', '').toLowerCase() == cleanQuery) {
           _toggleAllItemsInCategory(category, true);
         }
       }
     } else {
+      // If query is empty, include all toggle names from categories
       for (var entry in _toggleNames.entries) {
         _isTitleVisible[entry.key] = true;
-        _isExpanded[entry.key] = true;
+        _isExpanded[entry.key] =
+            true; // Keep all categories expanded if no search query
         filteredList.add(entry.key);
         filteredList.addAll(entry.value);
       }
@@ -186,11 +200,18 @@ class _HomePageState extends State<HomePage> {
     // For example, adding or removing items from a list that tracks active toggles
     if (newValue) {
       lookingForThings.add(itemName.toLowerCase().replaceAll(' ', '-'));
-      print('Looking for things from the main: $lookingForThings');
+      //print('Looking for things from the main: $lookingForThings');
     } else {
       lookingForThings.remove(itemName.toLowerCase().replaceAll(' ', '-'));
     }
   }
+
+/* Does not work, doesn't update UI 
+  void _onSearchTextChanged() {
+    // Call setState to trigger a UI re-render
+    _scaffoldKey.currentState?.setState(() {});
+  }
+ */
 
   void toggleTitleVisibility(String category) {
     setState(() {
@@ -239,6 +260,7 @@ class _HomePageState extends State<HomePage> {
             child: ListView.builder(
               itemCount: _toggleNames.keys.length,
               itemBuilder: (context, index) {
+                // Collapsed title
                 String categoryName = _toggleNames.keys.elementAt(index);
                 if (!(_isTitleVisible[categoryName] ?? false)) {
                   return GestureDetector(
@@ -275,6 +297,7 @@ class _HomePageState extends State<HomePage> {
                 }
 
                 List<String> toggleNames = _toggleNames[categoryName]!;
+                // Expanded title
                 return StickyHeader(
                   header: GestureDetector(
                     onTap: () {
@@ -307,21 +330,18 @@ class _HomePageState extends State<HomePage> {
                       ),
                     ),
                   ),
+                  // switches inside the titles
                   content: (_isTitleVisible[categoryName] ?? false)
                       ? Column(
                           children: toggleNames.map((name) {
                             if (name == 'Toggle All') {
                               return CheckboxListTile(
-                                title: const Text('Toggle All'),
+                                title: Text('Find all $categoryName'),
                                 value: toggleNames.skip(1).every((item) =>
-                                    toggleStates[item
-                                        .toLowerCase()
-                                        .replaceAll(' ', '-')] ??
-                                    false),
+                                    toggleStates[item.toLowerCase().replaceAll(' ', '-')] ?? false),
                                 onChanged: (bool? newValue) {
                                   if (newValue != null) {
-                                    _toggleAllItemsInCategory(
-                                        categoryName, newValue);
+                                    _toggleAllItemsInCategory(categoryName, newValue);
                                   }
                                 },
                               );
@@ -330,14 +350,11 @@ class _HomePageState extends State<HomePage> {
                                 visible: _filteredNames.contains(name),
                                 child: ToggleSwitch(
                                   passedName: name,
-                                  isHighlighted: toggleStates[name
-                                          .toLowerCase()
-                                          .replaceAll(' ', '-')] ??
-                                      false,
+                                  isHighlighted: toggleStates[name.toLowerCase().replaceAll(' ', '-')] ?? false,
                                   onChanged: (bool newValue) {
                                     _handleToggleChange(
                                         name.toLowerCase().replaceAll(' ', '-'),
-                                        newValue);
+                                        newValue); // Update state when toggled
                                   },
                                 ),
                               );
@@ -349,7 +366,6 @@ class _HomePageState extends State<HomePage> {
               },
             ),
           ),
-
           Align(
             alignment: Alignment.bottomCenter,
             child: Padding(
