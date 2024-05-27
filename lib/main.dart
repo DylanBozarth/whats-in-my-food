@@ -5,6 +5,7 @@ import 'package:whatsinmyfood/api.dart';
 import 'package:whatsinmyfood/food_lists.dart';
 import 'components/toggles.dart';
 import 'components/alert.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'components/global_variables.dart';
 
 void main() {
@@ -74,6 +75,7 @@ class _HomePageState extends State<HomePage> {
   final Map<String, bool> _isTitleVisible = {};
   List<String> _filteredNames = [];
   List<String> foundThings = [];
+
   @override
   void initState() {
     super.initState();
@@ -82,7 +84,27 @@ class _HomePageState extends State<HomePage> {
       _isExpanded[category] = true;
       _isTitleVisible[category] = true; // Initialize title visibility
     }
+    _loadToggleStates(); // retrieve state from user's device
     //_searchController.addListener(_onSearchTextChanged);
+  }
+
+  Future<void> _loadToggleStates() async {
+    final prefs = await SharedPreferences.getInstance();
+    final savedStates = prefs.getStringList('toggleStates') ?? [];
+    setState(() {
+      toggleStates = Map.fromIterable(
+        savedStates,
+        key: (item) => item.split(':')[0],
+        value: (item) => item.split(':')[1] == 'true',
+      );
+    });
+  }
+
+  Future<void> _saveToggleStates() async {
+    final prefs = await SharedPreferences.getInstance();
+    final saveStates =
+        toggleStates.entries.map((e) => '${e.key}:${e.value}').toList();
+    await prefs.setStringList('toggleStates', saveStates);
   }
 
   void _filterList(String query) {
@@ -150,6 +172,7 @@ class _HomePageState extends State<HomePage> {
           }
         }
       }
+      _saveToggleStates(); // Save the state whenever it changes
     });
   }
 
@@ -206,19 +229,20 @@ class _HomePageState extends State<HomePage> {
   void _handleToggleChange(String itemName, bool newValue) {
     setState(() {
       toggleStates[itemName] = newValue; // Update the toggle state
+      _saveToggleStates(); // Save the state whenever it changes
     });
     // Here, you can also handle any additional logic needed when a toggle changes
     // For example, adding or removing items from a list that tracks active toggles
     if (newValue) {
       lookingForThings.add(itemName.toLowerCase().replaceAll(' ', '-'));
       print(
-          'Looking for things from the main: $toggleStates'); // log lookingforthings
+          'Toggle states from the main: $toggleStates'); // log lookingforthings
     } else {
       lookingForThings.remove(itemName.toLowerCase().replaceAll(' ', '-'));
     }
   }
 
-/* Does not work, doesn't update UI 
+  /* Does not work, doesn't update UI 
   void _onSearchTextChanged() {
     // Call setState to trigger a UI re-render
     _scaffoldKey.currentState?.setState(() {});
@@ -324,7 +348,6 @@ class _HomePageState extends State<HomePage> {
                       padding: const EdgeInsets.symmetric(horizontal: 16.0),
                       alignment: Alignment.centerLeft,
                       child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
                             categoryName,

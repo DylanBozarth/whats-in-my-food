@@ -43,6 +43,7 @@ dependencies:
   flutter_hooks: ^0.20.5
   hooks_riverpod: ^2.5.1
   sticky_headers: "^0.3.0"
+  shared_preferences: ^2.0.9
   
 dev_dependencies:
   flutter_test:
