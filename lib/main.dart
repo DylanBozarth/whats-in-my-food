@@ -228,18 +228,16 @@ class _HomePageState extends State<HomePage> {
 
   void _handleToggleChange(String itemName, bool newValue) {
     setState(() {
-      toggleStates[itemName] = newValue; // Update the toggle state
+      if (newValue) {
+        toggleStates[itemName] = newValue; // Add or update the toggle state
+        lookingForThings.add(itemName.toLowerCase().replaceAll(' ', '-'));
+      } else {
+        toggleStates.remove(itemName); // Remove the toggle state
+        lookingForThings.remove(itemName.toLowerCase().replaceAll(' ', '-'));
+      }
       _saveToggleStates(); // Save the state whenever it changes
     });
-    // Here, you can also handle any additional logic needed when a toggle changes
-    // For example, adding or removing items from a list that tracks active toggles
-    if (newValue) {
-      lookingForThings.add(itemName.toLowerCase().replaceAll(' ', '-'));
-      print(
-          'Toggle states from the main: $toggleStates'); // log lookingforthings
-    } else {
-      lookingForThings.remove(itemName.toLowerCase().replaceAll(' ', '-'));
-    }
+    print('Toggle states from the main: $toggleStates'); // Log toggleStates
   }
 
   /* Does not work, doesn't update UI 
@@ -348,6 +346,7 @@ class _HomePageState extends State<HomePage> {
                       padding: const EdgeInsets.symmetric(horizontal: 16.0),
                       alignment: Alignment.centerLeft,
                       child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
                             categoryName,
