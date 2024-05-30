@@ -17,7 +17,7 @@ class _ToggleSwitchContainerState extends State<ToggleSwitchContainer> {
   }
 }
 
-class ToggleSwitch extends StatefulWidget {
+class ToggleSwitch extends StatelessWidget {
   final String passedName;
   final bool isHighlighted; // Indicates if the switch should be highlighted
   final Function(bool) onChanged; // Callback to handle changes
@@ -30,37 +30,20 @@ class ToggleSwitch extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _ToggleSwitchState createState() => _ToggleSwitchState();
-}
-
-class _ToggleSwitchState extends State<ToggleSwitch> {
-  late bool isSwitched; // State managed by the parent now
-
-  @override
-  void initState() {
-    super.initState();
-    // Initialize the switch state based on the passed value
-    isSwitched = widget.isHighlighted;
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Container(
       child: Row(
         children: [
           Switch(
-            value: isSwitched,
+            value: isHighlighted,
             onChanged: (value) {
-              setState(() {
-                isSwitched = value; // Update the local state
-              });
-              widget.onChanged(value); // Call the passed callback function
+              onChanged(value); // Call the passed callback function
             },
             activeTrackColor: Colors.lightGreenAccent,
             activeColor: Colors.green,
           ),
           Text(
-            widget.passedName,
+            passedName,
             style: const TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,

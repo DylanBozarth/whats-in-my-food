@@ -7,6 +7,7 @@ import 'components/toggles.dart';
 import 'components/alert.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'components/global_variables.dart';
+import 'dart:convert'; // Import JSON encoding and decoding
 
 void main() {
   runApp(const MyApp());
@@ -33,13 +34,6 @@ class HomePage extends StatefulWidget {
   @override
   State<HomePage> createState() => _HomePageState();
 }
-
-//TODO add snazzy logo and style to be the same style
-// TODO going back to adjust filters will clear the toggles
-
-//lesser todo
-// TODO make categories that aren't being filtered for not show up in results page IE: honey -- only happens when 2 or more categories are searched
-// TODO show that the app is thinking when it scans
 
 class _HomePageState extends State<HomePage> {
   String barCodeScanResult = '';
@@ -90,21 +84,21 @@ class _HomePageState extends State<HomePage> {
 
   Future<void> _loadToggleStates() async {
     final prefs = await SharedPreferences.getInstance();
-    final savedStates = prefs.getStringList('toggleStates') ?? [];
-    setState(() {
-      toggleStates = Map.fromIterable(
-        savedStates,
-        key: (item) => item.split(':')[0],
-        value: (item) => item.split(':')[1] == 'true',
-      );
-    });
+    final String? savedStates = prefs.getString('toggleStates');
+    print('Loading toggleStates: $savedStates'); // Debug print
+    if (savedStates != null) {
+      setState(() {
+        toggleStates = Map<String, bool>.from(jsonDecode(savedStates));
+      });
+    }
+    print('Loaded toggleStates: $toggleStates'); // Debug print
   }
 
   Future<void> _saveToggleStates() async {
     final prefs = await SharedPreferences.getInstance();
-    final saveStates =
-        toggleStates.entries.map((e) => '${e.key}:${e.value}').toList();
-    await prefs.setStringList('toggleStates', saveStates);
+    final String encodedStates = jsonEncode(toggleStates);
+    print('Saving toggleStates: $encodedStates'); // Debug print
+    await prefs.setString('toggleStates', encodedStates);
   }
 
   void _filterList(String query) {
@@ -228,24 +222,16 @@ class _HomePageState extends State<HomePage> {
 
   void _handleToggleChange(String itemName, bool newValue) {
     setState(() {
+      toggleStates[itemName] = newValue;
       if (newValue) {
-        toggleStates[itemName] = newValue; // Add or update the toggle state
         lookingForThings.add(itemName.toLowerCase().replaceAll(' ', '-'));
       } else {
-        toggleStates.remove(itemName); // Remove the toggle state
         lookingForThings.remove(itemName.toLowerCase().replaceAll(' ', '-'));
       }
       _saveToggleStates(); // Save the state whenever it changes
     });
     print('Toggle states from the main: $toggleStates'); // Log toggleStates
   }
-
-  /* Does not work, doesn't update UI 
-  void _onSearchTextChanged() {
-    // Call setState to trigger a UI re-render
-    _scaffoldKey.currentState?.setState(() {});
-  }
- */
 
   void toggleTitleVisibility(String category) {
     setState(() {
@@ -368,41 +354,27 @@ class _HomePageState extends State<HomePage> {
                   content: (_isTitleVisible[categoryName] ?? false)
                       ? Column(
                           children: toggleNames.map((name) {
-                            if (name == 'Toggle All') {
-                              return CheckboxListTile(
-                                title: Text('Find all $categoryName'),
-                                value: toggleNames.skip(1).every((item) =>
-                                    toggleStates.containsKey(item
-                                        .toLowerCase()
-                                        .replaceAll(' ', '-')) &&
-                                    (toggleStates[item
-                                            .toLowerCase()
-                                            .replaceAll(' ', '-')] ??
-                                        false)), // check if the value is already being searched for
-                                onChanged: (bool? newValue) {
-                                  if (newValue != null) {
-                                    _toggleAllItemsInCategory(
-                                        categoryName, newValue);
-                                  }
+                            // Ensure keys match formatting
+                            String formattedName =
+                                name.toLowerCase().replaceAll(' ', '-');
+                            bool isHighlighted =
+                                toggleStates[formattedName] ?? false;
+
+                            // Debug print
+                            print(
+                                'ToggleSwitch: $formattedName is $isHighlighted');
+
+                            return Visibility(
+                              visible: _filteredNames.contains(name),
+                              child: ToggleSwitch(
+                                passedName: name,
+                                isHighlighted: isHighlighted,
+                                onChanged: (bool newValue) {
+                                  _handleToggleChange(formattedName,
+                                      newValue); // Update state when toggled
                                 },
-                              );
-                            } else {
-                              return Visibility(
-                                visible: _filteredNames.contains(name),
-                                child: ToggleSwitch(
-                                  passedName: name,
-                                  isHighlighted: toggleStates[name
-                                          .toLowerCase()
-                                          .replaceAll(' ', '-')] ??
-                                      false,
-                                  onChanged: (bool newValue) {
-                                    _handleToggleChange(
-                                        name.toLowerCase().replaceAll(' ', '-'),
-                                        newValue); // Update state when toggled
-                                  },
-                                ),
-                              );
-                            }
+                              ),
+                            );
                           }).toList(),
                         )
                       : const SizedBox.shrink(),
