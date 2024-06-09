@@ -7,12 +7,16 @@ import 'components/toggles.dart';
 import 'components/alert.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'components/global_variables.dart';
-import 'dart:convert'; // Import JSON encoding and decoding
+import 'dart:convert';
 
 void main() {
   runApp(const MyApp());
 }
 
+// TODO:
+// 1. show that the app is thinking when it is scanning something
+// 2. style the app
+// 3. add the rest of the food categories that you get
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
 
