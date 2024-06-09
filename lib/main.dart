@@ -17,6 +17,10 @@ void main() {
 // 1. show that the app is thinking when it is scanning something
 // 2. style the app
 // 3. add the rest of the food categories that you get
+
+// Known bugs:
+// Items can remain active even when they're not actually active.
+
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
 
@@ -84,6 +88,28 @@ class _HomePageState extends State<HomePage> {
     }
     _loadToggleStates(); // retrieve state from user's device
     //_searchController.addListener(_onSearchTextChanged);
+  }
+
+  void showLoadingDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return const AlertDialog(
+          content: Row(
+            children: [
+              CircularProgressIndicator(),
+              SizedBox(width: 20),
+              Text("Scanning your item..."),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  void dismissLoadingDialog(BuildContext context) {
+    Navigator.of(context, rootNavigator: true).pop();
   }
 
   Future<void> _loadToggleStates() async {
@@ -364,10 +390,6 @@ class _HomePageState extends State<HomePage> {
                             bool isHighlighted =
                                 toggleStates[formattedName] ?? false;
 
-                            // Debug print
-                            print(
-                                'ToggleSwitch: $formattedName is $isHighlighted');
-
                             return Visibility(
                               visible: _filteredNames.contains(name),
                               child: ToggleSwitch(
@@ -405,6 +427,9 @@ class _HomePageState extends State<HomePage> {
                     child: ElevatedButton(
                       onPressed: () async {
                         if (lookingForThings.isNotEmpty) {
+                          // Show the loading dialog
+                          showLoadingDialog(context);
+
                           var res = await Navigator.push(
                             context,
                             MaterialPageRoute(
@@ -412,6 +437,9 @@ class _HomePageState extends State<HomePage> {
                                   const SimpleBarcodeScannerPage(),
                             ),
                           );
+
+                          // Dismiss the loading dialog
+                          dismissLoadingDialog(context);
 
                           if (res is String) {
                             setState(() {
@@ -442,7 +470,7 @@ class _HomePageState extends State<HomePage> {
                         style: TextStyle(color: Colors.white),
                       ),
                     ),
-                  ),
+                  )
                 ],
               ),
             ),
