@@ -51,10 +51,10 @@ class _HomePageState extends State<HomePage> {
   GlobalKey<ScaffoldState> _scaffoldKey =
       GlobalKey<ScaffoldState>(); // to allow re-render of search bar
   final Map<String, List<String>> _toggleNames = {
-    'Added Sugar': ['Toggle All', ...addedSugar], // Include "Toggle All"
-    'Inflammatory foods': ['Toggle All', ...seedOils],
-    'Meat Products': ['Toggle All', ...nonVegetarian],
-    'Common Allergens': ['Toggle All', ...commonAllergens],
+    'Added Sugar': [...addedSugar], // Include "Toggle All"
+    'Inflammatory foods': [...seedOils],
+    'Meat Products': [...nonVegetarian],
+    'Common Allergens': [...commonAllergens],
     // Add other categories similarly
     'Religious abstentions': [],
     'High Environmental Impact': [],
@@ -188,11 +188,12 @@ class _HomePageState extends State<HomePage> {
     setState(() {
       for (var item in _toggleNames[category]!) {
         if (item != 'Toggle All') {
-          toggleStates[item.toLowerCase().replaceAll(' ', '-')] = value;
+          String formattedName = item.toLowerCase().replaceAll(' ', '-');
+          toggleStates[formattedName] = value;
           if (value) {
-            lookingForThings.add(item.toLowerCase().replaceAll(' ', '-'));
+            lookingForThings.add(formattedName);
           } else {
-            lookingForThings.remove(item.toLowerCase().replaceAll(' ', '-'));
+            lookingForThings.remove(formattedName);
           }
         }
       }
@@ -253,10 +254,11 @@ class _HomePageState extends State<HomePage> {
   void _handleToggleChange(String itemName, bool newValue) {
     setState(() {
       toggleStates[itemName] = newValue;
+      String formattedName = itemName.toLowerCase().replaceAll(' ', '-');
       if (newValue) {
-        lookingForThings.add(itemName.toLowerCase().replaceAll(' ', '-'));
+        lookingForThings.add(formattedName);
       } else {
-        lookingForThings.remove(itemName.toLowerCase().replaceAll(' ', '-'));
+        lookingForThings.remove(formattedName);
       }
       _saveToggleStates(); // Save the state whenever it changes
     });
@@ -372,15 +374,25 @@ class _HomePageState extends State<HomePage> {
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-                          const Icon(
-                            Icons.arrow_drop_down,
-                            color: Colors.white,
+                          Row(
+                            children: [
+                              // Toggle All Button
+                              ElevatedButton(
+                                onPressed: () {
+                                  _toggleAllItemsInCategory(categoryName, true);
+                                },
+                                child: const Text('Toggle All'),
+                              ),
+                              const Icon(
+                                Icons.arrow_drop_down,
+                                color: Colors.white,
+                              ),
+                            ],
                           ),
                         ],
                       ),
                     ),
                   ),
-                  // switches inside the titles
                   content: (_isTitleVisible[categoryName] ?? false)
                       ? Column(
                           children: toggleNames.map((name) {
