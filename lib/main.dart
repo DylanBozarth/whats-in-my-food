@@ -273,6 +273,18 @@ class _HomePageState extends State<HomePage> {
     _filterList(_searchController.text);
   }
 
+  bool areAllItemsSelected(String category) {
+    for (var item in _toggleNames[category]!) {
+      if (item != 'Toggle All') {
+        String formattedName = item.toLowerCase().replaceAll(' ', '-');
+        if (toggleStates[formattedName] != true) {
+          return false;
+        }
+      }
+    }
+    return true;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -376,12 +388,19 @@ class _HomePageState extends State<HomePage> {
                           ),
                           Row(
                             children: [
-                              // Toggle All Button
+                              // Toggle All/Deselect All Button
                               ElevatedButton(
                                 onPressed: () {
-                                  _toggleAllItemsInCategory(categoryName, true);
+                                  bool allSelected =
+                                      areAllItemsSelected(categoryName);
+                                  _toggleAllItemsInCategory(
+                                      categoryName, !allSelected);
                                 },
-                                child: const Text('Toggle All'),
+                                child: Text(
+                                  areAllItemsSelected(categoryName)
+                                      ? 'Deselect All'
+                                      : 'Select All',
+                                ),
                               ),
                               const Icon(
                                 Icons.arrow_drop_down,
