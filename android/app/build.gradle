@@ -46,9 +46,9 @@ android {
         // You can update the following values to match your application needs.
         // For more information, see: https://docs.flutter.dev/deployment/android#reviewing-the-gradle-build-configuration.
         minSdkVersion 21
-        targetSdkVersion flutter.targetSdkVersion
-        versionCode flutterVersionCode.toInteger()
-        versionName flutterVersionName
+        targetSdkVersion flutter.targetSdkVersion // CHANGE THESE TO MAKE A NEW VERSION BALOGNA
+        versionCode 3
+        versionName "1.0.1"
     }
     def keystoreProperties = new Properties()
     def keystorePropertiesFile = rootProject.file("key.properties")
