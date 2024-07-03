@@ -19,7 +19,10 @@ void main() {
 // 3. add the rest of the food categories that you get
 
 // Known bugs:
-// Items can remain active even when they're not actually active.
+// Items can remain active even when they're not actually active. Mostly happens when app is restarted
+// Categories that are not active show up in results
+// Scan doesn't happen sometimes
+// status of the toggle saves on the front end but does not persist between sessions. 
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
@@ -480,15 +483,10 @@ class _HomePageState extends State<HomePage> {
                                 barCodeScanResult, foundThings, context);
                           }
                         } else {
-                          Navigator.push(
+                          showAlert(
                             context,
-                            MaterialPageRoute(
-                              builder: (context) => showAlert(
-                                context,
-                                'No Items selected',
-                                "You need to select items to filter for",
-                              ),
-                            ),
+                            'Nothing Selected',
+                            'You need to select something to filter for',
                           );
                         }
                       },
@@ -497,7 +495,7 @@ class _HomePageState extends State<HomePage> {
                         foregroundColor: Colors.white,
                       ),
                       child: const Text(
-                        'Open Scanner',
+                        'SCAN',
                         style: TextStyle(color: Colors.white),
                       ),
                     ),

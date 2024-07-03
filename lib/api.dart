@@ -43,6 +43,7 @@ makeGetRequest(barcode, foundThings, context) async {
           .toList();
       findThingsInIngredients(filteredResults, foundThings, context);
     } else {
+      print('Network error: ${response.statusCode}');
       showAlert(
         context,
         'Network error',
@@ -50,6 +51,7 @@ makeGetRequest(barcode, foundThings, context) async {
       );
     }
   } catch (e) {
+    print('Exception: $e');
     showAlert(
       context,
       'Network error',
@@ -57,6 +59,7 @@ makeGetRequest(barcode, foundThings, context) async {
     );
   }
 }
+
 
 void findThingsInIngredients(List<Map<String, dynamic>> filteredResults,
     List<String> foundThings, context) {
@@ -106,14 +109,10 @@ void findThingsInIngredients(List<Map<String, dynamic>> filteredResults,
       ),
     );
   } else {
-    Navigator.push(
+   showAlert(
       context,
-      MaterialPageRoute(
-          builder: (context) => showAlert(
-                context,
-                'No items found',
-                "This item does not contain any ingredients you're filtering for.",
-              )),
+      'All good',
+      'This food item is free from ingredients you are looking for',
     );
   }
 }
