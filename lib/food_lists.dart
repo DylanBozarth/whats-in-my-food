@@ -206,7 +206,7 @@ List<String> onlyVegan = [
   "Schmaltz",
   "Ghee",
   "clarified butter"
-      "Cochineal",
+  "Cochineal",
   "Pepsin",
   "Collagen",
   "Elastin",
@@ -439,5 +439,6 @@ List<String> nuts = [
   "Nut based condiments",
   "Nut mustard",
 ];
-List<String> haram = ["Alcohol"];
+List<String> haram = [...forbiddenPork, "Alcohol",
+  "Ethyl alcohol", ...bugs ];
 List<String> heavyMetals = [];

@@ -84,7 +84,7 @@ void findThingsInIngredients(List<Map<String, dynamic>> filteredResults,
       .map((entry) => entry["key"].toString().toLowerCase())
       .map((s) => s.replaceAll(RegExp(r'\s+'), '-')) // Replace spaces
       .toList();
-  print('Filtered results: $cleanedUpStrings');
+  //print('Filtered results: $cleanedUpStrings');
   List<String> commonElements = [];
   for (String desiredString in desiredStrings) {
     // Check if desiredString exists in any item of filterResult

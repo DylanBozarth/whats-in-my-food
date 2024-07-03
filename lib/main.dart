@@ -19,10 +19,11 @@ void main() {
 // 3. add the rest of the food categories that you get
 
 // Known bugs:
-// Items can remain active even when they're not actually active. Mostly happens when app is restarted
 // Categories that are not active show up in results
 // Scan doesn't happen sometimes
-// status of the toggle saves on the front end but does not persist between sessions. 
+
+// nice to haves: 
+// hitting cancel on the camera shows an error
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
@@ -53,21 +54,23 @@ class _HomePageState extends State<HomePage> {
   Map<String, bool> toggleStates = {};
   GlobalKey<ScaffoldState> _scaffoldKey =
       GlobalKey<ScaffoldState>(); // to allow re-render of search bar
+  // categories of food
   final Map<String, List<String>> _toggleNames = {
-    'Added Sugar': [...addedSugar], // Include "Toggle All"
+    'Added Sugar': [...addedSugar],
     'Inflammatory foods': [...seedOils],
-    'Meat Products': [...nonVegetarian],
+    'Vegetarian': [...nonVegetarian],
+    'Vegan': [...nonVegan],
     'Common Allergens': [...commonAllergens],
     // Add other categories similarly
-    'Religious abstentions': [],
+    'Religious abstentions': [...haram],
     'High Environmental Impact': [],
     'GMOs': [],
     'Artificial colors and flavors': [],
     'Caffeine': [], // if possible
     'Internationally banned products': bannedInEU,
-    'Heavy Metals': [],
-    'Vegetarian & Vegan': [],
-    'Heavy Metals 2': [],
+    'placeholder': [],
+    'placeholder': [],
+    'placeholder': [],
     'Vegetarian & Vegan 2': [],
     'Heavy Metals 3': [],
     'Vegetarian & Vegan 3': [],
@@ -118,19 +121,22 @@ class _HomePageState extends State<HomePage> {
   Future<void> _loadToggleStates() async {
     final prefs = await SharedPreferences.getInstance();
     final String? savedStates = prefs.getString('toggleStates');
-    print('Loading toggleStates: $savedStates'); // Debug print
     if (savedStates != null) {
       setState(() {
         toggleStates = Map<String, bool>.from(jsonDecode(savedStates));
+        lookingForThings.clear();
+        toggleStates.forEach((key, value) {
+          if (value) {
+            lookingForThings.add(key);
+          }
+        });
       });
     }
-    print('Loaded toggleStates: $toggleStates'); // Debug print
   }
 
   Future<void> _saveToggleStates() async {
     final prefs = await SharedPreferences.getInstance();
     final String encodedStates = jsonEncode(toggleStates);
-    print('Saving toggleStates: $encodedStates'); // Debug print
     await prefs.setString('toggleStates', encodedStates);
   }
 
@@ -265,7 +271,7 @@ class _HomePageState extends State<HomePage> {
       }
       _saveToggleStates(); // Save the state whenever it changes
     });
-    print('Toggle states from the main: $toggleStates'); // Log toggleStates
+    //print('Toggle states from the main: $toggleStates'); // Log toggleStates
   }
 
   void toggleTitleVisibility(String category) {
