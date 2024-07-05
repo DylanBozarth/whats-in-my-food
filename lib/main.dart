@@ -22,7 +22,7 @@ void main() {
 // Categories that are not active show up in results
 // Scan doesn't happen sometimes
 
-// nice to haves: 
+// nice to haves:
 // hitting cancel on the camera shows an error
 
 class MyApp extends StatelessWidget {
@@ -61,7 +61,6 @@ class _HomePageState extends State<HomePage> {
     'Vegetarian': [...nonVegetarian],
     'Vegan': [...nonVegan],
     'Common Allergens': [...commonAllergens],
-    // Add other categories similarly
     'Religious abstentions': [...haram],
     'High Environmental Impact': [],
     'GMOs': [],
@@ -112,6 +111,16 @@ class _HomePageState extends State<HomePage> {
         );
       },
     );
+  }
+  // Logic to remove unwanted categories from results 
+  bool isCategoryActive(String category) {
+    for (var item in _toggleNames[category]!) {
+      String formattedName = item.toLowerCase().replaceAll(' ', '-');
+      if (toggleStates[formattedName] == true) {
+        return true;
+      }
+    }
+    return false;
   }
 
   void dismissLoadingDialog(BuildContext context) {
