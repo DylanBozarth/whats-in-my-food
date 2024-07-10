@@ -22,41 +22,28 @@ class Product {
 
 List<String> ingredientResults = [];
 
-makeGetRequest(barcode, foundThings, context) async {
-  var url =
-      Uri.parse('https://world.openfoodfacts.org/api/v0/product/$barcode.json');
+Future<bool> makeGetRequest(String barcode, List<String> foundThings, BuildContext context) async {
+  var url = Uri.parse('https://world.openfoodfacts.org/api/v0/product/$barcode.json');
   try {
     var response = await http.get(url);
-
+    print("Make get request");
     if (response.statusCode == 200) {
-      // Decode the JSON string into a Map<String, dynamic>
       Map<String, dynamic> decodedJson = jsonDecode(response.body);
-
-      // Create a Product object from the decoded JSON
       Product product = Product.fromJson(decodedJson);
-
-      // Access properties
       ingredientResults.add(product.product["ingredients_text"]);
-      // print(ingredientResults);
       List<Map<String, dynamic>> filteredResults = ingredientResults
           .map((item) => {'key': (item).toLowerCase()})
           .toList();
       findThingsInIngredients(filteredResults, foundThings, context);
+      print("make get request success");
+      return true; // Success
     } else {
       print('Network error: ${response.statusCode}');
-      showAlert(
-        context,
-        'Network error',
-        'Error in getting request, check your connection and try again',
-      );
+      return false; // Failure
     }
   } catch (e) {
     print('Exception: $e');
-    showAlert(
-      context,
-      'Network error',
-      'Error in getting request, check your connection and try again',
-    );
+    return false; // Failure
   }
 }
 

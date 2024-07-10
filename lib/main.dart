@@ -112,7 +112,30 @@ class _HomePageState extends State<HomePage> {
       },
     );
   }
-  // Logic to remove unwanted categories from results 
+
+  void showProcessingDialog(BuildContext context, String message) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          content: Row(
+            children: [
+              CircularProgressIndicator(),
+              SizedBox(width: 20),
+              Text(message),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  void dismissLoadingDialog(BuildContext context) {
+    Navigator.of(context, rootNavigator: true).pop();
+  }
+
+  // Logic to remove unwanted categories from results unfinished
   bool isCategoryActive(String category) {
     for (var item in _toggleNames[category]!) {
       String formattedName = item.toLowerCase().replaceAll(' ', '-');
@@ -121,10 +144,6 @@ class _HomePageState extends State<HomePage> {
       }
     }
     return false;
-  }
-
-  void dismissLoadingDialog(BuildContext context) {
-    Navigator.of(context, rootNavigator: true).pop();
   }
 
   Future<void> _loadToggleStates() async {
@@ -473,48 +492,90 @@ class _HomePageState extends State<HomePage> {
                     ),
                   ),
                   Expanded(
-                    child: ElevatedButton(
-                      onPressed: () async {
-                        if (lookingForThings.isNotEmpty) {
-                          // Show the loading dialog
-                          showLoadingDialog(context);
+  child: ElevatedButton(
+    onPressed: () async {
+      if (lookingForThings.isEmpty) {
+        showAlert(
+          context,
+          'Nothing Selected',
+          'You need to select something to filter for',
+        );
+        return;
+      }
 
-                          var res = await Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) =>
-                                  const SimpleBarcodeScannerPage(),
-                            ),
-                          );
+      showProcessingDialog(context, "Scanning your item...");
+      print("Scanning dialog shown");
 
-                          // Dismiss the loading dialog
-                          dismissLoadingDialog(context);
+      try {
+        final res = await Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const SimpleBarcodeScannerPage(),
+          ),
+        );
 
-                          if (res is String) {
-                            setState(() {
-                              barCodeScanResult = res;
-                            });
-                            makeGetRequest(
-                                barCodeScanResult, foundThings, context);
-                          }
-                        } else {
-                          showAlert(
-                            context,
-                            'Nothing Selected',
-                            'You need to select something to filter for',
-                          );
-                        }
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.blue,
-                        foregroundColor: Colors.white,
-                      ),
-                      child: const Text(
-                        'SCAN',
-                        style: TextStyle(color: Colors.white),
-                      ),
-                    ),
-                  )
+        if (res is String) {
+          setState(() {
+            barCodeScanResult = res;
+          });
+
+          if (mounted) {
+            Navigator.of(context).pop(); // Dismiss the scanning dialog
+            print("Scanning dialog dismissed");
+            showProcessingDialog(context, "Processing your item...");
+            print("Processing dialog shown");
+          }
+
+          // Perform the API request
+          bool success = await makeGetRequest(barCodeScanResult, foundThings, context);
+          print("API request completed. Success: $success");
+
+          // Dismiss the processing dialog with a delay
+          if (mounted) {
+            Future.delayed(Duration.zero, () {
+              Navigator.of(context).pop();
+              print("Processing dialog dismissed");
+              
+              // Show error alert if the API request failed
+              if (!success) {
+                showAlert(
+                  context,
+                  'Error',
+                  'Failed to process the item. Please try again.',
+                );
+              }
+            });
+          }
+        } else {
+          throw Exception('Barcode scanning failed or was cancelled');
+        }
+      } catch (e) {
+        print('Error occurred: $e');
+        if (mounted) {
+          // Dismiss any existing dialog with a delay
+          Future.delayed(Duration.zero, () {
+            Navigator.of(context).pop();
+            print("Error: dialog dismissed");
+            
+            showAlert(
+              context,
+              'Error',
+              'An error occurred while processing your request. Please try again.',
+            );
+          });
+        }
+      }
+    },
+    style: ElevatedButton.styleFrom(
+      backgroundColor: Colors.blue,
+      foregroundColor: Colors.white,
+    ),
+    child: const Text(
+      'SCAN',
+      style: TextStyle(color: Colors.white),
+    ),
+  ),
+)
                 ],
               ),
             ),
