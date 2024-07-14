@@ -522,8 +522,6 @@ class _HomePageState extends State<HomePage> {
           if (mounted) {
             Navigator.of(context).pop(); // Dismiss the scanning dialog
             print("Scanning dialog dismissed");
-            showProcessingDialog(context, "Processing your item...");
-            print("Processing dialog shown");
           }
 
           // Perform the API request

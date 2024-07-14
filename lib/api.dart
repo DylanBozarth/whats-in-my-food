@@ -38,11 +38,19 @@ Future<bool> makeGetRequest(String barcode, List<String> foundThings, BuildConte
       print("make get request success");
       return true; // Success
     } else {
-      print('Network error: ${response.statusCode}');
+      showAlert(
+      context,
+      'Scanning failure',
+      'the scan failed',
+    );
       return false; // Failure
     }
   } catch (e) {
-    print('Exception: $e');
+    showAlert(
+      context,
+      'Scanning failure',
+      'the error is ${e}',
+    );
     return false; // Failure
   }
 }
