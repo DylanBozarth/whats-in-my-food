@@ -521,10 +521,7 @@ class _HomePageState extends State<HomePage> {
                               barCodeScanResult = res;
                             });
 
-                            if (mounted) {
-                              dismissLoadingDialog(context);
-                              print("Scanning dialog dismissed");
-                            }
+                            
 
                             // Perform the API request
                             bool success = await makeGetRequest(
@@ -535,7 +532,7 @@ class _HomePageState extends State<HomePage> {
                             if (mounted) {
                               Future.delayed(Duration.zero, () {
                                 Navigator.of(context).pop();
-                                //ResultsPage.findThingsInIngredients(filteredResults, foundThings, context);
+                                findThingsInIngredients(filteredResults, foundThings, context);
                                 print("Processing dialog dismissed");
 
                                 // Show error alert if the API request failed

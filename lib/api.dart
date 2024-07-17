@@ -21,6 +21,7 @@ class Product {
 }
 
 List<String> ingredientResults = [];
+List<Map<String, dynamic>> filteredResults = [];
 
 Future<bool> makeGetRequest(String barcode, List<String> foundThings, BuildContext context) async {
   var url = Uri.parse('https://world.openfoodfacts.org/api/v0/product/$barcode.json');
@@ -31,10 +32,9 @@ Future<bool> makeGetRequest(String barcode, List<String> foundThings, BuildConte
       Map<String, dynamic> decodedJson = jsonDecode(response.body);
       Product product = Product.fromJson(decodedJson);
       ingredientResults.add(product.product["ingredients_text"]);
-      List<Map<String, dynamic>> filteredResults = ingredientResults
+      filteredResults = ingredientResults
           .map((item) => {'key': (item).toLowerCase()})
           .toList();
-      findThingsInIngredients(filteredResults, foundThings, context);
       print("make get request success");
       return true; // Success
     } else {
