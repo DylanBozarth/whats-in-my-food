@@ -3,6 +3,7 @@ import 'package:simple_barcode_scanner/simple_barcode_scanner.dart';
 import 'package:sticky_headers/sticky_headers/widget.dart';
 import 'package:whatsinmyfood/api.dart';
 import 'package:whatsinmyfood/food_lists.dart';
+import 'package:whatsinmyfood/results_page.dart';
 import 'components/toggles.dart';
 import 'components/alert.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -492,88 +493,92 @@ class _HomePageState extends State<HomePage> {
                     ),
                   ),
                   Expanded(
-  child: ElevatedButton(
-    onPressed: () async {
-      if (lookingForThings.isEmpty) {
-        showAlert(
-          context,
-          'Nothing Selected',
-          'You need to select something to filter for',
-        );
-        return;
-      }
+                    child: ElevatedButton(
+                      onPressed: () async {
+                        if (lookingForThings.isEmpty) {
+                          showAlert(
+                            context,
+                            'Nothing Selected',
+                            'You need to select something to filter for',
+                          );
+                          return;
+                        }
 
-      showProcessingDialog(context, "Scanning your item...");
-      print("Scanning dialog shown");
+                        showProcessingDialog(context, "Scanning your item...");
+                        print("Scanning dialog shown");
 
-      try {
-        final res = await Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => const SimpleBarcodeScannerPage(),
-          ),
-        );
+                        try {
+                          final res = await Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  const SimpleBarcodeScannerPage(),
+                            ),
+                          );
 
-        if (res is String) {
-          setState(() {
-            barCodeScanResult = res;
-          });
+                          if (res is String) {
+                            setState(() {
+                              barCodeScanResult = res;
+                            });
 
-          if (mounted) {
-            Navigator.of(context).pop(); // Dismiss the scanning dialog
-            print("Scanning dialog dismissed");
-          }
+                            if (mounted) {
+                              dismissLoadingDialog(context);
+                              print("Scanning dialog dismissed");
+                            }
 
-          // Perform the API request
-          bool success = await makeGetRequest(barCodeScanResult, foundThings, context);
-          print("API request completed. Success: $success");
+                            // Perform the API request
+                            bool success = await makeGetRequest(
+                                barCodeScanResult, foundThings, context);
+                            print("API request completed. Success: $success");
 
-          // Dismiss the processing dialog with a delay
-          if (mounted) {
-            Future.delayed(Duration.zero, () {
-              Navigator.of(context).pop();
-              print("Processing dialog dismissed");
-              
-              // Show error alert if the API request failed
-              if (!success) {
-                showAlert(
-                  context,
-                  'Error',
-                  'Failed to process the item. Please try again.',
-                );
-              }
-            });
-          }
-        } else {
-          throw Exception('Barcode scanning failed or was cancelled');
-        }
-      } catch (e) {
-        print('Error occurred: $e');
-        if (mounted) {
-          // Dismiss any existing dialog with a delay
-          Future.delayed(Duration.zero, () {
-            Navigator.of(context).pop();
-            print("Error: dialog dismissed");
-            
-            showAlert(
-              context,
-              'Error',
-              'An error occurred while processing your request. Please try again.',
-            );
-          });
-        }
-      }
-    },
-    style: ElevatedButton.styleFrom(
-      backgroundColor: Colors.blue,
-      foregroundColor: Colors.white,
-    ),
-    child: const Text(
-      'SCAN',
-      style: TextStyle(color: Colors.white),
-    ),
-  ),
-)
+                            // Dismiss the processing dialog with a delay
+                            if (mounted) {
+                              Future.delayed(Duration.zero, () {
+                                Navigator.of(context).pop();
+                                //ResultsPage.findThingsInIngredients(filteredResults, foundThings, context);
+                                print("Processing dialog dismissed");
+
+                                // Show error alert if the API request failed
+                                if (!success) {
+                                  showAlert(
+                                    context,
+                                    'Error',
+                                    'Failed to process the item. Please try again.',
+                                  );
+                                }
+                              });
+                            }
+                          } else {
+                            throw Exception(
+                                'Barcode scanning failed or was cancelled');
+                          }
+                        } catch (e) {
+                          print('Error occurred: $e');
+                          if (mounted) {
+                            // Dismiss any existing dialog with a delay
+                            Future.delayed(Duration.zero, () {
+                              Navigator.of(context).pop();
+                              print("Error: dialog dismissed");
+
+                              showAlert(
+                                context,
+                                'Error',
+                                'An error occurred while processing your request. Please try again.',
+                              );
+                            });
+                          }
+                        }
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.blue,
+                        foregroundColor: Colors.white,
+                      ),
+                      child: const Text(
+                        'SCAN',
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    ),
+                  )
                 ],
               ),
             ),
