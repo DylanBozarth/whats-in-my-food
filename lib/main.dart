@@ -3,7 +3,6 @@ import 'package:simple_barcode_scanner/simple_barcode_scanner.dart';
 import 'package:sticky_headers/sticky_headers/widget.dart';
 import 'package:whatsinmyfood/api.dart';
 import 'package:whatsinmyfood/food_lists.dart';
-import 'package:whatsinmyfood/results_page.dart';
 import 'components/toggles.dart';
 import 'components/alert.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -18,10 +17,11 @@ void main() {
 // 1. show that the app is thinking when it is scanning something
 // 2. style the app
 // 3. add the rest of the food categories that you get
+// 4. Create a tutorial 
 
 // Known bugs:
 // Categories that are not active show up in results
-// Scan doesn't happen sometimes
+// Scan doesn't happen sometimes, no idea why.
 
 // nice to haves:
 // hitting cancel on the camera shows an error
@@ -160,6 +160,10 @@ class _HomePageState extends State<HomePage> {
           }
         });
       });
+      print("returning user");
+    }
+    else {
+      print("This is a first time user"); // put a tutorial here 
     }
   }
 
@@ -340,10 +344,19 @@ class _HomePageState extends State<HomePage> {
         centerTitle: true,
         backgroundColor: Colors.deepOrangeAccent,
       ),
+      
       backgroundColor: Colors.grey,
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
+          // selection buttons
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: ElevatedButton(
+              onPressed: _showActiveToggles,
+              child: Text(showAllSelected ? 'Show everything' : 'Show All Selected'),
+            ),
+          ),
           // Search bar
           Padding(
             padding: const EdgeInsets.all(8.0),
@@ -393,7 +406,9 @@ class _HomePageState extends State<HomePage> {
                             color: Colors.white,
                           ),
                         ],
+                        
                       ),
+                      
                     ),
                   );
                 }
@@ -483,15 +498,7 @@ class _HomePageState extends State<HomePage> {
               padding: const EdgeInsets.all(16.0),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: <Widget>[
-                  Expanded(
-                    child: ElevatedButton(
-                      onPressed: _showActiveToggles,
-                      child: Text(showAllSelected
-                          ? 'Show everything'
-                          : 'Show All Selected'),
-                    ),
-                  ),
+                children: [
                   Expanded(
                     child: ElevatedButton(
                       onPressed: () async {
