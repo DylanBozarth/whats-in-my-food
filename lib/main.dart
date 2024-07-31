@@ -63,13 +63,11 @@ class _HomePageState extends State<HomePage> {
     'Vegan': [...nonVegan],
     'Common Allergens': [...commonAllergens],
     'Religious abstentions': [...haram],
-    'High Environmental Impact': [],
-    'GMOs': [],
-    'Artificial colors and flavors': [],
+    //'High Environmental Impact': [],
+    //'GMOs': [],
+    'Artificial colors and flavors': [...artificialAdditivesInFood],
     'Caffeine': [], // if possible
     'Internationally banned products': bannedInEU,
-    'placeholder': [],
-    'placeholder': [],
     'placeholder': [],
     'Vegetarian & Vegan 2': [],
     'Heavy Metals 3': [],
@@ -344,12 +342,11 @@ class _HomePageState extends State<HomePage> {
         centerTitle: true,
         backgroundColor: Colors.deepOrangeAccent,
       ),
-      
       backgroundColor: Colors.grey,
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          // selection buttons
+          // selection buttons, there should be more than 1 here
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: ElevatedButton(
@@ -375,14 +372,12 @@ class _HomePageState extends State<HomePage> {
             child: ListView.builder(
               itemCount: _toggleNames.keys.length,
               itemBuilder: (context, index) {
-                // Collapsed title
                 String categoryName = _toggleNames.keys.elementAt(index);
                 if (!(_isTitleVisible[categoryName] ?? false)) {
                   return GestureDetector(
                     onTap: () {
                       setState(() {
-                        _isTitleVisible[categoryName] =
-                            !(_isTitleVisible[categoryName] ?? false);
+                        _isTitleVisible[categoryName] = !(_isTitleVisible[categoryName] ?? false);
                       });
                     },
                     child: Container(
@@ -406,21 +401,17 @@ class _HomePageState extends State<HomePage> {
                             color: Colors.white,
                           ),
                         ],
-                        
                       ),
-                      
                     ),
                   );
                 }
 
                 List<String> toggleNames = _toggleNames[categoryName]!;
-                // Expanded title
                 return StickyHeader(
                   header: GestureDetector(
                     onTap: () {
                       setState(() {
-                        _isTitleVisible[categoryName] =
-                            !(_isTitleVisible[categoryName] ?? false);
+                        _isTitleVisible[categoryName] = !(_isTitleVisible[categoryName] ?? false);
                       });
                     },
                     child: Container(
@@ -441,18 +432,13 @@ class _HomePageState extends State<HomePage> {
                           ),
                           Row(
                             children: [
-                              // Toggle All/Deselect All Button
                               ElevatedButton(
                                 onPressed: () {
-                                  bool allSelected =
-                                      areAllItemsSelected(categoryName);
-                                  _toggleAllItemsInCategory(
-                                      categoryName, !allSelected);
+                                  bool allSelected = areAllItemsSelected(categoryName);
+                                  _toggleAllItemsInCategory(categoryName, !allSelected);
                                 },
                                 child: Text(
-                                  areAllItemsSelected(categoryName)
-                                      ? 'Deselect All'
-                                      : 'Select All',
+                                  areAllItemsSelected(categoryName) ? 'Deselect All' : 'Select All',
                                 ),
                               ),
                               const Icon(
@@ -468,20 +454,15 @@ class _HomePageState extends State<HomePage> {
                   content: (_isTitleVisible[categoryName] ?? false)
                       ? Column(
                           children: toggleNames.map((name) {
-                            // Ensure keys match formatting
-                            String formattedName =
-                                name.toLowerCase().replaceAll(' ', '-');
-                            bool isHighlighted =
-                                toggleStates[formattedName] ?? false;
-
+                            String formattedName = name.toLowerCase().replaceAll(' ', '-');
+                            bool isHighlighted = toggleStates[formattedName] ?? false;
                             return Visibility(
                               visible: _filteredNames.contains(name),
                               child: ToggleSwitch(
                                 passedName: name,
                                 isHighlighted: isHighlighted,
                                 onChanged: (bool newValue) {
-                                  _handleToggleChange(formattedName,
-                                      newValue); // Update state when toggled
+                                  _handleToggleChange(formattedName, newValue);
                                 },
                               ),
                             );
@@ -518,8 +499,7 @@ class _HomePageState extends State<HomePage> {
                           final res = await Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) =>
-                                  const SimpleBarcodeScannerPage(),
+                              builder: (context) => const SimpleBarcodeScannerPage(),
                             ),
                           );
 
@@ -528,21 +508,15 @@ class _HomePageState extends State<HomePage> {
                               barCodeScanResult = res;
                             });
 
-                            
-
-                            // Perform the API request
-                            bool success = await makeGetRequest(
-                                barCodeScanResult, foundThings, context);
+                            bool success = await makeGetRequest(barCodeScanResult, foundThings, context);
                             print("API request completed. Success: $success");
 
-                            // Dismiss the processing dialog with a delay
                             if (mounted) {
                               Future.delayed(Duration.zero, () {
                                 Navigator.of(context).pop();
                                 findThingsInIngredients(filteredResults, foundThings, context);
                                 print("Processing dialog dismissed");
 
-                                // Show error alert if the API request failed
                                 if (!success) {
                                   showAlert(
                                     context,
@@ -553,13 +527,11 @@ class _HomePageState extends State<HomePage> {
                               });
                             }
                           } else {
-                            throw Exception(
-                                'Barcode scanning failed or was cancelled');
+                            throw Exception('Barcode scanning failed or was cancelled');
                           }
                         } catch (e) {
                           print('Error occurred: $e');
                           if (mounted) {
-                            // Dismiss any existing dialog with a delay
                             Future.delayed(Duration.zero, () {
                               Navigator.of(context).pop();
                               print("Error: dialog dismissed");
