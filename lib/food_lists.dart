@@ -175,7 +175,6 @@ List<String> bannedInEU = [
   "Sodium Nitrite",
   "Quinines",
   "Monosodium Glutamate",
-  "MSG",
 ];
 List<String> nonVegetarian = [
   "Beef",

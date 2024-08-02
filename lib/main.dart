@@ -14,10 +14,10 @@ void main() {
 }
 
 // TODO:
-// 1. show that the app is thinking when it is scanning something
-// 2. style the app
+// 2. style the app/ make better category organization
 // 3. add the rest of the food categories that you get
-// 4. Create a tutorial 
+// 4. Create a tutorial
+// 5. Allow entire categories to be toggleable inside other categories, IE Meat
 
 // Known bugs:
 // Categories that are not active show up in results
@@ -159,9 +159,8 @@ class _HomePageState extends State<HomePage> {
         });
       });
       print("returning user");
-    }
-    else {
-      print("This is a first time user"); // put a tutorial here 
+    } else {
+      print("This is a first time user"); // put a tutorial here
     }
   }
 
@@ -351,7 +350,8 @@ class _HomePageState extends State<HomePage> {
             padding: const EdgeInsets.all(8.0),
             child: ElevatedButton(
               onPressed: _showActiveToggles,
-              child: Text(showAllSelected ? 'Show everything' : 'Show All Selected'),
+              child: Text(
+                  showAllSelected ? 'Show everything' : 'Show All Selected'),
             ),
           ),
           // Search bar
@@ -369,6 +369,7 @@ class _HomePageState extends State<HomePage> {
           ),
           // Titles
           Expanded(
+            // Title collapsed
             child: ListView.builder(
               itemCount: _toggleNames.keys.length,
               itemBuilder: (context, index) {
@@ -377,7 +378,8 @@ class _HomePageState extends State<HomePage> {
                   return GestureDetector(
                     onTap: () {
                       setState(() {
-                        _isTitleVisible[categoryName] = !(_isTitleVisible[categoryName] ?? false);
+                        _isTitleVisible[categoryName] =
+                            !(_isTitleVisible[categoryName] ?? false);
                       });
                     },
                     child: Container(
@@ -390,9 +392,11 @@ class _HomePageState extends State<HomePage> {
                         children: [
                           Text(
                             categoryName,
-                            style: const TextStyle(
+                            style: TextStyle(
                               color: Colors.white,
-                              fontSize: 16,
+                              fontSize:
+                                  (MediaQuery.of(context).size.width * 0.04)
+                                      .clamp(12.0, 24.0),
                               fontWeight: FontWeight.bold,
                             ),
                           ),
@@ -408,10 +412,12 @@ class _HomePageState extends State<HomePage> {
 
                 List<String> toggleNames = _toggleNames[categoryName]!;
                 return StickyHeader(
+                  // Title expanded
                   header: GestureDetector(
                     onTap: () {
                       setState(() {
-                        _isTitleVisible[categoryName] = !(_isTitleVisible[categoryName] ?? false);
+                        _isTitleVisible[categoryName] =
+                            !(_isTitleVisible[categoryName] ?? false);
                       });
                     },
                     child: Container(
@@ -424,49 +430,66 @@ class _HomePageState extends State<HomePage> {
                         children: [
                           Text(
                             categoryName,
-                            style: const TextStyle(
+                            style: TextStyle(
                               color: Colors.white,
-                              fontSize: 16,
+                              fontSize:
+                                  (MediaQuery.of(context).size.width * 0.04)
+                                      .clamp(12.0, 24.0),
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-                          Row(
-                            children: [
-                              ElevatedButton(
-                                onPressed: () {
-                                  bool allSelected = areAllItemsSelected(categoryName);
-                                  _toggleAllItemsInCategory(categoryName, !allSelected);
-                                },
-                                child: Text(
-                                  areAllItemsSelected(categoryName) ? 'Deselect All' : 'Select All',
-                                ),
-                              ),
+                          
                               const Icon(
                                 Icons.arrow_drop_down,
                                 color: Colors.white,
                               ),
-                            ],
-                          ),
+                            
+                          
                         ],
                       ),
                     ),
                   ),
+                  // All of the toggles under the categories
                   content: (_isTitleVisible[categoryName] ?? false)
                       ? Column(
-                          children: toggleNames.map((name) {
-                            String formattedName = name.toLowerCase().replaceAll(' ', '-');
-                            bool isHighlighted = toggleStates[formattedName] ?? false;
-                            return Visibility(
-                              visible: _filteredNames.contains(name),
-                              child: ToggleSwitch(
-                                passedName: name,
-                                isHighlighted: isHighlighted,
-                                onChanged: (bool newValue) {
-                                  _handleToggleChange(formattedName, newValue);
-                                },
-                              ),
-                            );
-                          }).toList(),
+                          children: [
+                            Row( // Select all {category name} button
+                              children: [
+                                Expanded(
+                                  child: ElevatedButton(
+                                    onPressed: () {
+                                      bool allSelected =
+                                          areAllItemsSelected(categoryName);
+                                      _toggleAllItemsInCategory(
+                                          categoryName, !allSelected);
+                                    },
+                                    child: Text(
+                                      areAllItemsSelected(categoryName)
+                                          ? 'Deselect All $categoryName'
+                                          : 'Select All $categoryName',
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            ...toggleNames.map((name) {
+                              String formattedName =
+                                  name.toLowerCase().replaceAll(' ', '-');
+                              bool isHighlighted =
+                                  toggleStates[formattedName] ?? false;
+                              return Visibility(
+                                visible: _filteredNames.contains(name),
+                                child: ToggleSwitch(
+                                  passedName: name,
+                                  isHighlighted: isHighlighted,
+                                  onChanged: (bool newValue) {
+                                    _handleToggleChange(
+                                        formattedName, newValue);
+                                  },
+                                ),
+                              );
+                            }).toList(),
+                          ],
                         )
                       : const SizedBox.shrink(),
                 );
@@ -499,7 +522,8 @@ class _HomePageState extends State<HomePage> {
                           final res = await Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => const SimpleBarcodeScannerPage(),
+                              builder: (context) =>
+                                  const SimpleBarcodeScannerPage(),
                             ),
                           );
 
@@ -508,13 +532,15 @@ class _HomePageState extends State<HomePage> {
                               barCodeScanResult = res;
                             });
 
-                            bool success = await makeGetRequest(barCodeScanResult, foundThings, context);
+                            bool success = await makeGetRequest(
+                                barCodeScanResult, foundThings, context);
                             print("API request completed. Success: $success");
 
                             if (mounted) {
                               Future.delayed(Duration.zero, () {
                                 Navigator.of(context).pop();
-                                findThingsInIngredients(filteredResults, foundThings, context);
+                                findThingsInIngredients(
+                                    filteredResults, foundThings, context);
                                 print("Processing dialog dismissed");
 
                                 if (!success) {
@@ -527,7 +553,8 @@ class _HomePageState extends State<HomePage> {
                               });
                             }
                           } else {
-                            throw Exception('Barcode scanning failed or was cancelled');
+                            throw Exception(
+                                'Barcode scanning failed or was cancelled');
                           }
                         } catch (e) {
                           print('Error occurred: $e');
