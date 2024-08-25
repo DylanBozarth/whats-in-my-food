@@ -46,8 +46,8 @@ android {
         // You can update the following values to match your application needs.
         // For more information, see: https://docs.flutter.dev/deployment/android#reviewing-the-gradle-build-configuration.
         minSdkVersion 21
-        targetSdkVersion flutter.targetSdkVersion // CHANGE THESE TO MAKE A NEW VERSION BALOGNA
-        versionCode 3
+        targetSdkVersion flutter.targetSdkVersion // CHANGE THESE TO MAKE A NEW VERSION CHEESE
+        versionCode 6
         versionName "1.0.1"
     }
     def keystoreProperties = new Properties()
