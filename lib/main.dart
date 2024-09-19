@@ -8,6 +8,7 @@ import 'components/alert.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'components/global_variables.dart';
 import 'dart:convert';
+import 'package:permission_handler/permission_handler.dart';
 
 void main() {
   runApp(const MyApp());
