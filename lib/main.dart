@@ -9,6 +9,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'components/global_variables.dart';
 import 'dart:convert';
 import 'package:permission_handler/permission_handler.dart';
+import 'permissions.dart';
 
 void main() {
   runApp(const MyApp());
@@ -93,6 +94,7 @@ class _HomePageState extends State<HomePage> {
     }
     _loadToggleStates(); // retrieve state from user's device
     //_searchController.addListener(_onSearchTextChanged);
+    RequestPermissions();
   }
 
   void showLoadingDialog(BuildContext context) {
