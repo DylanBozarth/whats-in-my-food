@@ -94,7 +94,7 @@ class _HomePageState extends State<HomePage> {
     }
     _loadToggleStates(); // retrieve state from user's device
     //_searchController.addListener(_onSearchTextChanged);
-    RequestPermissions();
+    RequestPermissions(); // request all permissions 
   }
 
   void showLoadingDialog(BuildContext context) {
