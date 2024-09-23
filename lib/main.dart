@@ -8,7 +8,6 @@ import 'components/alert.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'components/global_variables.dart';
 import 'dart:convert';
-import 'package:permission_handler/permission_handler.dart';
 import 'permissions.dart';
 
 void main() {
@@ -23,7 +22,7 @@ void main() {
 
 // Known bugs:
 // Categories that are not active show up in results
-// Scan doesn't happen sometimes, no idea why.
+// dialog does not go away 
 
 // nice to haves:
 // hitting cancel on the camera shows an error
@@ -539,23 +538,16 @@ class _HomePageState extends State<HomePage> {
                                 barCodeScanResult, foundThings, context);
                             print("API request completed. Success: $success");
 
-                            if (mounted) {
+                            if (success) {
                               Future.delayed(Duration.zero, () {
                                 Navigator.of(context).pop();
                                 findThingsInIngredients(
                                     filteredResults, foundThings, context);
                                 print("Processing dialog dismissed");
-
-                                if (!success) {
-                                  showAlert(
-                                    context,
-                                    'Error',
-                                    'Failed to process the item. Please try again.',
-                                  );
-                                }
                               });
                             }
                           } else {
+                            Navigator.of(context).pop();
                             throw Exception(
                                 'Barcode scanning failed or was cancelled');
                           }

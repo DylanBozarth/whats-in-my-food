@@ -26,7 +26,7 @@ List<Map<String, dynamic>> filteredResults = [];
 Future<bool> makeGetRequest(String barcode, List<String> foundThings, BuildContext context) async {
   var url = Uri.parse('https://world.openfoodfacts.org/api/v0/product/$barcode.json');
   try {
-    var response = await http.get(url);
+    var response = await http.get(url).timeout(const Duration(seconds: 8));
     print("Make get request");
     if (response.statusCode == 200) {
       Map<String, dynamic> decodedJson = jsonDecode(response.body);
@@ -48,7 +48,7 @@ Future<bool> makeGetRequest(String barcode, List<String> foundThings, BuildConte
   } catch (e) {
     showAlert(
       context,
-      'Scanning failure',
+      'Unknown error',
       'the error is ${e}',
     );
     return false; // Failure
