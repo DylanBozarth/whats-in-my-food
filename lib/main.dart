@@ -13,16 +13,20 @@ import 'permissions.dart';
 void main() {
   runApp(const MyApp());
 }
+// Romas ideas
+// Get rid of dropdown and create an icon system with categories 
+// use colors, red green white with very little green
+// another page to check your selections 
+// bold fonts 
 
 // TODO:
-// 2. style the app/ make better category organization
 // 3. add the rest of the food categories that you get
 // 4. Create a tutorial
 // 5. Allow entire categories to be toggleable inside other categories, IE Meat
 
 // Known bugs:
 // Categories that are not active show up in results
-// dialog does not go away 
+// dialog does not go away sometimes, need to simplify the api and dialog logic
 
 // nice to haves:
 // hitting cancel on the camera shows an error
