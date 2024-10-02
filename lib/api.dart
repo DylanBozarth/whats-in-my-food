@@ -36,24 +36,29 @@ Future<bool> makeGetRequest(String barcode, List<String> foundThings, BuildConte
           .map((item) => {'key': (item).toLowerCase()})
           .toList();
       print("make get request success");
+
+      // Call findThingsInIngredients after the API request is successful
+      findThingsInIngredients(filteredResults, foundThings, context);
+
       return true; // Success
     } else {
       showAlert(
-      context,
-      'Scanning failure',
-      'the scan failed',
-    );
+        context,
+        'Scanning failure',
+        'The scan failed',
+      );
       return false; // Failure
     }
   } catch (e) {
     showAlert(
       context,
       'Unknown error',
-      'the error is ${e}',
+      'The error is ${e}',
     );
     return false; // Failure
   }
 }
+
 
 
 void findThingsInIngredients(List<Map<String, dynamic>> filteredResults,

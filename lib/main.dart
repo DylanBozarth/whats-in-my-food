@@ -14,10 +14,10 @@ void main() {
   runApp(const MyApp());
 }
 // Romas ideas
-// Get rid of dropdown and create an icon system with categories 
+// Get rid of dropdown and create an icon system with categories
 // use colors, red green white with very little green
-// another page to check your selections 
-// bold fonts 
+// another page to check your selections
+// bold fonts
 
 // TODO:
 // 3. add the rest of the food categories that you get
@@ -97,7 +97,7 @@ class _HomePageState extends State<HomePage> {
     }
     _loadToggleStates(); // retrieve state from user's device
     //_searchController.addListener(_onSearchTextChanged);
-    RequestPermissions(); // request all permissions 
+    RequestPermissions(); // request all permissions
   }
 
   void showLoadingDialog(BuildContext context) {
@@ -444,13 +444,10 @@ class _HomePageState extends State<HomePage> {
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-                          
-                              const Icon(
-                                Icons.arrow_drop_down,
-                                color: Colors.white,
-                              ),
-                            
-                          
+                          const Icon(
+                            Icons.arrow_drop_down,
+                            color: Colors.white,
+                          ),
                         ],
                       ),
                     ),
@@ -459,7 +456,8 @@ class _HomePageState extends State<HomePage> {
                   content: (_isTitleVisible[categoryName] ?? false)
                       ? Column(
                           children: [
-                            Row( // Select all {category name} button
+                            Row(
+                              // Select all {category name} button
                               children: [
                                 Expanded(
                                   child: ElevatedButton(
@@ -538,18 +536,8 @@ class _HomePageState extends State<HomePage> {
                               barCodeScanResult = res;
                             });
 
-                            bool success = await makeGetRequest(
+                            await makeGetRequest(
                                 barCodeScanResult, foundThings, context);
-                            print("API request completed. Success: $success");
-
-                            if (success) {
-                              Future.delayed(Duration.zero, () {
-                                Navigator.of(context).pop();
-                                findThingsInIngredients(
-                                    filteredResults, foundThings, context);
-                                print("Processing dialog dismissed");
-                              });
-                            }
                           } else {
                             Navigator.of(context).pop();
                             throw Exception(
@@ -560,8 +548,6 @@ class _HomePageState extends State<HomePage> {
                           if (mounted) {
                             Future.delayed(Duration.zero, () {
                               Navigator.of(context).pop();
-                              print("Error: dialog dismissed");
-
                               showAlert(
                                 context,
                                 'Error',
