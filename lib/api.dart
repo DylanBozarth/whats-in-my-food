@@ -36,10 +36,7 @@ Future<bool> makeGetRequest(String barcode, List<String> foundThings, BuildConte
           .map((item) => {'key': (item).toLowerCase()})
           .toList();
       print("make get request success");
-
-      // Call findThingsInIngredients after the API request is successful
       findThingsInIngredients(filteredResults, foundThings, context);
-
       return true; // Success
     } else {
       showAlert(

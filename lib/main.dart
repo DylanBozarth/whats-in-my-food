@@ -500,75 +500,49 @@ class _HomePageState extends State<HomePage> {
               },
             ),
           ),
-          Align(
-            alignment: Alignment.bottomCenter,
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  Expanded(
-                    child: ElevatedButton(
-                      onPressed: () async {
-                        if (lookingForThings.isEmpty) {
-                          showAlert(
-                            context,
-                            'Nothing Selected',
-                            'You need to select something to filter for',
-                          );
-                          return;
-                        }
+          // Scan button logic
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: ElevatedButton(
+              onPressed: () async {
+                if (lookingForThings.isEmpty) {
+                  showAlert(context, 'Nothing Selected',
+                      'You need to select something to filter for');
+                  return;
+                }
 
-                        showProcessingDialog(context, "Scanning your item...");
-                        print("Scanning dialog shown");
+                showProcessingDialog(context, "Scanning your item...");
+                print("Scanning dialog shown");
 
-                        try {
-                          final res = await Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) =>
-                                  const SimpleBarcodeScannerPage(),
-                            ),
-                          );
+                try {
+                  final res = await Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const SimpleBarcodeScannerPage()),
+                  );
 
-                          if (res is String) {
-                            setState(() {
-                              barCodeScanResult = res;
-                            });
-
-                            await makeGetRequest(
-                                barCodeScanResult, foundThings, context);
-                          } else {
-                            Navigator.of(context).pop();
-                            throw Exception(
-                                'Barcode scanning failed or was cancelled');
-                          }
-                        } catch (e) {
-                          print('Error occurred: $e');
-                          if (mounted) {
-                            Future.delayed(Duration.zero, () {
-                              Navigator.of(context).pop();
-                              showAlert(
-                                context,
-                                'Error',
-                                'An error occurred while processing your request. Please try again.',
-                              );
-                            });
-                          }
-                        }
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.blue,
-                        foregroundColor: Colors.white,
-                      ),
-                      child: const Text(
-                        'SCAN',
-                        style: TextStyle(color: Colors.white),
-                      ),
-                    ),
-                  )
-                ],
+                  if (res is String) {
+                    setState(() => barCodeScanResult = res);
+                    await makeGetRequest(
+                        barCodeScanResult, foundThings, context);
+                  } else {
+                    Navigator.of(context).pop();
+                    throw Exception('Barcode scanning failed or was cancelled');
+                  }
+                } catch (e) {
+                  print('Error occurred: $e');
+                  if (mounted) {
+                    Navigator.of(context).pop();
+                    showAlert(context, 'Error',
+                        'An error occurred while processing your request. Please try again.');
+                  }
+                }
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.blue,
+                foregroundColor: Colors.white,
               ),
+              child: const Text('SCAN', style: TextStyle(color: Colors.white)),
             ),
           )
         ],
