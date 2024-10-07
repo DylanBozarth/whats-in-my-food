@@ -9,6 +9,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'components/global_variables.dart';
 import 'dart:convert';
 import 'permissions.dart';
+import './components/scan_button.dart';
 
 void main() {
   runApp(const MyApp());
@@ -116,28 +117,6 @@ class _HomePageState extends State<HomePage> {
         );
       },
     );
-  }
-
-  void showProcessingDialog(BuildContext context, String message) {
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          content: Row(
-            children: [
-              CircularProgressIndicator(),
-              SizedBox(width: 20),
-              Text(message),
-            ],
-          ),
-        );
-      },
-    );
-  }
-
-  void dismissLoadingDialog(BuildContext context) {
-    Navigator.of(context, rootNavigator: true).pop();
   }
 
   // Logic to remove unwanted categories from results unfinished
@@ -501,50 +480,9 @@ class _HomePageState extends State<HomePage> {
             ),
           ),
           // Scan button logic
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: ElevatedButton(
-              onPressed: () async {
-                if (lookingForThings.isEmpty) {
-                  showAlert(context, 'Nothing Selected',
-                      'You need to select something to filter for');
-                  return;
-                }
-
-                showProcessingDialog(context, "Scanning your item...");
-                print("Scanning dialog shown");
-
-                try {
-                  final res = await Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const SimpleBarcodeScannerPage()),
-                  );
-
-                  if (res is String) {
-                    setState(() => barCodeScanResult = res);
-                    await makeGetRequest(
-                        barCodeScanResult, foundThings, context);
-                  } else {
-                    Navigator.of(context).pop();
-                    throw Exception('Barcode scanning failed or was cancelled');
-                  }
-                } catch (e) {
-                  print('Error occurred: $e');
-                  if (mounted) {
-                    Navigator.of(context).pop();
-                    showAlert(context, 'Error',
-                        'An error occurred while processing your request. Please try again.');
-                  }
-                }
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.blue,
-                foregroundColor: Colors.white,
-              ),
-              child: const Text('SCAN', style: TextStyle(color: Colors.white)),
-            ),
-          )
+          Center(
+            child: ScanButton(), 
+          ),
         ],
       ),
     );
