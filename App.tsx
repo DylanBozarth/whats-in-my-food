@@ -1,9 +1,8 @@
-// App.js
 import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, TextInput, Button, FlatList, Alert, TouchableOpacity, ActivityIndicator } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import ScanButton from './components/scan_button.tsx';
-import ToggleSwitch from './components/toggles.tsx';
+import ScanButton from './components/scan_button.jsx';
+import ToggleSwitch from './components/toggles.jsx';
 import { PermissionsAndroid } from 'react-native';
 import foodLists from './components/food_list.tsx'
 
@@ -19,7 +18,7 @@ const App = () => {
 
   const toggleNames = {
     'Added Sugar': [...foodLists],
-    'Inflammatory foods': [...seedOils],
+    /*'Inflammatory foods': [...seedOils],
     'Vegetarian': [...nonVegetarian],
     'Vegan': [...nonVegan],
     'Common Allergens': [...commonAllergens],
@@ -27,7 +26,7 @@ const App = () => {
     'Artificial colors and flavors': [...artificialAdditivesInFood],
     'Caffeine': [],
     'Internationally banned products': bannedInEU,
-    'Placeholder': []
+    'Placeholder': [] */
   };
 
   useEffect(() => {
