@@ -94,3 +94,4 @@ xcuserdata/
 local.properties
 .settings/
 .cxx/
+node_modules

@@ -1,8 +1,7 @@
-// ScanButton.js
 import React, { useState } from 'react';
 import { View, Button, Alert, ActivityIndicator, Text, Modal, StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { makeGetRequest } from './api.jsx';
+import { makeGetRequest } from './api.tsx';
 import lookingForThings from './global_variables.jsx';
 import { showAlert, showProcessingDialog } from './show_alert.jsx';
 

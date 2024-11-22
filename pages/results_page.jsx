@@ -1,10 +1,10 @@
 import React from 'react';
 import { View, Text, Button, ScrollView, TouchableOpacity, FlatList } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import keywordLists from './data/keywordsData';
-import { lookingForThings } from './data/globalVariables';
-import HomePage from './HomePage';
-import { handleBarcodeScan } from './components/scanBarcode';
+import keywordLists from '../components/food_list';
+import { lookingForThings } from '../components/global_variables';
+import FiltersPage from './filters_page';
+import { handleBarcodeScan } from '../components/barcode_scanner';
 
 // React Native equivalent of ResultsPage
 const ResultsPage = ({ route }) => {

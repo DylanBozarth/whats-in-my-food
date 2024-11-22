@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import keywordLists from './data/keywordsData'; // Import keyword lists
+import keywordLists from './food_list'; // Import keyword lists
 import ResultsPage from '../pages/results_page';
 
 // Product Model Equivalent

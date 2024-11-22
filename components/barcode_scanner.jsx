@@ -2,7 +2,7 @@ import React from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { Button } from 'react-native';
 import { RNCamera } from 'react-native-camera';
-import { makeGetRequest } from '../api';
+import { makeGetRequest } from './api.tsx';
 
 // Function to handle barcode scanning and API request
 export const handleBarcodeScan = async (onUpdate, foundThings, navigation) => {
