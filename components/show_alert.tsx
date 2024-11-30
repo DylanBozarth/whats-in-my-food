@@ -1,7 +1,9 @@
 import React from 'react';
 import { Alert, Modal, View, Text, ActivityIndicator, StyleSheet, Button } from 'react-native';
 
-export const showAlert = (title, message) => {
+
+
+export const showAlert = (title: string, message: string, visible: boolean) => {
   Alert.alert(
     title,
     message,
@@ -10,7 +12,8 @@ export const showAlert = (title, message) => {
   );
 };
 
-export const showProcessingDialog = ({ visible, message }) => {
+
+export const showProcessingDialog = (message: string, visible: boolean) => {
   return (
     <Modal
       transparent={true}
@@ -28,7 +31,7 @@ export const showProcessingDialog = ({ visible, message }) => {
   );
 };
 
-export const dismissLoadingDialog = (setVisible) => {
+export const dismissLoadingDialog = (setVisible: Function) => {
   setVisible(false);
 };
 

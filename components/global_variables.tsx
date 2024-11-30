@@ -1,4 +1,4 @@
-const lookingForThings = [];
+const lookingForThings: String[] = [];
 
 
 export default lookingForThings

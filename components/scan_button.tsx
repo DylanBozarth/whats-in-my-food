@@ -13,26 +13,26 @@ const ScanButton = () => {
 
   const handleScan = async () => {
     if (lookingForThings.length === 0) {
-      showAlert('Nothing Selected', 'You need to select something to filter for');
+      showAlert('Nothing Selected', 'You need to select something to filter for', true);
       return;
     }
 
-    setIsProcessing(true); // Show processing dialog
+    setIsProcessing(true); 
 
     try {
-      const res = await navigation.navigate('BarcodeScanner'); // Navigate to BarcodeScanner screen
+      const res = await navigation.navigate('BarcodeScanner'); 
 
       if (typeof res === 'string') {
         setBarCodeScanResult(res);
-        await makeGetRequest(res, foundThings, navigation); // Process the scanned barcode
+        await makeGetRequest(res, foundThings, navigation); 
       } else {
         throw new Error('Barcode scanning failed or was cancelled');
       }
     } catch (e) {
       console.error('Error occurred:', e);
-      showAlert('Error', 'An error occurred while processing your request. Please try again.');
+      showAlert('Error', 'An error occurred while processing your request. Please try again.', true);
     } finally {
-      setIsProcessing(false); // Hide processing dialog
+      setIsProcessing(false);
     }
   };
 
