@@ -10,7 +10,7 @@ class Product {
     this.product = product;
   }
 
-  static fromJson(json) {
+  static fromJson(json: JSON) {
     return new Product(json.code, json.product);
   }
 }
@@ -18,7 +18,7 @@ class Product {
 let ingredientResults = [];
 let filteredResults = [];
 
-export const makeGetRequest = async (barcode, foundThings, context) => {
+export const makeGetRequest = async (barcode: number, foundThings: string) => {
   const url = `https://world.openfoodfacts.org/api/v0/product/${barcode}.json`;
   try {
     const response = await axios.get(url, { timeout: 8000 });
@@ -33,14 +33,14 @@ export const makeGetRequest = async (barcode, foundThings, context) => {
       }));
       console.log("make get request success");
 
-      findThingsInIngredients(filteredResults, foundThings, context);
+      findThingsInIngredients(filteredResults, foundThings);
       return true; // Success
     } else {
-      showAlert(context, 'Scanning failure', 'The scan failed');
+      showAlert( 'Scanning failure', 'The scan failed', true);
       return false; // Failure
     }
   } catch (e) {
-    showAlert(context, 'Unknown error', `The error is ${e.message}`);
+    showAlert( 'Unknown error', `The error is ${e}`, true);
     return false; // Failure
   }
 };

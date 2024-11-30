@@ -17,7 +17,7 @@ const RequestPermissions = () => {
     handlePermissionStatus('Media Location', mediaLocationStatus);
   };
 
-  const handlePermissionStatus = (permissionName, status) => {
+  const handlePermissionStatus = (permissionName : string, status : any) => {
     if (status === RESULTS.GRANTED) {
       console.log(`${permissionName} permission granted`);
     } else if (status === RESULTS.DENIED) {
@@ -29,7 +29,6 @@ const RequestPermissions = () => {
         `The ${permissionName} permission is required for this feature. Please enable it from settings.`,
         [
           { text: 'Cancel', style: 'cancel' },
-          { text: 'Open Settings', onPress: openSettings },
         ]
       );
     }
