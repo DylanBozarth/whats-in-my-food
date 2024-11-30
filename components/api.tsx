@@ -47,7 +47,7 @@ export const makeGetRequest = async (barcode: number, foundThings: string) => {
 
 
 // findThingsInIngredients Function Equivalent
-export const findThingsInIngredients = (filteredResults, foundThings, context) => {
+export const findThingsInIngredients = (filteredResults: string, foundThings: string) => {
   const desiredStrings = lookingForThings.map((s) => s.toLowerCase());
 
   // Match keywords with toggle values
