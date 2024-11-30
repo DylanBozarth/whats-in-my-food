@@ -1,0 +1,1 @@
+ /home/red-blue/Desktop/COOD/whats-in-my-food/.dart_tool/flutter_build/a864990833df456d368b8c56c80b4b2a/native_assets.yaml: 

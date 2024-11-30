@@ -1,20 +1,15 @@
-// App.tsx
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { StatusBar, StyleSheet } from 'react-native';
-
-// Import screens
 import FiltersPage from './pages/filters_page.jsx';
 import ResultsPage from './pages/results_page.jsx';
 
-// Define types for navigation stack
 export type RootStackParamList = {
   Home: undefined;
   Results: { itemId: number };
 };
 
-// Create the navigation stack
 const Stack = createStackNavigator<RootStackParamList>();
 
 const App: React.FC = () => {

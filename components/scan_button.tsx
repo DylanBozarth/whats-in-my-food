@@ -43,7 +43,6 @@ const ScanButton = () => {
         color="#2196F3"
         onPress={handleScan}
       />
-      {/* Processing dialog */}
       <Modal visible={isProcessing} transparent={true}>
         <View style={styles.modalOverlay}>
           <View style={styles.processingDialog}>

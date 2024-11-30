@@ -1,10 +1,9 @@
 import axios from 'axios';
-import { Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import keywordLists from './food_list'; // Import keyword lists
 import ResultsPage from '../pages/results_page';
+import { showAlert } from './show_alert';
 
-// Product Model Equivalent
 class Product {
   constructor(code, product) {
     this.code = code;
@@ -16,11 +15,9 @@ class Product {
   }
 }
 
-// Global variables equivalent
 let ingredientResults = [];
 let filteredResults = [];
 
-// makeGetRequest Function Equivalent
 export const makeGetRequest = async (barcode, foundThings, context) => {
   const url = `https://world.openfoodfacts.org/api/v0/product/${barcode}.json`;
   try {
@@ -48,10 +45,6 @@ export const makeGetRequest = async (barcode, foundThings, context) => {
   }
 };
 
-// Alert function equivalent for React Native
-const showAlert = (context, title, message) => {
-  Alert.alert(title, message, [{ text: "OK" }]);
-};
 
 // findThingsInIngredients Function Equivalent
 export const findThingsInIngredients = (filteredResults, foundThings, context) => {

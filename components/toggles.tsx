@@ -1,4 +1,3 @@
-// ToggleSwitch.js
 import React from 'react';
 import { View, Text, Switch, StyleSheet } from 'react-native';
 
@@ -7,22 +6,21 @@ interface ToggleSwitchProps {
     isHighlighted: boolean;          
     onChanged: (value: boolean) => void; 
   }
-// ToggleSwitch component equivalent
+
 const ToggleSwitch: React.FC<ToggleSwitchProps> = ({ passedName, isHighlighted, onChanged }) => {
   return (
     <View style={styles.container}>
       <Switch
         value={isHighlighted}
-        onValueChange={onChanged} // Call the callback function
-        trackColor={{ false: '#767577', true: '#b2fab4' }} // Light green active track color
-        thumbColor={isHighlighted ? '#4CAF50' : '#f4f3f4'} // Green thumb color when active
+        onValueChange={onChanged}
+        trackColor={{ false: '#767577', true: '#b2fab4' }}
+        thumbColor={isHighlighted ? '#4CAF50' : '#f4f3f4'} 
       />
       <Text style={styles.text}>{passedName}</Text>
     </View>
   );
 };
 
-// Styles
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',

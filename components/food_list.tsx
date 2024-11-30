@@ -1,5 +1,4 @@
 
-  // Seed Oils
   const seedOils = [
     "vegetable oil",
     "canola oil",
@@ -29,7 +28,6 @@
     "chia seed gel"
   ];
   
-  // Bugs
   const bugs = [
     "crickets",
     "cricket flour",
@@ -45,7 +43,6 @@
     "chitin"
   ];
   
-  // Common Allergens
   const commonAllergens = [
     "peanuts",
     "almonds",
@@ -92,7 +89,6 @@
     "watermelon"
   ];
   
-  // Artificial Additives in Food
   const artificialAdditivesInFood = [
     "red 40",
     "yellow 5",
@@ -126,7 +122,6 @@
     "methyl cinnamate"
   ];
   
-  // Banned in EU
   const bannedInEU = [
     "bha",
     "butylated hydroxyanisole",
@@ -155,7 +150,6 @@
     "monosodium glutamate"
   ];
   
-  // Non-Vegetarian
   const nonVegetarian = [
     "beef",
     "pork",
@@ -202,8 +196,7 @@
     "shellac",
     "l-cysteine"
   ];
-  
-  // Only Vegan
+
   const onlyVegan = [
     "gelatin",
     "honey",
@@ -234,9 +227,6 @@
     "squalene"
   ];
   
-
-  
-  // Added Sugar
   const addedSugar = [
     "sugar",
     "high fructose corn syrup",
@@ -298,7 +288,6 @@
     "yacon syrup"
   ];
   
-  // Dairy
   const dairy = [
     "milk",
     "butter",
@@ -369,7 +358,6 @@
     "ghee"
   ];
   
-  // Forbidden Pork
   const forbiddenPork = [
     "pork",
     "gelatin",
@@ -388,7 +376,6 @@
     "fatback"
   ];
   
-  // Nuts
   const nuts = [
     "almonds",
     "almond butter",
@@ -416,12 +403,10 @@
     "walnuts"
   ];
   
-  // Haram
   const haram = [...forbiddenPork, "alcohol", "ethyl alcohol", ...bugs];
   
-  // Heavy Metals (empty as no items were provided)
+  // Heavy Metals (add later)
 
- // Non-Vegan
  const nonVegan = [
     ...onlyVegan,
     ...nonVegetarian,
