@@ -2,7 +2,7 @@ import React from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { Button } from 'react-native';
 import { RNCamera } from 'react-native-camera';
-import { makeGetRequest } from './api.tsx';
+import { makeGetRequest } from './api.js';
 
 export const handleBarcodeScan = async (onUpdate, foundThings, navigation) => {
   navigation.navigate('BarcodeScanner', {
