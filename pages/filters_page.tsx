@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, TextInput, Button, FlatList, Alert, TouchableOpacity, ActivityIndicator } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import ScanButton from '../components/scan_button.tsx';
-import ToggleSwitch from '../components/toggles.tsx';
+import ScanButton from '../components/scan_button';
+import ToggleSwitch from '../components/toggles';
 import { PermissionsAndroid } from 'react-native';
-import foodLists from '../components/food_list.tsx'
+import foodLists from '../components/food_list'
 
 const FiltersPage = () => {
   const [barCodeScanResult, setBarCodeScanResult] = useState('');

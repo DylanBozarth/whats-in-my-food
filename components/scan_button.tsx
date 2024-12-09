@@ -25,7 +25,7 @@ const ScanButton = () => {
 
       if (typeof res === 'string') {
         setBarCodeScanResult(res);
-        await makeGetRequest(res, foundThings, navigation); 
+        await makeGetRequest(res, foundThings); 
       } else {
         throw new Error('Barcode scanning failed or was cancelled');
       }

@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { useNavigation } from '@react-navigation/native';
 import keywordLists from './food_list'; // Import keyword lists
-import ResultsPage from '../../pages/results_page';
+import ResultsPage from '../pages/results_page';
 import { showAlert } from './show_alert';
 
 class Product {
@@ -15,8 +15,8 @@ class Product {
   }
 }
 
-let ingredientResults = [];
-let filteredResults = [];
+let ingredientResults: String[] = [];
+let filteredResults: String[] = [];
 
 export const makeGetRequest = async (barcode: number, foundThings: string) => {
   const url = `https://world.openfoodfacts.org/api/v0/product/${barcode}.json`;
@@ -81,9 +81,8 @@ export const findThingsInIngredients = (filteredResults: string, foundThings: st
     context.navigate('ResultsPage', { passedResults: foundThings });
   } else {
     showAlert(
-      context,
       'All good',
-      'This food item is free from ingredients you are looking for'
+      'This food item is free from ingredients you are looking for', true
     );
   }
 };
