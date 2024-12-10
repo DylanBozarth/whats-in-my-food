@@ -1,10 +1,16 @@
 import React from 'react';
 import { Image, StyleSheet, Platform, View, Text } from 'react-native';
+import { useCameraPermission } from '../components/hooks/permissions';
+import { Camera, useCameraDevice } from 'react-native-vision-camera';
+const { hasPermission, requestPermission } = useCameraPermission()
 
 export default function HomeScreen() {
+  const device = useCameraDevice('back')
+  const { hasPermission } = useCameraPermission()
   return (
     <View>
       <Text>Yeah</Text>
+      
     </View>
   );
 }
@@ -27,3 +33,4 @@ const styles = StyleSheet.create({
     position: 'absolute',
   },
 });
+
