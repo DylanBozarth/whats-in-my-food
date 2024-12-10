@@ -1,21 +1,12 @@
 import axios from 'axios';
 import { useNavigation } from '@react-navigation/native';
-import keywordLists from './food_list'; // Import keyword lists
+import keywordLists from './food_list'; 
 import ResultsPage from '../pages/results_page';
 import { showAlert } from './show_alert';
+import { foundIngredients } from './global_variables';
+// TEST https://world.openfoodfacts.org/api/v0/product/028400589864.json
 
-class Product {
-  constructor(code, product) {
-    this.code = code;
-    this.product = product;
-  }
-
-  static fromJson(json: JSON) {
-    return new Product(json.code, json.product);
-  }
-}
-
-let ingredientResults: String[] = [];
+let resultsFromAPI: String[] = [];
 let filteredResults: String[] = [];
 
 export const makeGetRequest = async (barcode: number, foundThings: string) => {
@@ -26,9 +17,9 @@ export const makeGetRequest = async (barcode: number, foundThings: string) => {
 
     if (response.status === 200) {
       const product = Product.fromJson(response.data);
-      ingredientResults.push(product.product.ingredients_text);
+      resultsFromAPI.push(product.product.ingredients_text);
 
-      filteredResults = ingredientResults.map((item) => ({
+      filteredResults = resultsFromAPI.map((item) => ({
         key: item.toLowerCase(),
       }));
       console.log("make get request success");
