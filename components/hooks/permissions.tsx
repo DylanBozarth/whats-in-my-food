@@ -1,4 +1,4 @@
-import { Camera, CameraPermissionStatus } from 'react-native-vision-camera';
+/*import { Camera, CameraPermissionStatus } from 'react-native-vision-camera';
 import { useEffect, useState } from 'react';
 
 export function useCameraPermission() {
@@ -24,3 +24,4 @@ export function useCameraPermission() {
 
   return { hasPermission, requestPermission };
 }
+*/

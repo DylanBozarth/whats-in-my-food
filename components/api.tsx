@@ -5,18 +5,20 @@ import ResultsPage from '../pages/results_page';
 import { showAlert } from './show_alert';
 import { foundIngredients } from './global_variables';
 // TEST https://world.openfoodfacts.org/api/v0/product/028400589864.json
+//   const url = `https://world.openfoodfacts.org/api/v0/product/${barcode}.json`;
 
 let resultsFromAPI: String[] = [];
 let filteredResults: String[] = [];
 
 export const makeGetRequest = async (barcode: number, foundThings: string) => {
-  const url = `https://world.openfoodfacts.org/api/v0/product/${barcode}.json`;
+  const url = `https://world.openfoodfacts.org/api/v0/product/028400589864.json`;
   try {
     const response = await axios.get(url, { timeout: 8000 });
     console.log("Make get request");
-
+    console.log(response)
+    /*
     if (response.status === 200) {
-      const product = Product.fromJson(response.data);
+      const product = response.fromJson(response.data);
       resultsFromAPI.push(product.product.ingredients_text);
 
       filteredResults = resultsFromAPI.map((item) => ({
@@ -29,15 +31,14 @@ export const makeGetRequest = async (barcode: number, foundThings: string) => {
     } else {
       showAlert( 'Scanning failure', 'The scan failed', true);
       return false; // Failure
-    }
+    } */
   } catch (e) {
     showAlert( 'Unknown error', `The error is ${e}`, true);
     return false; // Failure
   }
 };
 
-
-// findThingsInIngredients Function Equivalent
+/*
 export const findThingsInIngredients = (filteredResults: string, foundThings: string) => {
   const desiredStrings = lookingForThings.map((s) => s.toLowerCase());
 
@@ -77,3 +78,4 @@ export const findThingsInIngredients = (filteredResults: string, foundThings: st
     );
   }
 };
+*/

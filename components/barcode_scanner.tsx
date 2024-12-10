@@ -1,58 +1,69 @@
-import { Camera, useCameraDevice, useFrameProcessor, CameraPermissionStatus } from 'react-native-vision-camera';
-import { scanBarcodes, BarcodeFormat } from 'vision-camera-code-scanner';
-import { useState, useEffect } from 'react';
-import 'react-native-reanimated';
+import React, { useState, useEffect } from 'react';
+import { CameraView, CameraType, useCameraPermissions } from 'expo-camera';
+import { Button, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-/**
- * Custom hook to scan barcodes using Vision Camera
- * Handles camera permission before starting the scanner
- * @returns {Object} - { device, barcode, ScanningComponent, hasPermission }
- */
-export const useBarcodeScanner = () => {
-  const [barcode, setBarcode] = useState<string | null>(null);
-  const [hasPermission, setHasPermission] = useState<boolean>(false);
-  const device = useCameraDevice('back');
+export const barcodeScanner = () => {
+  const [facing, setFacing] = useState<CameraType>('back');
+  const [permission, requestPermission] = useCameraPermissions();
 
-  // Frame processor to scan barcodes
-  const frameProcessor = useFrameProcessor((frame) => {
-    'worklet';
-    const barcodes = scanBarcodes(frame, [BarcodeFormat.ALL_FORMATS]);
+  if (!permission) {
+    // Camera permissions are still loading.
+    return <View />;
+  }
 
-    if (barcodes.length > 0) {
-      const scannedValue = barcodes[0]?.displayValue;
-      if (scannedValue) {
-        setBarcode(scannedValue);
-      }
-    }
-  }, []);
+  if (!permission.granted) {
+    // Camera permissions are not granted yet.
+    return (
+      <View style={styles.container}>
+        <Text style={styles.message}>We need your permission to show the camera</Text>
+        <Button onPress={requestPermission} title="grant permission" />
+      </View>
+    );
+  }
 
-  // Check and request camera permissions
-  useEffect(() => {
-    (async () => {
-      const status: CameraPermissionStatus = await Camera.getCameraPermissionStatus();
-      if (status === 'not-determined' || status === 'denied') {
-        const newStatus = await Camera.requestCameraPermission();
-        setHasPermission(newStatus === 'granted');
-      } else {
-        setHasPermission(status === 'granted');
-      }
-    })();
-  }, []);
+  function toggleCameraFacing() {
+    setFacing(current => (current === 'back' ? 'front' : 'back'));
+  }
 
-  const ScanningComponent = () => {
-    if (!hasPermission) {
-      return null; // No camera permission
-    }
+  return (
+    <View style={styles.container}>
+      <CameraView style={styles.camera} facing={facing}>
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity style={styles.button} onPress={toggleCameraFacing}>
+            <Text style={styles.text}>Flip Camera</Text>
+          </TouchableOpacity>
+        </View>
+      </CameraView>
+    </View>
+  );
+}
 
-    return device ? (
-      <Camera
-        style={{ flex: 1 }}
-        device={device}
-        isActive={true}
-        frameProcessor={frameProcessor}
-      />
-    ) : null;
-  };
-
-  return { device, barcode, ScanningComponent, hasPermission };
-};
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+  },
+  message: {
+    textAlign: 'center',
+    paddingBottom: 10,
+  },
+  camera: {
+    flex: 1,
+  },
+  buttonContainer: {
+    flex: 1,
+    flexDirection: 'row',
+    backgroundColor: 'transparent',
+    margin: 64,
+  },
+  button: {
+    flex: 1,
+    alignSelf: 'flex-end',
+    alignItems: 'center',
+  },
+  text: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: 'white',
+  },
+});

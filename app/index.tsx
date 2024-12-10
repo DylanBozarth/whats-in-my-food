@@ -1,16 +1,14 @@
 import React from 'react';
-import { Image, StyleSheet, Platform, View, Text } from 'react-native';
-import { useCameraPermission } from '../components/hooks/permissions';
-import { Camera, useCameraDevice } from 'react-native-vision-camera';
-const { hasPermission, requestPermission } = useCameraPermission()
+import { Image, StyleSheet, Platform, View, Text, Button } from 'react-native';
+//import { useCameraPermission } from '../components/hooks/permissions';
+import { makeGetRequest } from '@/components/api';
+import  barcodeScanner  from '@/components/barcode_scanner';
 
 export default function HomeScreen() {
-  const device = useCameraDevice('back')
-  const { hasPermission } = useCameraPermission()
   return (
     <View>
       <Text>Yeah</Text>
-      
+      <Button title={"camera"} onPress={() => barcodeScanner()} />
     </View>
   );
 }
