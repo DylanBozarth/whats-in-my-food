@@ -1,14 +1,21 @@
-import React from 'react';
+import React, {useState} from 'react';
 import { Image, StyleSheet, Platform, View, Text, Button } from 'react-native';
 //import { useCameraPermission } from '../components/hooks/permissions';
 import { makeGetRequest } from '@/components/api';
-import  barcodeScanner  from '@/components/barcode_scanner';
+import  {ScanBarcode}  from '@/components/barcode_scanner';
 
 export default function HomeScreen() {
+  const [showCamera, setShowCamera] = useState(false);
   return (
     <View>
       <Text>Yeah</Text>
-      <Button title={"camera"} onPress={() => barcodeScanner()} />
+      <View>
+      {showCamera ? (
+        <ScanBarcode onClose={() => setShowCamera(false)} />
+      ) : (
+        <Button title="Open Camera" onPress={() => setShowCamera(true)} />
+      )}
+    </View>
     </View>
   );
 }
