@@ -3,6 +3,7 @@ import { Image, StyleSheet, Platform, View, Text, Button } from 'react-native';
 //import { useCameraPermission } from '../components/hooks/permissions';
 import { makeGetRequest } from '@/components/api';
 import  {ScanBarcode}  from '@/components/barcode_scanner';
+import ToggleSwitch from '@/components/toggles';
 
 export default function HomeScreen() {
   const [showCamera, setShowCamera] = useState(false);
@@ -10,12 +11,16 @@ export default function HomeScreen() {
     <View>
       <Text>Yeah</Text>
       <View>
+        <ToggleSwitch passedName='Cheese' />
+      </View>
+      {/*}
+      <View>
       {showCamera ? (
         <ScanBarcode onClose={() => setShowCamera(false)} />
       ) : (
         <Button title="Open Camera" onPress={() => setShowCamera(true)} />
       )}
-    </View>
+    </View>*/}
     </View>
   );
 }
