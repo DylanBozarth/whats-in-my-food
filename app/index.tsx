@@ -1,27 +1,14 @@
 import React, {useState} from 'react';
-import { Image, StyleSheet, Platform, View, Text, Button } from 'react-native';
+import {Image, StyleSheet, Platform, View, Text, Button} from 'react-native';
 //import { useCameraPermission } from '../components/hooks/permissions';
-import { makeGetRequest } from '@/components/api';
-import  {ScanBarcode}  from '@/components/barcode_scanner';
-import ToggleSwitch from '@/components/toggles';
+import { GlobalProvider } from '../components/global_variables';
+import { Homepage } from '@/pages/home_page';
 
 export default function HomeScreen() {
-  const [showCamera, setShowCamera] = useState(false);
   return (
-    <View>
-      <Text>Yeah</Text>
-      <View>
-        <ToggleSwitch passedName='Cheese' />
-      </View>
-      {/*}
-      <View>
-      {showCamera ? (
-        <ScanBarcode onClose={() => setShowCamera(false)} />
-      ) : (
-        <Button title="Open Camera" onPress={() => setShowCamera(true)} />
-      )}
-    </View>*/}
-    </View>
+      <GlobalProvider>
+      <Homepage />
+    </GlobalProvider>
   );
 }
 
@@ -43,4 +30,3 @@ const styles = StyleSheet.create({
     position: 'absolute',
   },
 });
-
