@@ -10,6 +10,7 @@ const ToggleSwitch: React.FC<ToggleSwitchProps> = ({ passedName }) => {
   const { lookingForThings, setLookingForThings } = useGlobalState();
 
   const addOrRemove = (name: string) => {
+    
     setLookingForThings((prev: any) =>
       prev.includes(name) ? prev.filter((item: string) => item !== name) : [...prev, name]
     );
@@ -40,6 +41,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
     marginLeft: 8,
+    color: 'white'
   },
 });
 
