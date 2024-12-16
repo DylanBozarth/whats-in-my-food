@@ -1,21 +1,20 @@
+import {StartCamera} from '@/components/barcode_scanner';
 import ToggleSwitch from '@/components/toggles';
 import React, {useState} from 'react';
 import {Image, StyleSheet, Platform, View, Text, Button} from 'react-native';
 
-export const Homepage = () => {
-    
+export default function Homepage() {
   return (
     <View style={styles.container}>
       <View>
         <ToggleSwitch passedName="Cheese" />
       </View>
-      <View>
-       
-      </View>
+
+      <View></View>
       <Text>HOAMPAGE</Text>
     </View>
   );
-};
+}
 
 const styles = StyleSheet.create({
   container: {

@@ -1,14 +1,34 @@
 import React, {useState} from 'react';
-import {Image, StyleSheet, Platform, View, Text, Button} from 'react-native';
-//import { useCameraPermission } from '../components/hooks/permissions';
-import { GlobalProvider } from '../components/global_variables';
-import { Homepage } from '@/pages/home_page';
+import {
+  Image,
+  StyleSheet,
+  Platform,
+  View,
+  Text,
+  Button,
+  SafeAreaView,
+} from 'react-native';
+import {createNativeStackNavigator} from '@react-navigation/native-stack';
+import { NavigationContainer } from '@react-navigation/native';
+import { GlobalProvider } from '@/components/global_variables';
+import Homepage from '@/pages/home_page';
+import ResultsPage from '@/pages/results_page';
+
+
+const Stack = createNativeStackNavigator();
 
 export default function HomeScreen() {
   return (
-      <GlobalProvider>
-      <Homepage />
-    </GlobalProvider>
+    <NavigationContainer>
+      <SafeAreaView style={{ flex: 1 }}>
+        <GlobalProvider>
+          <Stack.Navigator initialRouteName="Home">
+            <Stack.Screen name="Home" component={HomeScreen} />
+            <Stack.Screen name="Results" component={ResultsPage} />
+          </Stack.Navigator>
+        </GlobalProvider>
+      </SafeAreaView>
+    </NavigationContainer>
   );
 }
 
