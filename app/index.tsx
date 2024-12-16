@@ -8,27 +8,23 @@ import {
   Button,
   SafeAreaView,
 } from 'react-native';
-import {createNativeStackNavigator} from '@react-navigation/native-stack';
-import { NavigationContainer } from '@react-navigation/native';
-import { GlobalProvider } from '@/components/global_variables';
-import Homepage from '@/pages/home_page';
+import HomePage from '../pages/home_page';
 import ResultsPage from '@/pages/results_page';
+import {GlobalProvider} from '../components/global_variables';
+import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
 
-
-const Stack = createNativeStackNavigator();
+const Tab = createMaterialTopTabNavigator();
 
 export default function HomeScreen() {
   return (
-    <NavigationContainer>
-      <SafeAreaView style={{ flex: 1 }}>
-        <GlobalProvider>
-          <Stack.Navigator initialRouteName="Home">
-            <Stack.Screen name="Home" component={HomeScreen} />
-            <Stack.Screen name="Results" component={ResultsPage} />
-          </Stack.Navigator>
-        </GlobalProvider>
-      </SafeAreaView>
-    </NavigationContainer>
+    <SafeAreaView style={{flex: 1}}>
+      <GlobalProvider>
+        <Tab.Navigator>
+          <Tab.Screen name="Home" component={HomePage} />
+          <Tab.Screen name="Results" component={ResultsPage} />
+        </Tab.Navigator>
+      </GlobalProvider>
+    </SafeAreaView>
   );
 }
 
