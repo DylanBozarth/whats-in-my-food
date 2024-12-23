@@ -12,7 +12,8 @@ export default function Homepage() {
         <ToggleSwitch passedName="Cheese" />
       </View>
       <View>
-    <StartCamera /></View>
+        <StartCamera />
+    </View>
       <View></View>
       <Text>HOAMPAGE</Text>
     </View>

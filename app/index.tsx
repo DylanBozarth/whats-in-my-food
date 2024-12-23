@@ -12,10 +12,12 @@ import HomePage from '../pages/home_page';
 import ResultsPage from '@/pages/results_page';
 import {GlobalProvider} from '../components/global_variables';
 import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
+import { createStackNavigator } from '@react-navigation/stack';
 
 const Tab = createMaterialTopTabNavigator();
+const Stack = createStackNavigator();
 
-export default function HomeScreen() {
+export default function Main() {
   return (
     <SafeAreaView style={{flex: 1}}>
       <GlobalProvider>
@@ -27,22 +29,3 @@ export default function HomeScreen() {
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
-  },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
-  },
-});
