@@ -3,7 +3,8 @@ import { useNavigation } from '@react-navigation/native';
 import keywordLists from './food_list'; 
 import ResultsPage from '../pages/results_page';
 import { showAlert } from './show_alert';
-import { foundIngredients } from './global_variables';
+import { useGlobalState } from './global_variables';
+
 // TEST https://world.openfoodfacts.org/api/v0/product/028400589864.json
 //   const url = `https://world.openfoodfacts.org/api/v0/product/${barcode}.json`;
 
@@ -11,6 +12,7 @@ let resultsFromAPI: String[] = [];
 let filteredResults: String[] = [];
 
 export const makeGetRequest = async (barcode: number, foundThings: string) => {
+  const { FoundIngrediens, setFoundIngredients } = useGlobalState();
   const url = `https://world.openfoodfacts.org/api/v0/product/028400589864.json`;
   try {
     const response = await axios.get(url, { timeout: 8000 });
