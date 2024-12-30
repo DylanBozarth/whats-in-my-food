@@ -1,18 +1,19 @@
 import {StartCamera} from '@/components/barcode_scanner';
-import ToggleSwitch from '@/components/toggles';
+import ToggleSwitch from '@/components/toggle_item';
+import ToggleSwitchList from '@/components/toggle_list';
 import { CameraView } from 'expo-camera';
 import React, {useState} from 'react';
 import {Image, StyleSheet, Platform, View, Text, Button} from 'react-native';
-
+import nuts from '../components/food_list';
 
 export default function Homepage() {
   return (
     <View style={styles.container}>
       <View>
         <ToggleSwitch passedName="Cheese" />
+        <ToggleSwitchList passedNames={nuts} displayName='nuts' />
       </View>
       <View>
-        <StartCamera />
     </View>
       <View></View>
       <Text>HOAMPAGE</Text>

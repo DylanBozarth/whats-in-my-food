@@ -2,13 +2,13 @@ import { CameraView, CameraType, useCameraPermissions } from 'expo-camera';
 import { useState } from 'react';
 import { Button, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useGlobalState } from './global_variables';
+import { makeGetRequest } from './api';
 
 export const StartCamera = () => {
   const [facing, setFacing] = useState<CameraType>('back');
   const [permission, requestPermission] = useCameraPermissions();
   const [scanned, setScanned] = useState<boolean>(false);
   const [cameraVisible, setCameraVisible] = useState<boolean>(false); // State to toggle camera
-  const { lastScanResult, setLastScanResult } = useGlobalState();
 
   if (!permission) {
     return <View />;
@@ -23,10 +23,9 @@ export const StartCamera = () => {
     );
   }
 
-  const handleBarCodeScanned = (data: string) => {
+  const handleBarCodeScanned = (barcode: Number) => {
     setScanned(true);
-    setLastScanResult(data);
-    console.log(data);
+    makeGetRequest(barcode);
   };
 
   const toggleCameraFacing = () => {
@@ -37,10 +36,6 @@ export const StartCamera = () => {
     setCameraVisible(!cameraVisible);
   };
 
-  interface BarcodeScanningResult {
-    data: string;
-    type: string;
-  }
 
   return (
     <View style={styles.container}>
@@ -48,8 +43,8 @@ export const StartCamera = () => {
         <CameraView
           style={styles.fullscreenCamera} // Fullscreen style
           facing={facing}
-          onBarcodeScanned={(scanningResult: BarcodeScanningResult) => {
-            handleBarCodeScanned(scanningResult.data);
+          onBarcodeScanned={(data: any) => {
+            handleBarCodeScanned(data);
           }}
         >
           <View style={styles.overlay}>

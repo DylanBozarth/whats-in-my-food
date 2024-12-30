@@ -376,7 +376,7 @@
     "fatback"
   ];
   
-  const nuts = [
+ const nuts = [
     "almonds",
     "almond butter",
     "almond extract",
@@ -430,5 +430,4 @@
     { "forbidden-pork": forbiddenPork }
   ];
   
-  export default keywordLists;
-  
+  export default nuts

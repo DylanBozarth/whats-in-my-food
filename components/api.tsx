@@ -11,29 +11,24 @@ import { useGlobalState } from './global_variables';
 let resultsFromAPI: String[] = [];
 let filteredResults: String[] = [];
 
-export const makeGetRequest = async (barcode: number, foundThings: string) => {
+export const makeGetRequest = async (barcode: Number) => {
   const { FoundIngrediens, setFoundIngredients } = useGlobalState();
-  const url = `https://world.openfoodfacts.org/api/v0/product/028400589864.json`;
+  const { lookingForThings, setLookingForThings } = useGlobalState();
+  const { lastScanResult, setLastScanResult } = useGlobalState();
+
+  const url = `https://world.openfoodfacts.org/api/v0/product/884912359414.json`;
   try {
     const response = await axios.get(url, { timeout: 8000 });
     console.log("Make get request");
-    console.log(response)
-    /*
+    //console.log(response)  
+    console.log("looking for things", lookingForThings)
     if (response.status === 200) {
-      const product = response.fromJson(response.data);
-      resultsFromAPI.push(product.product.ingredients_text);
-
-      filteredResults = resultsFromAPI.map((item) => ({
-        key: item.toLowerCase(),
-      }));
-      console.log("make get request success");
-
-      findThingsInIngredients(filteredResults, foundThings);
+      
       return true; // Success
     } else {
       showAlert( 'Scanning failure', 'The scan failed', true);
       return false; // Failure
-    } */
+    } 
   } catch (e) {
     showAlert( 'Unknown error', `The error is ${e}`, true);
     return false; // Failure
