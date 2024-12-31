@@ -27,6 +27,7 @@ export const StartCamera = () => {
     setScanned(true);
     makeGetRequest(barcode);
   };
+  
 
   const toggleCameraFacing = () => {
     setFacing((current) => (current === 'back' ? 'front' : 'back'));
@@ -41,10 +42,10 @@ export const StartCamera = () => {
     <View style={styles.container}>
       {cameraVisible ? (
         <CameraView
-          style={styles.fullscreenCamera} // Fullscreen style
+          style={styles.fullscreenCamera}
           facing={facing}
           onBarcodeScanned={(data: any) => {
-            handleBarCodeScanned(data);
+            handleBarCodeScanned(data.data);
           }}
         >
           <View style={styles.overlay}>

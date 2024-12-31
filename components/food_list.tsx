@@ -414,20 +414,17 @@
   ];
 
 
-  const keywordLists = [
-    { "seed-oils": seedOils },
-    { "bugs": bugs },
-    { "banned-in-eu": bannedInEU },
-    { "non-vegetarian": nonVegetarian },
-    { "non-vegan": nonVegan },
-    { "haram": haram },
-    { "added-sugar": addedSugar },
-    { "dairy": dairy },
-    { "nuts": nuts },
-    { "common-allergens": commonAllergens },
-    { "artificial-additives-in-food": artificialAdditivesInFood },
-    { "only-vegan": onlyVegan },
-    { "forbidden-pork": forbiddenPork }
-  ];
+export default  {
+    nonVegan,
+    nonVegetarian,
+    nuts,
+    forbiddenPork,
+    dairy,
+    addedSugar,
+    bannedInEU,
+    artificialAdditivesInFood,
+    commonAllergens,
+    seedOils,
+    bugs
+}
   
-  export default nuts
