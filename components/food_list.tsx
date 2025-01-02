@@ -1,5 +1,5 @@
-
-  const seedOils = [
+export const foodCategories = {
+  seedOils: [
     "vegetable oil",
     "canola oil",
     "sunflower oil",
@@ -25,10 +25,9 @@
     "poppy seed paste",
     "mustard seed powder",
     "cottonseed meal",
-    "chia seed gel"
-  ];
-  
-  const bugs = [
+    "chia seed gel",
+  ],
+  bugs: [
     "crickets",
     "cricket flour",
     "mealworms",
@@ -40,10 +39,9 @@
     "locusts",
     "ant larvae",
     "cricket oil",
-    "chitin"
-  ];
-  
-  const commonAllergens = [
+    "chitin",
+  ],
+  commonAllergens: [
     "peanuts",
     "almonds",
     "cashews",
@@ -86,10 +84,9 @@
     "citrus fruits",
     "apple",
     "grape",
-    "watermelon"
-  ];
-  
-  const artificialAdditivesInFood = [
+    "watermelon",
+  ],
+  artificialAdditivesInFood: [
     "red 40",
     "yellow 5",
     "yellow 6",
@@ -119,10 +116,9 @@
     "furaneol",
     "isobutyl acetate",
     "gamma-undecalactone",
-    "methyl cinnamate"
-  ];
-  
-  const bannedInEU = [
+    "methyl cinnamate",
+  ],
+  bannedInEU: [
     "bha",
     "butylated hydroxyanisole",
     "bht",
@@ -147,10 +143,9 @@
     "potassium nitrate",
     "sodium nitrite",
     "quinines",
-    "monosodium glutamate"
-  ];
-  
-  const nonVegetarian = [
+    "monosodium glutamate",
+  ],
+  nonVegetarian: [
     "beef",
     "pork",
     "chicken",
@@ -194,10 +189,9 @@
     "pepsin",
     "cochineal",
     "shellac",
-    "l-cysteine"
-  ];
-
-  const onlyVegan = [
+    "l-cysteine",
+  ],
+  nonVegan: [
     "gelatin",
     "honey",
     "beeswax",
@@ -224,71 +218,9 @@
     "omega3 fatty acids",
     "cysteine",
     "guanine",
-    "squalene"
-  ];
-  
-  const addedSugar = [
-    "sugar",
-    "high fructose corn syrup",
-    "honey",
-    "maple syrup",
-    "corn syrup",
-    "brown sugar",
-    "powdered sugar",
-    "cane sugar",
-    "confectioner's sugar",
-    "molasses",
-    "fructose",
-    "glucose",
-    "syrup",
-    "dextrose",
-    "sucrose",
-    "corn sweetener",
-    "corn syrup solids",
-    "crystalline fructose",
-    "caramel",
-    "agave nectar",
-    "coconut sugar",
-    "date sugar",
-    "golden syrup",
-    "treacle",
-    "fruit juice concentrate",
-    "invert sugar",
-    "raw sugar",
-    "refiner's syrup",
-    "turbinado sugar",
-    "evaporated cane juice",
-    "icing sugar",
-    "demerara sugar",
-    "beet sugar",
-    "blackstrap molasses",
-    "brown rice syrup",
-    "barley malt",
-    "cane juice",
-    "cane crystals",
-    "carob syrup",
-    "castor sugar",
-    "galactose",
-    "grape sugar",
-    "isomalt",
-    "lactose",
-    "malt extract",
-    "malt syrup",
-    "maltitol",
-    "maltodextrin",
-    "maltose",
-    "monosaccharides",
-    "nectar",
-    "palm sugar",
-    "panocha",
-    "rice syrup",
-    "saccharose",
-    "sorghum syrup",
-    "yellow sugar",
-    "yacon syrup"
-  ];
-  
-  const dairy = [
+    "squalene",
+  ],
+  dairy: [
     "milk",
     "butter",
     "cheese",
@@ -315,116 +247,60 @@
     "buttermilk",
     "kefir",
     "clotted cream",
-    "goat milk",
-    "sheep milk",
-    "buffalo milk",
-    "camel milk",
-    "horse milk",
-    "donkey milk",
-    "moose milk",
-    "reindeer milk",
-    "yak milk",
-    "bison milk",
-    "elk milk",
-    "zebu milk",
-    "ewe milk",
-    "water buffalo milk",
-    "a2 milk",
     "skim milk",
     "low fat milk",
     "full fat milk",
-    "flavored milk",
     "chocolate milk",
-    "strawberry milk",
-    "banana milk",
-    "soy yogurt",
-    "milkfat",
-    "milk solids",
-    "milk protein concentrate",
-    "milk protein isolate",
-    "milk permeate",
-    "buttermilk powder",
-    "lactose powder",
-    "whey powder",
-    "whey protein concentrate",
-    "whey protein isolate",
-    "casein powder",
-    "caseinate",
-    "lactalbumin",
-    "lactoferrin",
-    "lactulose",
-    "lactic acid",
-    "galactose",
-    "ghee"
-  ];
-  
-  const forbiddenPork = [
-    "pork",
-    "gelatin",
-    "lard",
-    "lard oil",
-    "pork flavoring",
-    "bacon",
-    "ham",
-    "sausage",
-    "pork pastrami",
-    "prosciutto",
-    "pancetta",
-    "coppa",
-    "capicola",
-    "guanciale",
-    "fatback"
-  ];
-  
- const nuts = [
+  ],
+  addedSugar: [
+    "sugar",
+    "high fructose corn syrup",
+    "honey",
+    "maple syrup",
+    "corn syrup",
+    "brown sugar",
+    "powdered sugar",
+    "cane sugar",
+    "molasses",
+    "fructose",
+    "glucose",
+    "syrup",
+    "dextrose",
+    "sucrose",
+    "corn sweetener",
+  ],
+  nuts: [
     "almonds",
     "almond butter",
     "almond extract",
-    "almond meal/flour",
-    "almond milk",
-    "brazil nuts",
     "cashews",
-    "cashew butter",
-    "cashew milk",
-    "chestnuts",
     "hazelnuts",
-    "filberts",
-    "hazelnut butter",
-    "hazelnut oil",
     "macadamia nuts",
-    "macadamia nut oil",
     "peanuts",
-    "peanut butter",
-    "peanut oil",
     "pecans",
     "pine nuts",
-    "pignoli",
     "pistachios",
-    "walnuts"
-  ];
-  
-  const haram = [...forbiddenPork, "alcohol", "ethyl alcohol", ...bugs];
-  
-  // Heavy Metals (add later)
+    "walnuts",
+  ],
+  forbiddenPork: [
+    "pork",
+    "gelatin",
+    "lard",
+    "bacon",
+    "ham",
+    "sausage",
+    "prosciutto",
+    "pancetta",
+  ],
+  haram: [
+    "alcohol",
+    "ethyl alcohol",
+    "crickets",
+    "mealworms",
+    "pork",
+    "bacon",
+    "ham",
+  ],
+};
 
- const nonVegan = [
-    ...onlyVegan,
-    ...nonVegetarian,
-    ...dairy
-  ];
-
-
-export default  {
-    nonVegan,
-    nonVegetarian,
-    nuts,
-    forbiddenPork,
-    dairy,
-    addedSugar,
-    bannedInEU,
-    artificialAdditivesInFood,
-    commonAllergens,
-    seedOils,
-    bugs
-}
-  
+export default foodCategories;

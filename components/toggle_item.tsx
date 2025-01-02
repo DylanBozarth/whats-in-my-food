@@ -4,9 +4,10 @@ import { useGlobalState } from './global_variables';
 
 interface ToggleSwitchProps {
   passedName: string;
+  displayName: string;
 }
 
-const ToggleSwitch: React.FC<ToggleSwitchProps> = ({ passedName }) => {
+const ToggleSwitch: React.FC<ToggleSwitchProps> = ({ passedName, displayName }) => {
   const { lookingForThings, setLookingForThings } = useGlobalState();
 
   const addOrRemove = (name: string) => {
@@ -27,7 +28,7 @@ const ToggleSwitch: React.FC<ToggleSwitchProps> = ({ passedName }) => {
         trackColor={{ false: '#767577', true: '#b2fab4' }}
         thumbColor={isItHighlighted(passedName) ? '#4CAF50' : '#f4f3f4'}
       />
-      <Text style={styles.text}>{passedName.toUpperCase()}</Text>
+      <Text style={styles.text}>{displayName}</Text>
     </View>
   );
 };

@@ -4,14 +4,14 @@ import ToggleSwitchList from '@/components/toggle_list';
 import { CameraView } from 'expo-camera';
 import React, {useState} from 'react';
 import {Image, StyleSheet, Platform, View, Text, Button} from 'react-native';
-import nuts from '../components/food_list';
+import foodCatagories from '../components/food_list';
 
 export default function Homepage() {
   return (
     <View style={styles.container}>
       <View>
-        <ToggleSwitch passedName="Cheese" />
-        <ToggleSwitchList passedNames={nuts} displayName='nuts' />
+        <ToggleSwitch passedName="Cheese" displayName='All cheese'/>
+        <ToggleSwitchList passedNames={foodCatagories.nuts} displayName='nuts' />
       </View>
       <View>
     </View>
