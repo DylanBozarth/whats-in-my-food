@@ -9,38 +9,36 @@ import {useGlobalState} from './global_variables';
 //   const url = `https://world.openfoodfacts.org/api/v0/product/${barcode}.json`;
 
 export const MakeApiCalls = (barcode: Number) => {
-//const { foundIngredients, setFoundIngredients, lookingForThings, setLookingForThings, lastScanResult, setLastScanResult } = useGlobalState();
-let resultsFromAPI: String[] = [];
-let filteredResults: String[] = [];
-const makeGetRequest = async (barcode: Number) => {
-  
-  const url = `https://world.openfoodfacts.org/api/v0/product/${barcode}.json`;
-  
+  //const { foundIngredients, setFoundIngredients, lookingForThings, setLookingForThings, lastScanResult, setLastScanResult } = useGlobalState();
+  let resultsFromAPI: String[] = [];
+  let filteredResults: String[] = [];
+  const makeGetRequest = async (barcode: Number) => {
+    const url = `https://world.openfoodfacts.org/api/v0/product/${barcode}.json`;
 
-  try {
-    console.log('Trying get request')
-    const response = await axios.get(url, { timeout: 12000 });
-    console.log("Response received:");
+    try {
+      console.log('Trying get request');
+      const response = await axios.get(url, {timeout: 12000});
+      console.log('Response received:');
 
-    if (response.status === 200) {
-      //console.log("Successful scan:", response.data);
-      //showAlert(response.data, "", true);
-      console.log("response was 200")
-      //setLastScanResult(response.data); 
-      return true;
-    } else {
-      console.warn("Scan failed with status:", response.status);
-      showAlert('Scanning failure', 'The scan failed', true);
+      if (response.status === 200) {
+        //console.log("Successful scan:", response.data);
+        //showAlert(response.data, "", true);
+        console.log('response was 200');
+        //setLastScanResult(response.data);
+        return true;
+      } else {
+        console.warn('Scan failed with status:', response.status);
+        showAlert('Scanning failure', 'The scan failed', true);
+        return false;
+      }
+    } catch (e) {
+      console.error('Error during request:', e);
+      showAlert('Unknown error', `The error is ${e}`, true);
       return false;
     }
-  } catch (e) {
-    console.error("Error during request:", e);
-    showAlert('Unknown error', `The error is ${e}`, true);
-    return false;
-  }
+  };
+  makeGetRequest(barcode);
 };
-makeGetRequest(barcode);
-}
 
 /*
 export const findThingsInIngredients = (filteredResults: string, foundThings: string) => {
