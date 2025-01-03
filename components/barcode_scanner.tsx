@@ -4,7 +4,7 @@ import { Button, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useGlobalState } from './global_variables';
 import { MakeApiCalls } from './api';
 
-export const StartCamera = () => {
+export const StartCamera = ({ navigation }: { navigation: any }) => {
   const [facing, setFacing] = useState<CameraType>('back');
   const [permission, requestPermission] = useCameraPermissions();
   const [scanned, setScanned] = useState<boolean>(false);
@@ -26,6 +26,7 @@ export const StartCamera = () => {
   const handleBarCodeScanned  = async (barcode: Number) => {
     setScanned(true);
     await MakeApiCalls(barcode);
+    navigation.navigate("Results");
   };
   
 
