@@ -22,12 +22,12 @@ const makeGetRequest = async (barcode: Number) => {
 
   try {
     console.log('try block')
-    const response = await axios.get(url, { timeout: 8000 });
+    const response = await axios.get(url, { timeout: 12000 });
     console.log("Response received:", response);
 
     if (response.status === 200) {
-      console.log("Successful scan:", response.data);
-      console.log("Set last scan result");
+      //console.log("Successful scan:", response.data);
+      showAlert(response.data, "", true);
       //setLastScanResult(response.data); 
       return true;
     } else {

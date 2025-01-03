@@ -1,14 +1,19 @@
 import { CameraView, CameraType, useCameraPermissions } from 'expo-camera';
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { Button, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { useGlobalState } from './global_variables';
+import { useFocusEffect } from '@react-navigation/native';
 import { MakeApiCalls } from './api';
 
 export const StartCamera = ({ navigation }: { navigation: any }) => {
   const [facing, setFacing] = useState<CameraType>('back');
   const [permission, requestPermission] = useCameraPermissions();
-  const [scanned, setScanned] = useState<boolean>(false);
-  const [cameraVisible, setCameraVisible] = useState<boolean>(false); // State to toggle camera
+  const scanning = useRef(false); // Ref to track scanning state
+  const lastScanned = useRef<number>(0); // Ref to track the last scanned timestamp
+
+  useFocusEffect(() => {
+    scanning.current = false; // Reset scanning state when screen gains focus
+    lastScanned.current = 0; // Reset timestamp for debouncing
+  });
 
   if (!permission) {
     return <View />;
@@ -17,40 +22,61 @@ export const StartCamera = ({ navigation }: { navigation: any }) => {
   if (!permission.granted) {
     return (
       <View style={styles.container}>
-        <Text style={styles.message}>We need your permission to show the camera</Text>
+        <Text style={styles.message}>
+          We need your permission to show the camera
+        </Text>
         <Button onPress={requestPermission} title="Grant Permission" />
       </View>
     );
   }
 
-  const handleBarCodeScanned  = async (barcode: Number) => {
-    setScanned(true);
-    await MakeApiCalls(barcode);
-    navigation.navigate("Results");
+  const handleBarCodeScanned = async (barcode: Number) => {
+    const now = Date.now();
+
+    // Debounce: Allow scans only every 2 seconds
+    if (now - lastScanned.current < 2000) {
+      console.log("Skipping scan due to debounce");
+      return;
+    }
+
+    if (scanning.current) {
+      console.log("Scan already in progress, skipping...");
+      return;
+    }
+
+    lastScanned.current = now; // Update last scanned time
+    scanning.current = true; // Lock scanning
+
+    try {
+      console.log("Barcode scanned:", barcode);
+      await MakeApiCalls(barcode); // Call the API
+      navigation.navigate('Results'); // Navigate to Results
+    } catch (error) {
+      console.error('Error scanning barcode:', error);
+    } finally {
+      scanning.current = false; // Unlock scanning after completion
+    }
   };
-  
 
   const toggleCameraFacing = () => {
     setFacing((current) => (current === 'back' ? 'front' : 'back'));
   };
 
-
-
   return (
     <View style={styles.container}>
-        <CameraView
-          style={styles.fullscreenCamera}
-          facing={facing}
-          onBarcodeScanned={(data: any) => {
-            handleBarCodeScanned(data.data);
-          }}
-        >
-          <View style={styles.overlay}>
-            <TouchableOpacity style={styles.button} onPress={toggleCameraFacing}>
-              <Text style={styles.text}>Flip Camera</Text>
-            </TouchableOpacity>
-          </View>
-        </CameraView>
+      <CameraView
+        style={styles.fullscreenCamera}
+        facing={facing}
+        onBarcodeScanned={(data: any) => {
+          handleBarCodeScanned(data.data);
+        }}
+      >
+        <View style={styles.overlay}>
+          <TouchableOpacity style={styles.button} onPress={toggleCameraFacing}>
+            <Text style={styles.text}>Flip Camera</Text>
+          </TouchableOpacity>
+        </View>
+      </CameraView>
     </View>
   );
 };
