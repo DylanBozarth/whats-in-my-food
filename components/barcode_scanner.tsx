@@ -2,7 +2,7 @@ import { CameraView, CameraType, useCameraPermissions } from 'expo-camera';
 import { useState } from 'react';
 import { Button, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useGlobalState } from './global_variables';
-import { makeGetRequest } from './api';
+import { MakeApiCalls } from './api';
 
 export const StartCamera = () => {
   const [facing, setFacing] = useState<CameraType>('back');
@@ -23,9 +23,9 @@ export const StartCamera = () => {
     );
   }
 
-  const handleBarCodeScanned = (barcode: Number) => {
+  const handleBarCodeScanned  = async (barcode: Number) => {
     setScanned(true);
-    makeGetRequest(barcode);
+    await MakeApiCalls(barcode);
   };
   
 
@@ -33,14 +33,10 @@ export const StartCamera = () => {
     setFacing((current) => (current === 'back' ? 'front' : 'back'));
   };
 
-  const toggleCameraVisibility = () => {
-    setCameraVisible(!cameraVisible);
-  };
 
 
   return (
     <View style={styles.container}>
-      {cameraVisible ? (
         <CameraView
           style={styles.fullscreenCamera}
           facing={facing}
@@ -52,14 +48,8 @@ export const StartCamera = () => {
             <TouchableOpacity style={styles.button} onPress={toggleCameraFacing}>
               <Text style={styles.text}>Flip Camera</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.button} onPress={toggleCameraVisibility}>
-              <Text style={styles.text}>Close Camera</Text>
-            </TouchableOpacity>
           </View>
         </CameraView>
-      ) : (
-        <Button title="Open Camera" onPress={toggleCameraVisibility} />
-      )}
     </View>
   );
 };

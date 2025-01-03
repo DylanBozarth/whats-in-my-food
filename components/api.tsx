@@ -7,17 +7,18 @@ import {useGlobalState} from './global_variables';
 
 // TEST https://world.openfoodfacts.org/api/v0/product/028400589864.json
 //   const url = `https://world.openfoodfacts.org/api/v0/product/${barcode}.json`;
-
+export const MakeApiCalls = (barcode: Number) => {
 let resultsFromAPI: String[] = [];
 let filteredResults: String[] = [];
-
-export const makeGetRequest = async (barcode: Number) => {
+//const { FoundIngredients, setFoundIngredients } = useGlobalState();
+//const { lookingForThings, setLookingForThings } = useGlobalState();
+//const { lastScanResult, setLastScanResult } = useGlobalState();
+const makeGetRequest = async (barcode: Number) => {
   console.log("makeGetRequest called with barcode:", barcode);
-
-  const { FoundIngredients, setFoundIngredients } = useGlobalState();
-  const { lookingForThings, setLookingForThings } = useGlobalState();
-  const { lastScanResult, setLastScanResult } = useGlobalState();
+  
   const url = `https://world.openfoodfacts.org/api/v0/product/${barcode}.json`;
+  console.log("Generated URL:", url);
+  
 
   try {
     console.log('try block')
@@ -26,7 +27,8 @@ export const makeGetRequest = async (barcode: Number) => {
 
     if (response.status === 200) {
       console.log("Successful scan:", response.data);
-      setLastScanResult(response.data); 
+      console.log("Set last scan result");
+      //setLastScanResult(response.data); 
       return true;
     } else {
       console.warn("Scan failed with status:", response.status);
@@ -39,7 +41,8 @@ export const makeGetRequest = async (barcode: Number) => {
     return false;
   }
 };
-
+makeGetRequest(barcode);
+}
 
 /*
 export const findThingsInIngredients = (filteredResults: string, foundThings: string) => {
