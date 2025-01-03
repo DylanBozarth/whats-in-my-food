@@ -7,27 +7,25 @@ import {useGlobalState} from './global_variables';
 
 // TEST https://world.openfoodfacts.org/api/v0/product/028400589864.json
 //   const url = `https://world.openfoodfacts.org/api/v0/product/${barcode}.json`;
+
 export const MakeApiCalls = (barcode: Number) => {
+//const { foundIngredients, setFoundIngredients, lookingForThings, setLookingForThings, lastScanResult, setLastScanResult } = useGlobalState();
 let resultsFromAPI: String[] = [];
 let filteredResults: String[] = [];
-//const { FoundIngredients, setFoundIngredients } = useGlobalState();
-//const { lookingForThings, setLookingForThings } = useGlobalState();
-//const { lastScanResult, setLastScanResult } = useGlobalState();
 const makeGetRequest = async (barcode: Number) => {
-  console.log("makeGetRequest called with barcode:", barcode);
   
   const url = `https://world.openfoodfacts.org/api/v0/product/${barcode}.json`;
-  console.log("Generated URL:", url);
   
 
   try {
-    console.log('try block')
+    console.log('Trying get request')
     const response = await axios.get(url, { timeout: 12000 });
-    console.log("Response received:", response);
+    console.log("Response received:");
 
     if (response.status === 200) {
       //console.log("Successful scan:", response.data);
-      showAlert(response.data, "", true);
+      //showAlert(response.data, "", true);
+      console.log("response was 200")
       //setLastScanResult(response.data); 
       return true;
     } else {
