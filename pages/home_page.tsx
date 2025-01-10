@@ -1,4 +1,4 @@
-import {StartCamera} from '@/components/barcode_scanner';
+import {StartCamera} from '@/pages/barcode_scanner';
 import ToggleSwitch from '@/components/toggle_item';
 import ToggleSwitchList from '@/components/toggle_list';
 import { CameraView } from 'expo-camera';

@@ -8,6 +8,8 @@ import {useGlobalState} from './global_variables';
 // TEST https://world.openfoodfacts.org/api/v0/product/028400589864.json
 //   const url = `https://world.openfoodfacts.org/api/v0/product/${barcode}.json`;
 
+
+// LEGACY PAGE ******************************************
 export const MakeApiCalls = (barcode: Number) => {
   //const { foundIngredients, setFoundIngredients, lookingForThings, setLookingForThings, lastScanResult, setLastScanResult } = useGlobalState();
   let resultsFromAPI: String[] = [];

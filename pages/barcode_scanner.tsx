@@ -2,8 +2,8 @@ import {CameraView, CameraType, useCameraPermissions} from 'expo-camera';
 import {useState, useRef} from 'react';
 import {Button, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import {useFocusEffect} from '@react-navigation/native';
-import {MakeApiCalls} from './api';
-import { useGlobalState } from './global_variables';
+import {MakeApiCalls} from '../components/api';
+import { useGlobalState } from '../components/global_variables';
 
 export const StartCamera = ({navigation}: {navigation: any}) => {
   const [facing, setFacing] = useState<CameraType>('back');
@@ -48,7 +48,7 @@ export const StartCamera = ({navigation}: {navigation: any}) => {
 
     try {
       console.log('Barcode scanned:', barcode);
-      await MakeApiCalls(barcode); // pass the global variables here 
+      setLastScanResult(barcode);
       navigation.navigate('Results');
     } catch (error) {
       console.error('Error scanning barcode:', error);
