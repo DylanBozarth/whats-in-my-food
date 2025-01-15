@@ -1,4 +1,5 @@
-import React, {useEffect} from 'react';
+import React, {useRef, useEffect, useState} from 'react';
+import {Image} from 'react-native';
 import axios from 'axios';
 import {showAlert} from '@/components/show_alert';
 import {View, Text} from 'react-native';
@@ -6,32 +7,30 @@ import {useGlobalState} from '@/components/global_variables';
 import {useFocusEffect} from '@react-navigation/native';
 
 export default function ResultsPage() {
-  const { foundIngredients, setFoundIngredients, lookingForThings, lastScanResult, setLastScanResult, setLastScanBarcode, lastScanBarcode } = useGlobalState();
+  const {
+    foundIngredients,
+    setFoundIngredients,
+    lookingForThings,
+    lastScanResult,
+    setLastScanResult,
+    setLastScanBarcode,
+    lastScanBarcode,
+  } = useGlobalState();
 
+  const previousBarcode = useRef<number | null>(null); // Store the previous barcode
+  const [productImage, setProductImage] = useState<string>(''); 
 
-  //https://world.openfoodfacts.org/api/v0/product/884912359414.json
+  const makeGetRequest = async (barcode: number) => {
+    const url: string = `https://world.openfoodfacts.org/api/v0/product/${barcode}.json`;
 
-  const makeGetRequest = async (barcode: Number) => {
-    const url = `https://world.openfoodfacts.org/api/v0/product/${barcode}.json`;
-  
     try {
-      //console.log('Trying get request');
-      const response = await axios.get(url, { timeout: 10000 });
-      //console.log('Response received:');
-  
-      if (response.status === 200) {
-        console.log('response was 200');
-        //console.log('Full Response:', JSON.stringify(response, null, 2));
+      const response = await axios.get(url, {timeout: 8000});
 
-        //console.log(response.data.product.ingredients_text)
-        // Set the last scan result to the ingredients_text from the response
-        if (response.data.product?.ingredients_text) {
-          setLastScanResult(response.data.product.ingredients_text);
-        } else {
-          console.warn('No ingredients_text found in the response.');
-          showAlert('No Ingredients', 'The response does not contain ingredients.', true);
-        }
-  
+      if (response.status === 200) {
+        setLastScanResult(response.data.product.ingredients_text);
+        console.log('Last scan result:', response.data.product.ingredients_text);
+        setProductImage(response.data.product.image_url);
+        console.log(productImage)
         return true;
       } else {
         console.warn('Scan failed with status:', response.status);
@@ -44,28 +43,32 @@ export default function ResultsPage() {
       return false;
     }
   };
-  
-  const findThingsInIngredients = (filteredResults: string, foundThings: string) => {
-    
-
-
-      showAlert(
-        'All good',
-        'This food item is free from ingredients you are looking for', true
-      );
-    
-  };
 
   useFocusEffect(() => {
-    if (lastScanResult !== lastScanBarcode) {
-      makeGetRequest(lastScanBarcode);
+    if (lastScanBarcode !== previousBarcode.current) {
+      previousBarcode.current = lastScanBarcode; // Update the previous barcode
+      if (lastScanBarcode) {
+        makeGetRequest(lastScanBarcode);
+      }
     }
   });
 
   return (
     <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
       <Text>📋 Results Page</Text>
-      {lastScanResult !== 0 ? <Text>Scan something!</Text> : <Text>Scan result</Text>}
+      {lastScanBarcode ? (
+        <Text>
+          
+          <Image
+            source={{
+              uri: `${productImage}`,
+            }}
+          />
+          Scan result contains {lastScanResult}
+        </Text>
+      ) : (
+        <Text>Scan something!</Text>
+      )}
       <Text>{foundIngredients}</Text>
     </View>
   );
