@@ -17,8 +17,9 @@ export default function ResultsPage() {
     lastScanBarcode,
   } = useGlobalState();
 
+  //https://world.openfoodfacts.org/api/v0/product/884912359414.json
   const previousBarcode = useRef<number | null>(null); // Store the previous barcode
-  const [productImage, setProductImage] = useState<string>(''); 
+  const [productImage, setProductImage] = useState<string>('');
 
   const makeGetRequest = async (barcode: number) => {
     const url: string = `https://world.openfoodfacts.org/api/v0/product/${barcode}.json`;
@@ -28,9 +29,12 @@ export default function ResultsPage() {
 
       if (response.status === 200) {
         setLastScanResult(response.data.product.ingredients_text);
-        console.log('Last scan result:', response.data.product.ingredients_text);
-        setProductImage(response.data.product.image_url);
-        console.log(productImage)
+        console.log(
+          'Last scan result:',
+          response.data.product.ingredients_text,
+        );
+        setProductImage(response.data.product.image_small_url);
+        console.log(productImage);
         return true;
       } else {
         console.warn('Scan failed with status:', response.status);
@@ -58,12 +62,15 @@ export default function ResultsPage() {
       <Text>📋 Results Page</Text>
       {lastScanBarcode ? (
         <Text>
-          
-          <Image
-            source={{
-              uri: `${productImage}`,
-            }}
-          />
+          {productImage ? (
+            <Image
+              source={{uri: productImage}}
+              style={{width: 50, height: 50}}
+              resizeMode="contain"
+            />
+          ) : (
+            <Text>No Image Available</Text>
+          )}
           Scan result contains {lastScanResult}
         </Text>
       ) : (
