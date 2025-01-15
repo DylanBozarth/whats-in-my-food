@@ -10,7 +10,7 @@ export const StartCamera = ({navigation}: {navigation: any}) => {
   const [permission, requestPermission] = useCameraPermissions();
   const scanning = useRef(false); // Ref to track scanning state
   const lastScanned = useRef<number>(0); // Ref to track the last scanned timestamp
-  const { foundIngredients, setFoundIngredients, lookingForThings, setLookingForThings, lastScanResult, setLastScanResult } = useGlobalState();
+  const { foundIngredients, setFoundIngredients, lookingForThings, setLookingForThings, lastScanResult, setLastScanResult, lastScanBarcode, setLastScanBarcode } = useGlobalState();
   useFocusEffect(() => {
     scanning.current = false; // Reset scanning state when screen gains focus
     lastScanned.current = 0; // Reset timestamp for debouncing
@@ -48,7 +48,7 @@ export const StartCamera = ({navigation}: {navigation: any}) => {
 
     try {
       console.log('Barcode scanned:', barcode);
-      setLastScanResult(barcode);
+      setLastScanBarcode(barcode);
       navigation.navigate('Results');
     } catch (error) {
       console.error('Error scanning barcode:', error);

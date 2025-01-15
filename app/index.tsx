@@ -36,3 +36,4 @@ export default function Main() {
 // scan still happens more than once  X 
 // need to search through the barcode result for found things 
 // then display the problems in the results page 
+// works if the barcode is 0, fix this

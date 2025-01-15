@@ -7,6 +7,7 @@ export const GlobalProvider = ({ children }: { children: ReactNode }) => {
   const [lookingForThings, setLookingForThings] = useState<string[]>([]);
   const [foundIngredients, setFoundIngredients] = useState<string[]>([]);
   const [lastScanResult, setLastScanResult] = useState<string[]>([])
+  const [lastScanBarcode, setLastScanBarcode] = useState<Number>();
 
   const LOOKING_KEY = 'lookingForThings';
   const FOUND_KEY = 'foundIngredients';
@@ -59,7 +60,9 @@ export const GlobalProvider = ({ children }: { children: ReactNode }) => {
         foundIngredients,
         setFoundIngredients,
         lastScanResult,
-        setLastScanResult
+        setLastScanResult,
+        lastScanBarcode,
+        setLastScanBarcode
       }}
     >
       {children}
