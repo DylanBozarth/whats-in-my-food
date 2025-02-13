@@ -18,7 +18,7 @@ export default function ResultsPage() {
   } = useGlobalState();
 
   //https://world.openfoodfacts.org/api/v0/product/884912359414.json
-  const previousBarcode = useRef<number | null>(null); // Store the previous barcode
+  const previousBarcode = useRef<number | null>(null);
   const [productImage, setProductImage] = useState<string>('');
 
   const makeGetRequest = async (barcode: number) => {
@@ -29,12 +29,13 @@ export default function ResultsPage() {
 
       if (response.status === 200) {
         setLastScanResult(response.data.product.ingredients_text);
+        
         console.log(
           'Last scan result:',
-          response.data.product.ingredients_text,
+          lastScanResult,
         );
         setProductImage(response.data.product.image_small_url);
-        console.log(productImage);
+        findMatches();
         return true;
       } else {
         console.warn('Scan failed with status:', response.status);
@@ -48,13 +49,35 @@ export default function ResultsPage() {
     }
   };
 
+  const findMatches = () => {
+    const lastScanIngredients = lastScanResult
+      .toLowerCase() // Convert to lowercase
+      .split(', ') // Split into an array of ingredients
+      .map((ingredient: string) => ingredient.trim()); // Remove extra spaces
+
+    const lookingForIngredients = lookingForThings.map((ingredient: string) =>
+      ingredient.toLowerCase(),
+    ); 
+
+    // Step 2: Find matches
+    const matches = lookingForIngredients.filter((ingredient: any) =>
+      lastScanIngredients.includes(ingredient),
+    );
+
+    // Step 3: Remove duplicates (if any)
+    const uniqueMatches = [...new Set(matches)];
+
+    console.log('Matches:', uniqueMatches);
+    setFoundIngredients(uniqueMatches);
+  };
   useFocusEffect(() => {
     if (lastScanBarcode !== previousBarcode.current) {
-      previousBarcode.current = lastScanBarcode; // Update the previous barcode
+      previousBarcode.current = lastScanBarcode;
       if (lastScanBarcode) {
         makeGetRequest(lastScanBarcode);
       }
     }
+    //console.log('looking for ', lookingForThings);
   });
 
   return (
@@ -76,7 +99,7 @@ export default function ResultsPage() {
       ) : (
         <Text>Scan something!</Text>
       )}
-      <Text>{foundIngredients}</Text>
+      <Text>Matches are: {foundIngredients}</Text>
     </View>
   );
 }

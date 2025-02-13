@@ -12,6 +12,7 @@ export default function Homepage() {
       <View>
         <ToggleSwitch passedName="Cheese" displayName='All cheese'/>
         <ToggleSwitchList passedNames={foodCatagories.nuts} displayName='nuts' />
+        <ToggleSwitch passedName='potato' displayName='Potato' />
       </View>
       <View>
     </View>
