@@ -34,7 +34,7 @@ export const StartCamera = ({navigation}: {navigation: any}) => {
   const handleBarCodeScanned = async (barcode: Number) => {
     const now = Date.now();
     if (now - lastScanned.current < 2000) {
-      console.log('Skipping scan due to debounce');
+      //console.log('Skipping scan due to debounce');
       return;
     }
 

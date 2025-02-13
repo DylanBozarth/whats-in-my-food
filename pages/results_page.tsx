@@ -23,19 +23,15 @@ export default function ResultsPage() {
 
   const makeGetRequest = async (barcode: number) => {
     const url: string = `https://world.openfoodfacts.org/api/v0/product/${barcode}.json`;
-
     try {
       const response = await axios.get(url, {timeout: 8000});
-
       if (response.status === 200) {
-        setLastScanResult(response.data.product.ingredients_text);
-        
-        console.log(
-          'Last scan result:',
-          lastScanResult,
-        );
+        await new Promise<void>(resolve => {
+          setLastScanResult(response.data.product.ingredients_text || ''); // Ensure it's a string
+          resolve();
+        });
         setProductImage(response.data.product.image_small_url);
-        findMatches();
+        findMatches(); 
         return true;
       } else {
         console.warn('Scan failed with status:', response.status);
@@ -50,26 +46,29 @@ export default function ResultsPage() {
   };
 
   const findMatches = () => {
-    const lastScanIngredients = lastScanResult
+    /* const lastScanIngredients = lastScanResult   
       .toLowerCase() // Convert to lowercase
       .split(', ') // Split into an array of ingredients
       .map((ingredient: string) => ingredient.trim()); // Remove extra spaces
-
+      WORK ON THIS TO SANTISIZE THE RESULTS
+*/
     const lookingForIngredients = lookingForThings.map((ingredient: string) =>
       ingredient.toLowerCase(),
-    ); 
-
-    // Step 2: Find matches
-    const matches = lookingForIngredients.filter((ingredient: any) =>
-      lastScanIngredients.includes(ingredient),
     );
-
-    // Step 3: Remove duplicates (if any)
+    const matches = lookingForIngredients.filter((ingredient: any) =>
+      lastScanResult.includes(ingredient),
+    );
     const uniqueMatches = [...new Set(matches)];
 
     console.log('Matches:', uniqueMatches);
     setFoundIngredients(uniqueMatches);
   };
+  useEffect(() => {
+    if (lastScanResult !== undefined) {
+      findMatches();
+    }
+  }, [lastScanResult]);
+
   useFocusEffect(() => {
     if (lastScanBarcode !== previousBarcode.current) {
       previousBarcode.current = lastScanBarcode;
@@ -99,7 +98,7 @@ export default function ResultsPage() {
       ) : (
         <Text>Scan something!</Text>
       )}
-      <Text>Matches are: {foundIngredients}</Text>
+      <Text>{foundIngredients === "" ? `Matches are: ${foundIngredients}` : "There are no matches"}</Text>
     </View>
   );
 }
