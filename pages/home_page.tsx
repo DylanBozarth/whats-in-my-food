@@ -10,9 +10,12 @@ export default function Homepage() {
   return (
     <View style={styles.container}>
       <View>
-        <ToggleSwitch passedName="Cheese" displayName='All cheese'/>
+        
+        <Text>A whole category:</Text>
         <ToggleSwitchList passedNames={foodCatagories.nuts} displayName='nuts' />
+        <Text>Individual ingredients</Text>
         <ToggleSwitch passedName='poTaTO' displayName='Potato' />
+        <ToggleSwitch passedName="wheat" displayName='wheat'/>
       </View>
       <View>
     </View>
