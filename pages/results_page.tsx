@@ -1,13 +1,14 @@
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, SafeAreaView } from "react-native"
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, SafeAreaView, ActivityIndicator } from "react-native"
 import { useNavigation } from "@react-navigation/native"
 import React, { useState, useEffect } from 'react';
 import { useGlobalState } from '@/components/global_variables';
-import { Check, X, AlertTriangle } from 'react-native-feather'; // Assuming you have react-native-feather or similar icon library
+import { Check, X, AlertTriangle, RefreshCw } from 'react-native-feather'; // Assuming you have react-native-feather or similar icon library
 
 const ResultsScreen = ({ route }: any) => {
   const navigation = useNavigation();
   const { globalState } = useGlobalState();
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(false);
   const [scannedItem, setScannedItem] = useState({
     name: "",
     ingredients: []
@@ -19,51 +20,145 @@ const ResultsScreen = ({ route }: any) => {
   });
   
   useEffect(() => {
-    if (globalState) {
-      // Get the scanned item from global state
-      const itemData = globalState.scannedItem || {
-        name: "Sample Product",
-        ingredients: ["Sugar", "Salt", "Wheat flour", "Vegetable oil", "Milk", "Eggs", "Soy lecithin", "Natural flavors"]
-      };
-      
-      setScannedItem(itemData);
-      
-      // Get user's selected ingredients to watch for
-      const userSelectedIngredients = globalState.selectedIngredients || [];
-      
-      // Check which ingredients from the user's selection are in the scanned item
-      const matched: any = [];
-      const safe: any = [];
-      
-      userSelectedIngredients.forEach((ingredient: string) => {
-        // Check if any of the scanned item's ingredients contain this ingredient
-        // Using lowercase for case-insensitive comparison
-        const found = itemData.ingredients.some(
-          (          itemIngredient: string) => itemIngredient.toLowerCase().includes(ingredient.toLowerCase())
-        );
+    // Set a timeout to prevent infinite loading
+    const timeoutId = setTimeout(() => {
+      if (isLoading) {
+        setIsLoading(false);
+        setError(true);
+      }
+    }, 10000); // 10 second timeout
+    
+    try {
+      if (globalState) {
+        // Get the scanned item from global state
+        const itemData = globalState.scannedItem || null;
         
-        if (found) {
-          matched.push(ingredient);
-        } else {
-          safe.push(ingredient);
+        if (!itemData || !itemData.ingredients || itemData.ingredients.length === 0) {
+          // If no valid data, set error after a short delay to show loading first
+          setTimeout(() => {
+            setIsLoading(false);
+            setError(true);
+          }, 1500);
+          return;
         }
-      });
-      
-      setResults({
-        matchedIngredients: matched,
-        safeIngredients: safe,
-        productName: itemData.name
-      });
-      
+        
+        setScannedItem(itemData);
+        
+        // Get user's selected ingredients to watch for
+        const userSelectedIngredients = globalState.selectedIngredients || [];
+        
+        // Check which ingredients from the user's selection are in the scanned item
+        const matched: any = [];
+        const safe: any = [];
+        
+        userSelectedIngredients.forEach((ingredient: string) => {
+          // Check if any of the scanned item's ingredients contain this ingredient
+          // Using lowercase for case-insensitive comparison
+          const found = itemData.ingredients.some(
+            (            itemIngredient: string) => itemIngredient.toLowerCase().includes(ingredient.toLowerCase())
+          );
+          
+          if (found) {
+            matched.push(ingredient);
+          } else {
+            safe.push(ingredient);
+          }
+        });
+        
+        setResults({
+          matchedIngredients: matched,
+          safeIngredients: safe,
+          productName: itemData.name
+        });
+        
+        setIsLoading(false);
+      }
+    } catch (err) {
+      console.error("Error processing ingredients:", err);
       setIsLoading(false);
+      setError(true);
     }
+    
+    // Clear timeout if component unmounts or if loading completes
+    return () => clearTimeout(timeoutId);
   }, [globalState]);
+
+  const handleRetry = () => {
+    setIsLoading(true);
+    setError(false);
+    
+    // Simulate a fresh load by waiting a moment before checking global state again
+    setTimeout(() => {
+      if (globalState && globalState.scannedItem) {
+        // Re-run the analysis logic
+        const itemData = globalState.scannedItem;
+        const userSelectedIngredients = globalState.selectedIngredients || [];
+        
+        const matched: any = [];
+        const safe: any = [];
+        
+        userSelectedIngredients.forEach((ingredient: string) => {
+          const found = itemData.ingredients.some(
+            (            itemIngredient: string) => itemIngredient.toLowerCase().includes(ingredient.toLowerCase())
+          );
+          
+          if (found) {
+            matched.push(ingredient);
+          } else {
+            safe.push(ingredient);
+          }
+        });
+        
+        setScannedItem(itemData);
+        setResults({
+          matchedIngredients: matched,
+          safeIngredients: safe,
+          productName: itemData.name
+        });
+        
+        setIsLoading(false);
+      } else {
+        setIsLoading(false);
+        setError(true);
+      }
+    }, 1000);
+  };
 
   if (isLoading) {
     return (
       <SafeAreaView style={styles.container}>
         <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color="#4361EE" style={styles.loadingSpinner} />
           <Text style={styles.loadingText}>Analyzing ingredients...</Text>
+        </View>
+      </SafeAreaView>
+    );
+  }
+
+  if (error) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <View style={styles.errorContainer}>
+          <AlertTriangle width={48} height={48} color="#FF4D6D" />
+          <Text style={styles.errorTitle}>Unable to analyze ingredients</Text>
+          <Text style={styles.errorText}>
+            We couldn't process the ingredient data. This might be because:
+          </Text>
+          <View style={styles.errorList}>
+            <Text style={styles.errorListItem}>• No ingredients were detected</Text>
+            <Text style={styles.errorListItem}>• The scan was incomplete</Text>
+            <Text style={styles.errorListItem}>• There was a connection issue</Text>
+          </View>
+          <TouchableOpacity style={styles.retryButton} onPress={handleRetry}>
+            <RefreshCw width={20} height={20} color="#FFFFFF" />
+            <Text style={styles.retryButtonText}>Try Again</Text>
+          </TouchableOpacity>
+          <TouchableOpacity 
+            style={styles.backButton}
+            onPress={() => navigation.goBack()}
+          >
+            <Text style={styles.backButtonText}>Go Back</Text>
+          </TouchableOpacity>
         </View>
       </SafeAreaView>
     );
@@ -179,10 +274,72 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    padding: 20,
+  },
+  loadingSpinner: {
+    marginBottom: 16,
   },
   loadingText: {
     fontSize: 18,
     color: '#495057',
+    textAlign: 'center',
+  },
+  errorContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  errorTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#212529',
+    marginTop: 16,
+    marginBottom: 8,
+  },
+  errorText: {
+    fontSize: 16,
+    color: '#495057',
+    textAlign: 'center',
+    marginBottom: 16,
+  },
+  errorList: {
+    alignSelf: 'stretch',
+    marginBottom: 24,
+  },
+  errorListItem: {
+    fontSize: 15,
+    color: '#495057',
+    marginBottom: 8,
+  },
+  retryButton: {
+    backgroundColor: '#4361EE',
+    borderRadius: 12,
+    padding: 16,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '100%',
+    marginBottom: 12,
+  },
+  retryButtonText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: '600',
+    marginLeft: 8,
+  },
+  backButton: {
+    borderWidth: 1,
+    borderColor: '#4361EE',
+    borderRadius: 12,
+    padding: 16,
+    width: '100%',
+    alignItems: 'center',
+  },
+  backButtonText: {
+    color: '#4361EE',
+    fontSize: 16,
+    fontWeight: '600',
   },
   summaryCard: {
     backgroundColor: "#ffffff",
