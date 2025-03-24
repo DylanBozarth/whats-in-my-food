@@ -1,166 +1,147 @@
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, SafeAreaView } from "react-native"
 import { useNavigation } from "@react-navigation/native"
-
-// This is just a type definition for our nutrition data
-type NutritionResult = {
-  name: string
-  calories: number
-  protein: number
-  carbs: number
-  fat: number
-  sugar: number
-  fiber: number
-  vitamins: Array<{ name: string; amount: string }>
-}
-
-// Mock data - replace with your actual data source
-const mockResult: NutritionResult = {
-  name: "Grilled Chicken Salad",
-  calories: 320,
-  protein: 28,
-  carbs: 12,
-  fat: 18,
-  sugar: 3,
-  fiber: 5,
-  vitamins: [
-    { name: "Vitamin A", amount: "15%" },
-    { name: "Vitamin C", amount: "45%" },
-    { name: "Calcium", amount: "8%" },
-    { name: "Iron", amount: "10%" },
-  ],
-}
+import React, { useState, useEffect } from 'react';
+import { useGlobalState } from '@/components/global_variables';
+import { Check, X, AlertTriangle } from 'react-native-feather'; // Assuming you have react-native-feather or similar icon library
 
 const ResultsScreen = ({ route }: any) => {
-  const navigation = useNavigation()
-  // In a real implementation, you would get the result from route.params
-  // const { result } = route.params || { result: mockResult };
-  const result = mockResult // Using mock data for demonstration
+  const navigation = useNavigation();
+  const { globalState } = useGlobalState();
+  const [isLoading, setIsLoading] = useState(true);
+  const [scannedItem, setScannedItem] = useState({
+    name: "",
+    ingredients: []
+  });
+  const [results, setResults] = useState({
+    matchedIngredients: [],
+    safeIngredients: [],
+    productName: ""
+  });
+  
+  useEffect(() => {
+    if (globalState) {
+      // Get the scanned item from global state
+      const itemData = globalState.scannedItem || {
+        name: "Sample Product",
+        ingredients: ["Sugar", "Salt", "Wheat flour", "Vegetable oil", "Milk", "Eggs", "Soy lecithin", "Natural flavors"]
+      };
+      
+      setScannedItem(itemData);
+      
+      // Get user's selected ingredients to watch for
+      const userSelectedIngredients = globalState.selectedIngredients || [];
+      
+      // Check which ingredients from the user's selection are in the scanned item
+      const matched: any = [];
+      const safe: any = [];
+      
+      userSelectedIngredients.forEach((ingredient: string) => {
+        // Check if any of the scanned item's ingredients contain this ingredient
+        // Using lowercase for case-insensitive comparison
+        const found = itemData.ingredients.some(
+          (          itemIngredient: string) => itemIngredient.toLowerCase().includes(ingredient.toLowerCase())
+        );
+        
+        if (found) {
+          matched.push(ingredient);
+        } else {
+          safe.push(ingredient);
+        }
+      });
+      
+      setResults({
+        matchedIngredients: matched,
+        safeIngredients: safe,
+        productName: itemData.name
+      });
+      
+      setIsLoading(false);
+    }
+  }, [globalState]);
 
-  // Calculate the percentage for the nutrition bars
-  const calculatePercentage = (value: number, max: number) => {
-    return Math.min((value / max) * 100, 100)
+  if (isLoading) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <View style={styles.loadingContainer}>
+          <Text style={styles.loadingText}>Analyzing ingredients...</Text>
+        </View>
+      </SafeAreaView>
+    );
   }
 
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <View style={styles.header}>
-          <Text style={styles.title}>Nutrition Results</Text>
-          <Text style={styles.subtitle}>{result.name}</Text>
+          <Text style={styles.title}>Ingredient Check Results</Text>
+          <Text style={styles.subtitle}>{results.productName}</Text>
         </View>
 
-        <View style={styles.calorieCard}>
-          <Text style={styles.calorieTitle}>Total Calories</Text>
-          <Text style={styles.calorieValue}>{result.calories}</Text>
-          <Text style={styles.calorieUnit}>kcal</Text>
+        {/* Summary Card */}
+        <View style={styles.summaryCard}>
+          {results.matchedIngredients.length > 0 ? (
+            <View style={styles.warningContainer}>
+              <AlertTriangle width={32} height={32} color="#FF4D6D" />
+              <Text style={styles.warningText}>
+                This product contains {results.matchedIngredients.length} ingredient{results.matchedIngredients.length !== 1 ? 's' : ''} you're watching for
+              </Text>
+            </View>
+          ) : (
+            <View style={styles.safeContainer}>
+              <Check width={32} height={32} color="#4CC9BE" />
+              <Text style={styles.safeText}>
+                This product doesn't contain any ingredients you're watching for
+              </Text>
+            </View>
+          )}
         </View>
 
-        <View style={styles.macrosContainer}>
-          <Text style={styles.sectionTitle}>Macronutrients</Text>
-
-          <View style={styles.macroItem}>
-            <View style={styles.macroHeader}>
-              <Text style={styles.macroName}>Protein</Text>
-              <Text style={styles.macroValue}>{result.protein}g</Text>
-            </View>
-            <View style={styles.progressBackground}>
-              <View
-                style={[
-                  styles.progressFill,
-                  { width: `${calculatePercentage(result.protein, 50)}%`, backgroundColor: "#5E60CE" },
-                ]}
-              />
-            </View>
-          </View>
-
-          <View style={styles.macroItem}>
-            <View style={styles.macroHeader}>
-              <Text style={styles.macroName}>Carbs</Text>
-              <Text style={styles.macroValue}>{result.carbs}g</Text>
-            </View>
-            <View style={styles.progressBackground}>
-              <View
-                style={[
-                  styles.progressFill,
-                  { width: `${calculatePercentage(result.carbs, 100)}%`, backgroundColor: "#64DFDF" },
-                ]}
-              />
-            </View>
-          </View>
-
-          <View style={styles.macroItem}>
-            <View style={styles.macroHeader}>
-              <Text style={styles.macroName}>Fat</Text>
-              <Text style={styles.macroValue}>{result.fat}g</Text>
-            </View>
-            <View style={styles.progressBackground}>
-              <View
-                style={[
-                  styles.progressFill,
-                  { width: `${calculatePercentage(result.fat, 65)}%`, backgroundColor: "#FF9F1C" },
-                ]}
-              />
-            </View>
-          </View>
-
-          <View style={styles.macroItem}>
-            <View style={styles.macroHeader}>
-              <Text style={styles.macroName}>Sugar</Text>
-              <Text style={styles.macroValue}>{result.sugar}g</Text>
-            </View>
-            <View style={styles.progressBackground}>
-              <View
-                style={[
-                  styles.progressFill,
-                  { width: `${calculatePercentage(result.sugar, 25)}%`, backgroundColor: "#FF4D6D" },
-                ]}
-              />
-            </View>
-          </View>
-
-          <View style={styles.macroItem}>
-            <View style={styles.macroHeader}>
-              <Text style={styles.macroName}>Fiber</Text>
-              <Text style={styles.macroValue}>{result.fiber}g</Text>
-            </View>
-            <View style={styles.progressBackground}>
-              <View
-                style={[
-                  styles.progressFill,
-                  { width: `${calculatePercentage(result.fiber, 25)}%`, backgroundColor: "#7B2CBF" },
-                ]}
-              />
-            </View>
-          </View>
-        </View>
-
-        <View style={styles.vitaminsContainer}>
-          <Text style={styles.sectionTitle}>Vitamins & Minerals</Text>
-          <View style={styles.vitaminsGrid}>
-            {result.vitamins.map((vitamin, index) => (
-              <View key={index} style={styles.vitaminItem}>
-                <Text style={styles.vitaminName}>{vitamin.name}</Text>
-                <Text style={styles.vitaminAmount}>{vitamin.amount}</Text>
+        {/* All Ingredients Section */}
+        <View style={styles.ingredientsContainer}>
+          <Text style={styles.sectionTitle}>All Ingredients</Text>
+          <View style={styles.ingredientsList}>
+            {scannedItem.ingredients.map((ingredient, index) => (
+              <View key={index} style={styles.ingredientItem}>
+                <Text style={styles.ingredientText}>{ingredient}</Text>
               </View>
             ))}
           </View>
         </View>
 
-        <View style={styles.actionsContainer}>
-          <TouchableOpacity
-            style={[styles.actionButton, styles.primaryButton]}
-            onPress={() => {
-              // Navigate to save or share screen
-              // navigation.navigate('SaveResults');
-            }}
-          >
-            <Text style={styles.primaryButtonText}>Save Results</Text>
-          </TouchableOpacity>
+        {/* Matched Ingredients Section */}
+        {results.matchedIngredients.length > 0 && (
+          <View style={styles.matchedContainer}>
+            <Text style={styles.sectionTitle}>Found Ingredients You're Watching For</Text>
+            <View style={styles.ingredientsList}>
+              {results.matchedIngredients.map((ingredient, index) => (
+                <View key={index} style={styles.matchedItem}>
+                  <X width={20} height={20} color="#FF4D6D" />
+                  <Text style={styles.matchedText}>{ingredient}</Text>
+                </View>
+              ))}
+            </View>
+          </View>
+        )}
 
+        {/* Safe Ingredients Section */}
+        {results.safeIngredients.length > 0 && (
+          <View style={styles.safeIngredientsContainer}>
+            <Text style={styles.sectionTitle}>Not Found in This Product</Text>
+            <View style={styles.ingredientsList}>
+              {results.safeIngredients.map((ingredient, index) => (
+                <View key={index} style={styles.safeItem}>
+                  <Check width={20} height={20} color="#4CC9BE" />
+                  <Text style={styles.safeItemText}>{ingredient}</Text>
+                </View>
+              ))}
+            </View>
+          </View>
+        )}
+
+        <View style={styles.actionsContainer}>
           <TouchableOpacity
             style={[styles.actionButton, styles.secondaryButton]}
             onPress={() => {
-              // Navigate back to scan or home
               navigation.goBack()
             }}
           >
@@ -194,11 +175,19 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: "#495057",
   },
-  calorieCard: {
-    backgroundColor: "#4361EE",
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  loadingText: {
+    fontSize: 18,
+    color: '#495057',
+  },
+  summaryCard: {
+    backgroundColor: "#ffffff",
     borderRadius: 16,
     padding: 20,
-    alignItems: "center",
     marginBottom: 24,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
@@ -206,22 +195,59 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 3,
   },
-  calorieTitle: {
+  warningContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 16,
+    backgroundColor: 'rgba(255, 77, 109, 0.1)',
+    borderRadius: 12,
+  },
+  warningText: {
     fontSize: 16,
-    color: "rgba(255, 255, 255, 0.8)",
-    marginBottom: 8,
+    fontWeight: '600',
+    color: '#FF4D6D',
+    marginLeft: 12,
+    flex: 1,
   },
-  calorieValue: {
-    fontSize: 36,
-    fontWeight: "bold",
-    color: "#ffffff",
+  safeContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 16,
+    backgroundColor: 'rgba(76, 201, 190, 0.1)',
+    borderRadius: 12,
   },
-  calorieUnit: {
-    fontSize: 14,
-    color: "rgba(255, 255, 255, 0.8)",
-    marginTop: 4,
+  safeText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#4CC9BE',
+    marginLeft: 12,
+    flex: 1,
   },
-  macrosContainer: {
+  ingredientsContainer: {
+    backgroundColor: "#ffffff",
+    borderRadius: 16,
+    padding: 20,
+    marginBottom: 24,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  matchedContainer: {
+    backgroundColor: "#ffffff",
+    borderRadius: 16,
+    padding: 20,
+    marginBottom: 24,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  safeIngredientsContainer: {
     backgroundColor: "#ffffff",
     borderRadius: 16,
     padding: 20,
@@ -238,66 +264,46 @@ const styles = StyleSheet.create({
     color: "#212529",
     marginBottom: 16,
   },
-  macroItem: {
-    marginBottom: 16,
+  ingredientsList: {
+    marginTop: 8,
   },
-  macroHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
+  ingredientItem: {
+    backgroundColor: "#f1f3f5",
+    borderRadius: 8,
+    padding: 12,
     marginBottom: 8,
   },
-  macroName: {
-    fontSize: 16,
+  ingredientText: {
+    fontSize: 15,
     color: "#495057",
   },
-  macroValue: {
-    fontSize: 16,
-    fontWeight: "600",
-    color: "#212529",
+  matchedItem: {
+    backgroundColor: 'rgba(255, 77, 109, 0.1)',
+    borderRadius: 8,
+    padding: 12,
+    marginBottom: 8,
+    flexDirection: 'row',
+    alignItems: 'center',
   },
-  progressBackground: {
-    height: 10,
-    backgroundColor: "#e9ecef",
-    borderRadius: 5,
-    overflow: "hidden",
+  matchedText: {
+    fontSize: 15,
+    color: '#FF4D6D',
+    marginLeft: 8,
+    fontWeight: '500',
   },
-  progressFill: {
-    height: "100%",
-    borderRadius: 5,
+  safeItem: {
+    backgroundColor: 'rgba(76, 201, 190, 0.1)',
+    borderRadius: 8,
+    padding: 12,
+    marginBottom: 8,
+    flexDirection: 'row',
+    alignItems: 'center',
   },
-  vitaminsContainer: {
-    backgroundColor: "#ffffff",
-    borderRadius: 16,
-    padding: 20,
-    marginBottom: 24,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
-  },
-  vitaminsGrid: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    justifyContent: "space-between",
-  },
-  vitaminItem: {
-    width: "48%",
-    backgroundColor: "#f8f9fa",
-    borderRadius: 12,
-    padding: 16,
-    marginBottom: 12,
-    alignItems: "center",
-  },
-  vitaminName: {
-    fontSize: 14,
-    color: "#495057",
-    marginBottom: 4,
-  },
-  vitaminAmount: {
-    fontSize: 16,
-    fontWeight: "bold",
-    color: "#212529",
+  safeItemText: {
+    fontSize: 15,
+    color: '#4CC9BE',
+    marginLeft: 8,
+    fontWeight: '500',
   },
   actionsContainer: {
     marginBottom: 20,
@@ -307,14 +313,6 @@ const styles = StyleSheet.create({
     padding: 16,
     alignItems: "center",
     marginBottom: 12,
-  },
-  primaryButton: {
-    backgroundColor: "#4361EE",
-  },
-  primaryButtonText: {
-    color: "#ffffff",
-    fontSize: 16,
-    fontWeight: "600",
   },
   secondaryButton: {
     backgroundColor: "transparent",
@@ -329,4 +327,3 @@ const styles = StyleSheet.create({
 })
 
 export default ResultsScreen
-

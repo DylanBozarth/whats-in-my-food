@@ -19,7 +19,7 @@ export const MakeApiCalls = (barcode: Number) => {
 
     try {
       console.log('Trying get request');
-      const response = await axios.get(url, {timeout: 12000});
+      const response = await axios.get(url, {timeout: 4000});
       console.log('Response received:');
 
       if (response.status === 200) {

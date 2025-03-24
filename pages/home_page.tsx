@@ -21,7 +21,7 @@ export default function Homepage({ navigation }: { navigation: any }) {
             <Text style={styles.sectionTitle}>Ingredient Filter</Text>
             <TouchableOpacity style={styles.filterButton} onPress={() => setFilterModalVisible(true)}>
               <Ionicons name="options-outline" size={24} color="#007AFF" />
-              <Text style={styles.filterButtonText}>Filter</Text>
+              <Text style={styles.filterButtonText}>Search</Text>
             </TouchableOpacity>
           </View>
 
