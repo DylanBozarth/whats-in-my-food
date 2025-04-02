@@ -75,7 +75,7 @@ const ResultsScreen = ({ route }: any) => {
       // Check if we have scan results
       if (lastScanResult && lastScanResult.length > 0) {
         console.log("Processing scan results:", lastScanResult.length)
-
+        console.log(lastScanResult)
         // Process the ingredients
         const matched: string[] = []
         const safe: string[] = []
