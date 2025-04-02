@@ -13,7 +13,7 @@ export default function Homepage({ navigation }: { navigation: any }) {
     <ScrollView style={styles.scrollContainer}>
       <View style={styles.container}>
         <View style={styles.header}>
-          <Text style={styles.headerTitle}>What's In My Food</Text>
+          <Text style={styles.headerTitle}>What's In My Food?</Text>
         </View>
 
         <View style={styles.section}>
@@ -21,7 +21,7 @@ export default function Homepage({ navigation }: { navigation: any }) {
             <Text style={styles.sectionTitle}>Ingredient Filter</Text>
             <TouchableOpacity style={styles.filterButton} onPress={() => setFilterModalVisible(true)}>
               <Ionicons name="options-outline" size={24} color="#007AFF" />
-              <Text style={styles.filterButtonText}>Search</Text>
+              <Text style={styles.filterButtonText}>Search for Ingredients</Text>
             </TouchableOpacity>
           </View>
 
@@ -30,13 +30,13 @@ export default function Homepage({ navigation }: { navigation: any }) {
           <Text style={styles.infoText}>
             {lookingForThings.length
               ? `You're filtering for ${lookingForThings.length} ingredient${lookingForThings.length !== 1 ? "s" : ""}`
-              : "Tap the Filter button to select ingredients you want to avoid"}
+              : "Search for ingredients to be alerted to you want to avoid in your food"}
           </Text>
         </View>
 
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Scan a Product</Text>
-          <TouchableOpacity style={styles.scanButton} onPress={() => navigation.navigate("StartCamera")}>
+          <TouchableOpacity style={styles.scanButton} onPress={() => navigation.navigate("Scan")}>
             <Ionicons name="barcode-outline" size={24} color="#fff" />
             <Text style={styles.scanButtonText}>Scan Barcode</Text>
           </TouchableOpacity>
@@ -56,7 +56,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#f5f5f5",
   },
   container: {
-    flex: 1,
     padding: 16,
   },
   header: {
@@ -77,7 +76,9 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 2,
+    width: '100%',
   },
+  
   sectionHeader: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -87,6 +88,7 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 18,
     fontWeight: "bold",
+    textAlign: "center"
   },
   filterButton: {
     flexDirection: "row",

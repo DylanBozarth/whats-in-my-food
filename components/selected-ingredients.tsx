@@ -6,7 +6,7 @@ export default function SelectedIngredients() {
   const { lookingForThings, setLookingForThings } = useGlobalState()
 
   const removeIngredient = (ingredient: string) => {
-    setLookingForThings(lookingForThings.filter((item) => item !== ingredient))
+    setLookingForThings(lookingForThings.filter((item: string) => item !== ingredient))
   }
 
   if (!lookingForThings.length) {
@@ -19,19 +19,23 @@ export default function SelectedIngredients() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Selected Ingredients:</Text>
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
-        {lookingForThings.map((ingredient) => (
+      <Text style={styles.title}>You are searching for:</Text>
+      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
+        {lookingForThings.map((ingredient: string) => (
           <View key={ingredient} style={styles.chip}>
-            <Text style={styles.chipText}>{ingredient.charAt(0).toUpperCase() + ingredient.slice(1)}</Text>
-            <TouchableOpacity onPress={() => removeIngredient(ingredient)} style={styles.removeButton}>
-              <Ionicons name="close-circle" size={16} color="#666" />
+            <TouchableOpacity onPress={() => removeIngredient(ingredient)}>
+              <Text style={styles.chipText}>{ingredient.charAt(0).toUpperCase() + ingredient.slice(1)}</Text>
+            
+             
             </TouchableOpacity>
+            
           </View>
         ))}
+        <Text>Touch to remove ingredients</Text>
       </ScrollView>
     </View>
-  )
+  );
+  
 }
 
 const styles = StyleSheet.create({
@@ -45,20 +49,18 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
   },
   scrollContent: {
-    paddingHorizontal: 12,
+    paddingHorizontal: 16,
   },
   chip: {
-    flexDirection: "row",
-    alignItems: "center",
     backgroundColor: "#e0e0e0",
     borderRadius: 16,
-    paddingVertical: 6,
-    paddingHorizontal: 12,
-    marginHorizontal: 4,
+    paddingVertical: 2,
+    paddingHorizontal: 4,
+    
   },
   chipText: {
     fontSize: 14,
-    marginRight: 4,
+    margin: 6,
   },
   removeButton: {
     padding: 2,
@@ -71,5 +73,4 @@ const styles = StyleSheet.create({
     color: "#666",
     fontSize: 14,
   },
-})
-
+});
