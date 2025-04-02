@@ -230,19 +230,6 @@ const ResultsScreen = ({ route }: any) => {
           )}
         </View>
 
-        {/* All Ingredients Section */}
-        <View style={styles.ingredientsContainer}>
-          <Text style={styles.sectionTitle}>All Ingredients</Text>
-          <View style={styles.ingredientsList}>
-            {lastScanResult &&
-              lastScanResult.map((ingredient: string, index: number) => (
-                <View key={index} style={styles.ingredientItem}>
-                  <Text style={styles.ingredientText}>{ingredient}</Text>
-                </View>
-              ))}
-          </View>
-        </View>
-
         {/* Matched Ingredients Section */}
         {results.matchedIngredients.length > 0 && (
           <View style={styles.matchedContainer}>
@@ -272,6 +259,20 @@ const ResultsScreen = ({ route }: any) => {
             </View>
           </View>
         )}
+
+
+        {/* All Ingredients Section */}
+        <View style={styles.ingredientsContainer}>
+          <Text style={styles.sectionTitle}>All Ingredients</Text>
+          <View style={styles.ingredientsList}>
+            {lastScanResult &&
+              lastScanResult.map((ingredient: string, index: number) => (
+                <View key={index} style={styles.ingredientItem}>
+                  <Text style={styles.ingredientText}>{ingredient}</Text>
+                </View>
+              ))}
+          </View>
+        </View>
 
         <View style={styles.actionsContainer}>
           <TouchableOpacity
