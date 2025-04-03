@@ -5,6 +5,7 @@ import { useNavigation } from "@react-navigation/native"
 import { useState, useEffect, useRef } from "react"
 import { useGlobalState } from "../components/global_variables"
 import { Check, X, AlertTriangle, RefreshCw } from "react-native-feather"
+import axios from "axios"
 
 interface ResultsState {
   matchedIngredients: string[]
@@ -14,7 +15,7 @@ interface ResultsState {
 
 const ResultsScreen = ({ route }: any) => {
   const navigation = useNavigation()
-  const { lookingForThings, lastScanResult, lastScanBarcode } = useGlobalState()
+  const { lookingForThings, lastScanResult, setLastScanResult, lastScanBarcode } = useGlobalState()
 
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState(false)
@@ -34,94 +35,136 @@ const ResultsScreen = ({ route }: any) => {
     hasProcessedData: hasProcessedData.current,
     lastScanResultLength: lastScanResult?.length || 0,
     lookingForThingsLength: lookingForThings?.length || 0,
+    lastScanBarcode,
   })
 
+  // Fetch product data when the screen loads
   useEffect(() => {
     console.log("Effect running, loading:", isLoading)
 
-    // Only set up the timeout if we're still loading and haven't processed data
-    if (isLoading && !hasProcessedData.current) {
-      console.log("Setting up timeout")
+    // Only fetch if we have a barcode and haven't processed data yet
+    if (lastScanBarcode && !hasProcessedData.current && isLoading) {
+      const fetchProductData = async () => {
+        try {
+          console.log("Making API request for barcode:", lastScanBarcode)
+          const url = `https://world.openfoodfacts.org/api/v0/product/${lastScanBarcode}.json`
+          const response = await axios.get(url, { timeout: 4000 })
 
-      // Set a timeout to prevent infinite loading
-      const timeoutId = setTimeout(() => {
-        console.log("Timeout triggered after 10 seconds")
-        if (isLoading && !hasProcessedData.current) {
-          console.log("Still loading after timeout, showing error")
+          if (response.status === 200 && response.data.status === 1) {
+            console.log("API request successful")
+
+            // Extract the ingredients from the API response
+            let ingredients = []
+            let productName = `Product ${lastScanBarcode}`
+
+            // Get product name if available
+            if (response.data.product && response.data.product.product_name) {
+              productName = response.data.product.product_name
+            }
+
+            // Check if the product has ingredients_text
+            if (response.data.product && response.data.product.ingredients_text) {
+              // Split the ingredients text by commas and clean up each ingredient
+              ingredients = response.data.product.ingredients_text
+                .split(",")
+                .map((ingredient: string) => ingredient.trim())
+                .filter((ingredient: string) => ingredient.length > 0)
+            }
+            // If no ingredients_text, try to get from ingredients array
+            else if (
+              response.data.product &&
+              response.data.product.ingredients &&
+              Array.isArray(response.data.product.ingredients)
+            ) {
+              ingredients = response.data.product.ingredients.map((ing: any) => ing.text || ing.id).filter((text: string) => text)
+            }
+
+            console.log("Extracted ingredients:", ingredients)
+
+            // Store the ingredients in global state
+            setLastScanResult(ingredients)
+
+            // Process the ingredients using the existing logic
+            processData(ingredients, productName)
+          } else {
+            console.warn("API request failed or product not found")
+            setIsLoading(false)
+            setError(true)
+          }
+        } catch (err) {
+          console.error("Error fetching product data:", err)
           setIsLoading(false)
           setError(true)
         }
-      }, 10000) // 10 second timeout
-
-      // Clear timeout if component unmounts or if loading completes
-      return () => {
-        console.log("Clearing timeout")
-        clearTimeout(timeoutId)
       }
-    }
-  }, [isLoading])
 
-  // Separate effect to process data
-  useEffect(() => {
-    console.log("Data processing effect running")
-
-    // Don't process if we're not loading or already processed
-    if (!isLoading || hasProcessedData.current) {
-      console.log("Skipping processing - not loading or already processed")
-      return
+      fetchProductData()
     }
 
+    // Set a timeout to prevent infinite loading
+    const timeoutId = setTimeout(() => {
+      console.log("Timeout triggered after 10 seconds")
+      if (isLoading && !hasProcessedData.current) {
+        console.log("Still loading after timeout, showing error")
+        setIsLoading(false)
+        setError(true)
+      }
+    }, 10000) // 10 second timeout
+
+    // Clear timeout if component unmounts or if loading completes
+    return () => {
+      console.log("Clearing timeout")
+      clearTimeout(timeoutId)
+    }
+  }, [isLoading, lastScanBarcode])
+
+  // Process the data once we have ingredients
+  const processData = (ingredients: string[], productName: string) => {
     try {
-      // Check if we have scan results
-      if (lastScanResult && lastScanResult.length > 0) {
-        console.log("Processing scan results:", lastScanResult.length)
-        console.log(lastScanResult)
-        // Process the ingredients
-        const matched: string[] = []
-        const safe: string[] = []
+      console.log("Processing ingredients:", ingredients.length)
 
-        // Check which ingredients from lookingForThings are in lastScanResult
-        if (lookingForThings && lookingForThings.length > 0) {
-          console.log("Processing lookingForThings:", lookingForThings.length)
+      // Process the ingredients
+      const matched: string[] = []
+      const safe: string[] = []
 
-          lookingForThings.forEach((ingredient: string) => {
-            // Check if any of the scanned ingredients contain this ingredient
-            // Using lowercase for case-insensitive comparison
-            const found = lastScanResult.some((itemIngredient: string) =>
-              itemIngredient.toLowerCase().includes(ingredient.toLowerCase()),
-            )
+      // Check which ingredients from lookingForThings are in the ingredients list
+      if (lookingForThings && lookingForThings.length > 0) {
+        console.log("Processing lookingForThings:", lookingForThings.length)
 
-            if (found) {
-              matched.push(ingredient)
-            } else {
-              safe.push(ingredient)
-            }
-          })
+        lookingForThings.forEach((ingredient: string) => {
+          // Check if any of the scanned ingredients contain this ingredient
+          // Using lowercase for case-insensitive comparison
+          const found = ingredients.some((itemIngredient: string) =>
+            itemIngredient.toLowerCase().includes(ingredient.toLowerCase()),
+          )
 
-          console.log("Matched ingredients:", matched.length)
-          console.log("Safe ingredients:", safe.length)
-        }
-
-        setResults({
-          matchedIngredients: matched,
-          safeIngredients: safe,
-          productName: `Product ${lastScanBarcode || ""}`,
+          if (found) {
+            matched.push(ingredient)
+          } else {
+            safe.push(ingredient)
+          }
         })
 
-        // Mark as processed and stop loading
-        hasProcessedData.current = true
-        setIsLoading(false)
-        console.log("Data processed successfully, loading complete")
-      } else {
-        console.log("No scan results yet, continuing to wait")
-        // Keep loading, don't set error yet
+        console.log("Matched ingredients:", matched.length)
+        console.log("Safe ingredients:", safe.length)
       }
+
+      setResults({
+        matchedIngredients: matched,
+        safeIngredients: safe,
+        productName: productName,
+      })
+
+      // Mark as processed and stop loading
+      hasProcessedData.current = true
+      setIsLoading(false)
+      console.log("Data processed successfully, loading complete")
     } catch (err) {
       console.error("Error processing ingredients:", err)
       setIsLoading(false)
       setError(true)
     }
-  }, [lastScanResult, lookingForThings, lastScanBarcode, isLoading])
+  }
 
   const handleRetry = () => {
     console.log("Retry button pressed")
@@ -130,43 +173,8 @@ const ResultsScreen = ({ route }: any) => {
     setIsLoading(true)
     setError(false)
 
-    // Simulate a fresh load by waiting a moment before checking global state again
-    setTimeout(() => {
-      console.log("Retry timeout complete, checking data")
-      if (lastScanResult && lastScanResult.length > 0) {
-        console.log("Data available for retry")
-        // Re-run the analysis logic
-        const matched: string[] = []
-        const safe: string[] = []
-
-        if (lookingForThings && lookingForThings.length > 0) {
-          lookingForThings.forEach((ingredient: string) => {
-            const found = lastScanResult.some((itemIngredient: string) =>
-              itemIngredient.toLowerCase().includes(ingredient.toLowerCase()),
-            )
-
-            if (found) {
-              matched.push(ingredient)
-            } else {
-              safe.push(ingredient)
-            }
-          })
-        }
-
-        setResults({
-          matchedIngredients: matched,
-          safeIngredients: safe,
-          productName: `Product ${lastScanBarcode || ""}`,
-        })
-
-        hasProcessedData.current = true
-        setIsLoading(false)
-      } else {
-        console.log("No data available after retry")
-        setIsLoading(false)
-        setError(true)
-      }
-    }, 1000)
+    // Navigate back to scanner to try again
+    navigation.goBack()
   }
 
   if (isLoading) {
@@ -259,7 +267,6 @@ const ResultsScreen = ({ route }: any) => {
             </View>
           </View>
         )}
-
 
         {/* All Ingredients Section */}
         <View style={styles.ingredientsContainer}>
