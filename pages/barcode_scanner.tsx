@@ -6,6 +6,9 @@ import { Button, StyleSheet, Text, TouchableOpacity, View, ActivityIndicator } f
 import { useFocusEffect } from "@react-navigation/native"
 import { useGlobalState } from "../components/global_variables"
 
+// Import axios at the top of the file with other imports
+import axios from "axios"
+
 export const StartCamera = ({ navigation }: { navigation: any }) => {
   const [facing, setFacing] = useState<CameraType>("back")
   const [permission, requestPermission] = useCameraPermissions()
@@ -42,10 +45,10 @@ export const StartCamera = ({ navigation }: { navigation: any }) => {
     )
   }
 
+  // Replace the handleBarCodeScanned function with this implementation
   const handleBarCodeScanned = async (barcode: number) => {
     const now = Date.now()
     if (now - lastScanned.current < 2000) {
-      //console.log('Skipping scan due to debounce');
       return
     }
 
@@ -62,27 +65,52 @@ export const StartCamera = ({ navigation }: { navigation: any }) => {
       console.log("Barcode scanned:", barcode)
       setLastScanBarcode(barcode)
 
-      // Simulate fetching ingredient data
-      // In a real app, you would call your API here
+      // Make the actual API call to OpenFoodFacts
+      const url = `https://world.openfoodfacts.org/api/v0/product/${barcode}.json`
+
       try {
-        // Example: const ingredients = await MakeApiCalls.getIngredients(barcode);
+        console.log("Making API request to OpenFoodFacts")
+        const response = await axios.get(url, { timeout: 4000 })
 
-        // For testing, let's simulate an API call with a timeout
-        await new Promise((resolve) => setTimeout(resolve, 2000))
+        if (response.status === 200 && response.data.status === 1) {
+          console.log("API request successful")
 
-        // Simulate some ingredient data (replace with your actual API call)
-        const mockIngredients = ["Water", "Sugar", "Natural Flavors", "Citric Acid", "Sodium Citrate"]
+          // Extract the ingredients from the API response
+          let ingredients = []
 
-        // Set the ingredients in the global state
-        setLastScanResult(mockIngredients)
+          // Check if the product has ingredients_text
+          if (response.data.product && response.data.product.ingredients_text) {
+            // Split the ingredients text by commas and clean up each ingredient
+            ingredients = response.data.product.ingredients_text
+              .split(",")
+              .map((ingredient: string) => ingredient.trim())
+              .filter((ingredient: string) => ingredient.length > 0)
+          }
+          // If no ingredients_text, try to get from ingredients array
+          else if (
+            response.data.product &&
+            response.data.product.ingredients &&
+            Array.isArray(response.data.product.ingredients)
+          ) {
+            ingredients = response.data.product.ingredients.map((ing: any) => ing.text || ing.id).filter((text: string) => text)
+          }
 
-        // Navigate to results screen
-        navigation.navigate("Results")
+          console.log("Extracted ingredients:", ingredients)
+
+          // Store just the ingredients array in global state
+          setLastScanResult(ingredients)
+
+          // Navigate to results screen
+          navigation.navigate("Results")
+        } else {
+          console.warn("API request failed or product not found:", response.status)
+          setLastScanResult([])
+          navigation.navigate("Results") // Still navigate to results for error handling
+        }
       } catch (apiError) {
         console.error("Error fetching ingredients:", apiError)
-        // Still navigate to results, the error handling is there
         setLastScanResult([])
-        navigation.navigate("Results")
+        navigation.navigate("Results") // Still navigate to results, the error handling is there
       }
     } catch (error) {
       console.error("Error scanning barcode:", error)
