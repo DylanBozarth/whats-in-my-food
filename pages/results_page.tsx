@@ -15,7 +15,7 @@ interface ResultsState {
 
 const ResultsScreen = ({ route }: any) => {
   const navigation = useNavigation()
-  const { lookingForThings, lastScanResult, setLastScanResult, lastScanBarcode } = useGlobalState()
+  const { lookingForThings, lastScanResult, setLastScanResult, lastScanBarcode, setLastScanBarcode } = useGlobalState()
 
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState(false)
@@ -25,25 +25,39 @@ const ResultsScreen = ({ route }: any) => {
     productName: "Scanned Product",
   })
 
-  // Use a ref to track if we've processed data
-  const hasProcessedData = useRef(false)
+  // Use a ref to track if we've processed data for the CURRENT barcode
+  const processedBarcodeRef = useRef<number | null>(null)
 
   // Debug logging
-  console.log("Component rendered with state:", {
+  console.log("Results component rendered with state:", {
     isLoading,
     error,
-    hasProcessedData: hasProcessedData.current,
+    processedBarcode: processedBarcodeRef.current,
+    lastScanBarcode,
     lastScanResultLength: lastScanResult?.length || 0,
     lookingForThingsLength: lookingForThings?.length || 0,
-    lastScanBarcode,
   })
 
-  // Fetch product data when the screen loads
+  // Reset state when a new barcode is detected
   useEffect(() => {
-    console.log("Effect running, loading:", isLoading)
+    if (lastScanBarcode && lastScanBarcode !== processedBarcodeRef.current) {
+      console.log("New barcode detected, resetting state:", lastScanBarcode)
+      setIsLoading(true)
+      setError(false)
+      setResults({
+        matchedIngredients: [],
+        safeIngredients: [],
+        productName: "Scanned Product",
+      })
+    }
+  }, [lastScanBarcode])
 
-    // Only fetch if we have a barcode and haven't processed data yet
-    if (lastScanBarcode && !hasProcessedData.current && isLoading) {
+  // Fetch product data when the screen loads or when barcode changes
+  useEffect(() => {
+    console.log("Results effect running, loading:", isLoading, "barcode:", lastScanBarcode)
+
+    // Only fetch if we have a barcode and haven't processed THIS barcode yet
+    if (lastScanBarcode && processedBarcodeRef.current !== lastScanBarcode && isLoading) {
       const fetchProductData = async () => {
         try {
           console.log("Making API request for barcode:", lastScanBarcode)
@@ -76,7 +90,9 @@ const ResultsScreen = ({ route }: any) => {
               response.data.product.ingredients &&
               Array.isArray(response.data.product.ingredients)
             ) {
-              ingredients = response.data.product.ingredients.map((ing: any) => ing.text || ing.id).filter((text: string) => text)
+              ingredients = response.data.product.ingredients
+                .map((ing: any) => ing.text || ing.id)
+                .filter((text: string) => text)
             }
 
             console.log("Extracted ingredients:", ingredients)
@@ -86,6 +102,9 @@ const ResultsScreen = ({ route }: any) => {
 
             // Process the ingredients using the existing logic
             processData(ingredients, productName)
+
+            // Mark this barcode as processed
+            processedBarcodeRef.current = lastScanBarcode
           } else {
             console.warn("API request failed or product not found")
             setIsLoading(false)
@@ -104,7 +123,7 @@ const ResultsScreen = ({ route }: any) => {
     // Set a timeout to prevent infinite loading
     const timeoutId = setTimeout(() => {
       console.log("Timeout triggered after 10 seconds")
-      if (isLoading && !hasProcessedData.current) {
+      if (isLoading) {
         console.log("Still loading after timeout, showing error")
         setIsLoading(false)
         setError(true)
@@ -155,8 +174,7 @@ const ResultsScreen = ({ route }: any) => {
         productName: productName,
       })
 
-      // Mark as processed and stop loading
-      hasProcessedData.current = true
+      // Stop loading
       setIsLoading(false)
       console.log("Data processed successfully, loading complete")
     } catch (err) {
@@ -166,14 +184,19 @@ const ResultsScreen = ({ route }: any) => {
     }
   }
 
+  const handleScanAnother = () => {
+    console.log("Scan Another button pressed")
+    // Reset the processed barcode ref so we can scan the same item again if needed
+    processedBarcodeRef.current = null
+    navigation.goBack()
+  }
+
   const handleRetry = () => {
     console.log("Retry button pressed")
-    // Reset state for retry
-    hasProcessedData.current = false
+    // Reset processing state
+    processedBarcodeRef.current = null
     setIsLoading(true)
     setError(false)
-
-    // Navigate back to scanner to try again
     navigation.goBack()
   }
 
@@ -204,7 +227,7 @@ const ResultsScreen = ({ route }: any) => {
             <RefreshCw width={20} height={20} color="#FFFFFF" />
             <Text style={styles.retryButtonText}>Try Again</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
+          <TouchableOpacity style={styles.backButton} onPress={handleScanAnother}>
             <Text style={styles.backButtonText}>Go Back</Text>
           </TouchableOpacity>
         </View>
@@ -218,6 +241,7 @@ const ResultsScreen = ({ route }: any) => {
         <View style={styles.header}>
           <Text style={styles.title}>Ingredient Check Results</Text>
           <Text style={styles.subtitle}>{results.productName}</Text>
+          <Text style={styles.barcodeText}>Barcode: {lastScanBarcode}</Text>
         </View>
 
         {/* Summary Card */}
@@ -272,22 +296,20 @@ const ResultsScreen = ({ route }: any) => {
         <View style={styles.ingredientsContainer}>
           <Text style={styles.sectionTitle}>All Ingredients</Text>
           <View style={styles.ingredientsList}>
-            {lastScanResult &&
+            {lastScanResult && lastScanResult.length > 0 ? (
               lastScanResult.map((ingredient: string, index: number) => (
                 <View key={index} style={styles.ingredientItem}>
                   <Text style={styles.ingredientText}>{ingredient}</Text>
                 </View>
-              ))}
+              ))
+            ) : (
+              <Text style={styles.noIngredientsText}>No ingredients information available</Text>
+            )}
           </View>
         </View>
 
         <View style={styles.actionsContainer}>
-          <TouchableOpacity
-            style={[styles.actionButton, styles.secondaryButton]}
-            onPress={() => {
-              navigation.goBack()
-            }}
-          >
+          <TouchableOpacity style={[styles.actionButton, styles.secondaryButton]} onPress={handleScanAnother}>
             <Text style={styles.secondaryButtonText}>Scan Another</Text>
           </TouchableOpacity>
         </View>
@@ -317,6 +339,11 @@ const styles = StyleSheet.create({
   subtitle: {
     fontSize: 18,
     color: "#495057",
+    marginBottom: 4,
+  },
+  barcodeText: {
+    fontSize: 14,
+    color: "#6c757d",
   },
   loadingContainer: {
     flex: 1,
@@ -482,6 +509,13 @@ const styles = StyleSheet.create({
     fontSize: 15,
     color: "#495057",
   },
+  noIngredientsText: {
+    fontSize: 15,
+    color: "#6c757d",
+    fontStyle: "italic",
+    textAlign: "center",
+    padding: 12,
+  },
   matchedItem: {
     backgroundColor: "rgba(255, 77, 109, 0.1)",
     borderRadius: 8,
@@ -532,4 +566,3 @@ const styles = StyleSheet.create({
 })
 
 export default ResultsScreen
-

@@ -1,7 +1,7 @@
 "use client"
 
+import React, { useState, useRef } from "react"
 import { CameraView, type CameraType, useCameraPermissions } from "expo-camera"
-import { useState, useRef } from "react"
 import { Button, StyleSheet, Text, TouchableOpacity, View } from "react-native"
 import { useFocusEffect } from "@react-navigation/native"
 import { useGlobalState } from "../components/global_variables"
@@ -13,11 +13,25 @@ export const StartCamera = ({ navigation }: { navigation: any }) => {
   const lastScanned = useRef<number>(0) // Ref to track the last scanned timestamp
   const { setLastScanBarcode } = useGlobalState()
 
-  useFocusEffect(() => {
-    // Reset states when screen gains focus
+  // Reset function to enable scanning again
+  const resetScannerState = () => {
+    console.log("Resetting scanner state - enabling scanning")
     lastScanned.current = 0
-    setScanningEnabled(true) // Re-enable scanning when returning to this screen
-  })
+    setScanningEnabled(true)
+    // DO NOT reset the lastScanBarcode here - that would break the results page
+  }
+
+  // Use useFocusEffect to reset scanner when screen is focused
+  useFocusEffect(
+    React.useCallback(() => {
+      console.log("Scanner screen focused via useFocusEffect")
+      resetScannerState()
+
+      return () => {
+        console.log("Scanner screen unfocused via useFocusEffect")
+      }
+    }, []),
+  )
 
   if (!permission) {
     return <View />
@@ -36,12 +50,17 @@ export const StartCamera = ({ navigation }: { navigation: any }) => {
     // Simple debounce to prevent multiple scans
     const now = Date.now()
     if (now - lastScanned.current < 1000 || !scanningEnabled) {
+      console.log("Scan ignored: debounce or scanning disabled", {
+        timeSinceLastScan: now - lastScanned.current,
+        scanningEnabled,
+      })
       return
     }
 
     // Immediately disable scanning and update timestamp
     lastScanned.current = now
     setScanningEnabled(false)
+    console.log("Scanning disabled after successful scan")
 
     // Set the barcode in global state
     console.log("Barcode scanned:", barcode)
@@ -54,6 +73,12 @@ export const StartCamera = ({ navigation }: { navigation: any }) => {
 
   const toggleCameraFacing = () => {
     setFacing((current) => (current === "back" ? "front" : "back"))
+  }
+
+  // Add a manual reset button for testing
+  const manualReset = () => {
+    console.log("Manual reset triggered")
+    resetScannerState()
   }
 
   return (
@@ -70,13 +95,25 @@ export const StartCamera = ({ navigation }: { navigation: any }) => {
         }
       >
         <View style={styles.overlay}>
+          <View style={styles.scannerStatus}>
+            <Text style={styles.statusText}>Scanner {scanningEnabled ? "Ready" : "Disabled"}</Text>
+          </View>
+
           <View style={styles.scannerGuide}>
             <Text style={styles.scannerText}>Align barcode within frame</Text>
           </View>
 
-          <TouchableOpacity style={styles.button} onPress={toggleCameraFacing}>
-            <Text style={styles.text}>Flip Camera</Text>
-          </TouchableOpacity>
+          <View style={styles.buttonContainer}>
+            <TouchableOpacity style={styles.button} onPress={toggleCameraFacing}>
+              <Text style={styles.text}>Flip Camera</Text>
+            </TouchableOpacity>
+
+            {!scanningEnabled && (
+              <TouchableOpacity style={[styles.button, styles.resetButton]} onPress={manualReset}>
+                <Text style={styles.text}>Reset Scanner</Text>
+              </TouchableOpacity>
+            )}
+          </View>
         </View>
       </CameraView>
     </View>
@@ -107,11 +144,29 @@ const styles = StyleSheet.create({
     backgroundColor: "transparent",
     padding: 20,
   },
+  scannerStatus: {
+    backgroundColor: "rgba(0, 0, 0, 0.7)",
+    padding: 8,
+    borderRadius: 4,
+    marginTop: 40,
+  },
+  statusText: {
+    color: "#FFFFFF",
+    fontSize: 14,
+  },
+  buttonContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    width: "100%",
+    marginBottom: 40,
+  },
   button: {
     backgroundColor: "rgba(0, 0, 0, 0.5)",
     padding: 10,
     borderRadius: 5,
-    marginBottom: 40,
+  },
+  resetButton: {
+    backgroundColor: "rgba(255, 0, 0, 0.5)",
   },
   text: {
     fontSize: 18,
@@ -135,4 +190,3 @@ const styles = StyleSheet.create({
     borderRadius: 4,
   },
 })
-
