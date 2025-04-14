@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "whatsinmyfood",
-    "slug": "whatsinmyfood",
+    "slug": "whats-in-my-food",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -11,7 +11,8 @@
     "ios": {
       "supportsTablet": true,
       "infoPlist": {
-        "NSCameraUsageDescription": "$(PRODUCT_NAME) needs access to your Camera."
+        "NSCameraUsageDescription": "$(PRODUCT_NAME) needs access to your Camera.",
+        "ITSAppUsesNonExemptEncryption": false
       },
       "bundleIdentifier": "com.dylanbozarthwork.whatsinmyfood"
     },
@@ -21,7 +22,8 @@
         "backgroundColor": "#ffffff"
       },
       "permissions": [
-        "android.permission.CAMERA"
+        "android.permission.CAMERA",
+        "android.permission.RECORD_AUDIO"
       ],
       "package": "com.dylanbozarthwork.whatsinmyfood"
     },
@@ -48,10 +50,27 @@
           "microphonePermission": "Allow $(PRODUCT_NAME) to access your microphone",
           "recordAudioAndroid": true
         }
+      ],
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "kotlinVersion": "1.9.25"
+          }
+        }
       ]
     ],
     "experiments": {
       "typedRoutes": true
-    }
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "37b5ee22-07d2-4c00-a69d-c46f56e723e0"
+      }
+    },
+    "owner": "dylanbozarthdev"
   }
 }
