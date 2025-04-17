@@ -1,6 +1,15 @@
 "use client"
 
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, SafeAreaView, ActivityIndicator } from "react-native"
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  TouchableOpacity,
+  SafeAreaView,
+  ActivityIndicator,
+  Alert,
+} from "react-native"
 import { useNavigation } from "@react-navigation/native"
 import { useState, useEffect, useRef } from "react"
 import { useGlobalState } from "../components/global_variables"
@@ -111,6 +120,9 @@ const ResultsScreen = ({ route }: any) => {
             setError(true)
           }
         } catch (err) {
+          Alert.alert("Error", "Failed to fetch product data. Please check your connection and try again.", [
+            { text: "OK" },
+          ])
           console.error("Error fetching product data:", err)
           setIsLoading(false)
           setError(true)
@@ -178,6 +190,7 @@ const ResultsScreen = ({ route }: any) => {
       setIsLoading(false)
       console.log("Data processed successfully, loading complete")
     } catch (err) {
+      Alert.alert("Error", "Failed to process ingredients data.", [{ text: "OK" }])
       console.error("Error processing ingredients:", err)
       setIsLoading(false)
       setError(true)
@@ -198,6 +211,22 @@ const ResultsScreen = ({ route }: any) => {
     setIsLoading(true)
     setError(false)
     navigation.goBack()
+  }
+
+  // Check if we need to show the "scan something" screen
+  if (!lastScanBarcode && !isLoading && !error) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <View style={styles.emptyStateContainer}>
+          <AlertTriangle width={48} height={48} color="#4361EE" />
+          <Text style={styles.emptyStateTitle}>No Product Scanned</Text>
+          <Text style={styles.emptyStateText}>You need to scan something first to see ingredient analysis.</Text>
+          <TouchableOpacity style={styles.retryButton} onPress={handleScanAnother}>
+            <Text style={styles.retryButtonText}>Scan a Product</Text>
+          </TouchableOpacity>
+        </View>
+      </SafeAreaView>
+    )
   }
 
   if (isLoading) {
@@ -562,6 +591,25 @@ const styles = StyleSheet.create({
     color: "#4361EE",
     fontSize: 16,
     fontWeight: "600",
+  },
+  emptyStateContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 20,
+  },
+  emptyStateTitle: {
+    fontSize: 20,
+    fontWeight: "bold",
+    color: "#212529",
+    marginTop: 16,
+    marginBottom: 8,
+  },
+  emptyStateText: {
+    fontSize: 16,
+    color: "#495057",
+    textAlign: "center",
+    marginBottom: 24,
   },
 })
 
