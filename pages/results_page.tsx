@@ -205,12 +205,10 @@ const ResultsScreen = ({ route }: any) => {
   }
 
   const handleRetry = () => {
-    console.log("Retry button pressed")
     // Reset processing state
     processedBarcodeRef.current = null
     setIsLoading(true)
     setError(false)
-    navigation.goBack()
   }
 
   // Check if we need to show the "scan something" screen
