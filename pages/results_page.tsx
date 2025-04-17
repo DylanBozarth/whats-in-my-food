@@ -9,17 +9,20 @@ import {
   SafeAreaView,
   ActivityIndicator,
   Alert,
+  RefreshControl,
+  Image,
 } from "react-native"
 import { useNavigation } from "@react-navigation/native"
-import { useState, useEffect, useRef } from "react"
+import { useState, useEffect, useRef, useCallback } from "react"
 import { useGlobalState } from "../components/global_variables"
-import { Check, X, AlertTriangle, RefreshCw } from "react-native-feather"
+import { Check, X, AlertTriangle, RefreshCw, Image as ImageIcon } from "react-native-feather"
 import axios from "axios"
 
 interface ResultsState {
   matchedIngredients: string[]
   safeIngredients: string[]
   productName: string
+  imageUrl: string | null
 }
 
 const ResultsScreen = ({ route }: any) => {
@@ -28,10 +31,13 @@ const ResultsScreen = ({ route }: any) => {
 
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState(false)
+  const [refreshing, setRefreshing] = useState(false)
+  const [imageError, setImageError] = useState(false)
   const [results, setResults] = useState<ResultsState>({
     matchedIngredients: [],
     safeIngredients: [],
     productName: "Scanned Product",
+    imageUrl: null,
   })
 
   // Use a ref to track if we've processed data for the CURRENT barcode
@@ -41,6 +47,7 @@ const ResultsScreen = ({ route }: any) => {
   console.log("Results component rendered with state:", {
     isLoading,
     error,
+    refreshing,
     processedBarcode: processedBarcodeRef.current,
     lastScanBarcode,
     lastScanResultLength: lastScanResult?.length || 0,
@@ -53,13 +60,103 @@ const ResultsScreen = ({ route }: any) => {
       console.log("New barcode detected, resetting state:", lastScanBarcode)
       setIsLoading(true)
       setError(false)
+      setImageError(false)
       setResults({
         matchedIngredients: [],
         safeIngredients: [],
         productName: "Scanned Product",
+        imageUrl: null,
       })
     }
   }, [lastScanBarcode])
+
+  // Function to fetch product data
+  const fetchProductData = async () => {
+    if (!lastScanBarcode) return
+
+    try {
+      console.log("Making API request for barcode:", lastScanBarcode)
+      const url = `https://world.openfoodfacts.org/api/v0/product/${lastScanBarcode}.json`
+      const response = await axios.get(url, { timeout: 4000 })
+
+      if (response.status === 200 && response.data.status === 1) {
+        console.log("API request successful")
+
+        // Extract the ingredients from the API response
+        let ingredients = []
+        let productName = `Product ${lastScanBarcode}`
+        let imageUrl = null
+
+        // Get product name if available
+        if (response.data.product && response.data.product.product_name) {
+          productName = response.data.product.product_name
+        }
+
+        // Get product image if available
+        if (response.data.product) {
+          // Try to get the front image first
+          if (response.data.product.image_front_url) {
+            imageUrl = response.data.product.image_front_url
+          }
+          // Fall back to the main image
+          else if (response.data.product.image_url) {
+            imageUrl = response.data.product.image_url
+          }
+          // Try other image fields if available
+          else if (response.data.product.selected_images?.front?.display?.url) {
+            imageUrl = response.data.product.selected_images.front.display.url
+          } else if (response.data.product.selected_images?.front?.small?.url) {
+            imageUrl = response.data.product.selected_images.front.small.url
+          }
+        }
+
+        console.log("Product image URL:", imageUrl)
+
+        // Check if the product has ingredients_text
+        if (response.data.product && response.data.product.ingredients_text) {
+          // Split the ingredients text by commas and clean up each ingredient
+          ingredients = response.data.product.ingredients_text
+            .split(",")
+            .map((ingredient: string) => ingredient.trim())
+            .filter((ingredient: string) => ingredient.length > 0)
+        }
+        // If no ingredients_text, try to get from ingredients array
+        else if (
+          response.data.product &&
+          response.data.product.ingredients &&
+          Array.isArray(response.data.product.ingredients)
+        ) {
+          ingredients = response.data.product.ingredients
+            .map((ing: any) => ing.text || ing.id)
+            .filter((text: string) => text)
+        }
+
+        console.log("Extracted ingredients:", ingredients)
+
+        // Store the ingredients in global state
+        setLastScanResult(ingredients)
+
+        // Process the ingredients using the existing logic
+        processData(ingredients, productName, imageUrl)
+
+        // Mark this barcode as processed
+        processedBarcodeRef.current = lastScanBarcode
+      } else {
+        console.warn("API request failed or product not found")
+        setIsLoading(false)
+        setRefreshing(false)
+        setError(true)
+      }
+    } catch (err) {
+      Alert.alert("Error", "Failed to fetch product data. Please check your connection and try again.", [
+        { text: "OK" },
+      ])
+      console.error("Error fetching product data:", err)
+      setIsLoading(false)
+      setRefreshing(false)
+      setError(true)
+    }
+  }
 
   // Fetch product data when the screen loads or when barcode changes
   useEffect(() => {
@@ -67,90 +164,29 @@ const ResultsScreen = ({ route }: any) => {
 
     // Only fetch if we have a barcode and haven't processed THIS barcode yet
     if (lastScanBarcode && processedBarcodeRef.current !== lastScanBarcode && isLoading) {
-      const fetchProductData = async () => {
-        try {
-          console.log("Making API request for barcode:", lastScanBarcode)
-          const url = `https://world.openfoodfacts.org/api/v0/product/${lastScanBarcode}.json`
-          const response = await axios.get(url, { timeout: 4000 })
+      fetchProductData()
 
-          if (response.status === 200 && response.data.status === 1) {
-            console.log("API request successful")
-
-            // Extract the ingredients from the API response
-            let ingredients = []
-            let productName = `Product ${lastScanBarcode}`
-
-            // Get product name if available
-            if (response.data.product && response.data.product.product_name) {
-              productName = response.data.product.product_name
-            }
-
-            // Check if the product has ingredients_text
-            if (response.data.product && response.data.product.ingredients_text) {
-              // Split the ingredients text by commas and clean up each ingredient
-              ingredients = response.data.product.ingredients_text
-                .split(",")
-                .map((ingredient: string) => ingredient.trim())
-                .filter((ingredient: string) => ingredient.length > 0)
-            }
-            // If no ingredients_text, try to get from ingredients array
-            else if (
-              response.data.product &&
-              response.data.product.ingredients &&
-              Array.isArray(response.data.product.ingredients)
-            ) {
-              ingredients = response.data.product.ingredients
-                .map((ing: any) => ing.text || ing.id)
-                .filter((text: string) => text)
-            }
-
-            console.log("Extracted ingredients:", ingredients)
-
-            // Store the ingredients in global state
-            setLastScanResult(ingredients)
-
-            // Process the ingredients using the existing logic
-            processData(ingredients, productName)
-
-            // Mark this barcode as processed
-            processedBarcodeRef.current = lastScanBarcode
-          } else {
-            console.warn("API request failed or product not found")
-            setIsLoading(false)
-            setError(true)
-          }
-        } catch (err) {
-          Alert.alert("Error", "Failed to fetch product data. Please check your connection and try again.", [
-            { text: "OK" },
-          ])
-          console.error("Error fetching product data:", err)
+      // Set a timeout to prevent infinite loading
+      const timeoutId = setTimeout(() => {
+        console.log("Timeout triggered after 10 seconds")
+        if (isLoading) {
+          console.log("Still loading after timeout, showing error")
           setIsLoading(false)
+          setRefreshing(false)
           setError(true)
         }
+      }, 10000) // 10 second timeout
+
+      // Clear timeout if component unmounts or if loading completes
+      return () => {
+        console.log("Clearing timeout")
+        clearTimeout(timeoutId)
       }
-
-      fetchProductData()
-    }
-
-    // Set a timeout to prevent infinite loading
-    const timeoutId = setTimeout(() => {
-      console.log("Timeout triggered after 10 seconds")
-      if (isLoading) {
-        console.log("Still loading after timeout, showing error")
-        setIsLoading(false)
-        setError(true)
-      }
-    }, 10000) // 10 second timeout
-
-    // Clear timeout if component unmounts or if loading completes
-    return () => {
-      console.log("Clearing timeout")
-      clearTimeout(timeoutId)
     }
   }, [isLoading, lastScanBarcode])
 
   // Process the data once we have ingredients
-  const processData = (ingredients: string[], productName: string) => {
+  const processData = (ingredients: string[], productName: string, imageUrl: string | null) => {
     try {
       console.log("Processing ingredients:", ingredients.length)
 
@@ -184,15 +220,18 @@ const ResultsScreen = ({ route }: any) => {
         matchedIngredients: matched,
         safeIngredients: safe,
         productName: productName,
+        imageUrl: imageUrl,
       })
 
       // Stop loading
       setIsLoading(false)
+      setRefreshing(false)
       console.log("Data processed successfully, loading complete")
     } catch (err) {
       Alert.alert("Error", "Failed to process ingredients data.", [{ text: "OK" }])
       console.error("Error processing ingredients:", err)
       setIsLoading(false)
+      setRefreshing(false)
       setError(true)
     }
   }
@@ -211,6 +250,23 @@ const ResultsScreen = ({ route }: any) => {
     setError(false)
   }
 
+  // Pull to refresh handler
+  const onRefresh = useCallback(() => {
+    console.log("Pull to refresh triggered")
+    setRefreshing(true)
+    // Reset the processed barcode ref so we can fetch the same barcode again
+    processedBarcodeRef.current = null
+    setImageError(false)
+
+    // If we have a barcode, fetch the data again
+    if (lastScanBarcode) {
+      fetchProductData()
+    } else {
+      // If no barcode, just stop refreshing
+      setRefreshing(false)
+    }
+  }, [lastScanBarcode])
+
   // Check if we need to show the "scan something" screen
   if (!lastScanBarcode && !isLoading && !error) {
     return (
@@ -227,7 +283,7 @@ const ResultsScreen = ({ route }: any) => {
     )
   }
 
-  if (isLoading) {
+  if (isLoading && !refreshing) {
     return (
       <SafeAreaView style={styles.container}>
         <View style={styles.loadingContainer}>
@@ -264,12 +320,41 @@ const ResultsScreen = ({ route }: any) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView contentContainerStyle={styles.scrollContent}>
+      <ScrollView
+        contentContainerStyle={styles.scrollContent}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            colors={["#4361EE"]}
+            tintColor="#4361EE"
+            title="Pull to refresh..."
+            titleColor="#6c757d"
+          />
+        }
+      >
         <View style={styles.header}>
           <Text style={styles.title}>Ingredient Check Results</Text>
           <Text style={styles.subtitle}>{results.productName}</Text>
           <Text style={styles.barcodeText}>Barcode: {lastScanBarcode}</Text>
         </View>
+
+        {/* Product Image */}
+        {results.imageUrl && !imageError ? (
+          <View style={styles.imageContainer}>
+            <Image
+              source={{ uri: results.imageUrl }}
+              style={styles.productImage}
+              resizeMode="contain"
+              onError={() => setImageError(true)}
+            />
+          </View>
+        ) : (
+          <View style={styles.noImageContainer}>
+            <ImageIcon width={48} height={48} color="#6c757d" />
+            <Text style={styles.noImageText}>No product image available</Text>
+          </View>
+        )}
 
         {/* Summary Card */}
         <View style={styles.summaryCard}>
@@ -354,7 +439,7 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   header: {
-    marginBottom: 24,
+    marginBottom: 16,
     alignItems: "center",
   },
   title: {
@@ -367,10 +452,47 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: "#495057",
     marginBottom: 4,
+    textAlign: "center",
   },
   barcodeText: {
     fontSize: 14,
     color: "#6c757d",
+  },
+  imageContainer: {
+    backgroundColor: "#ffffff",
+    borderRadius: 16,
+    padding: 16,
+    marginBottom: 16,
+    alignItems: "center",
+    justifyContent: "center",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  productImage: {
+    width: "100%",
+    height: 200,
+    borderRadius: 8,
+  },
+  noImageContainer: {
+    backgroundColor: "#ffffff",
+    borderRadius: 16,
+    padding: 24,
+    marginBottom: 16,
+    alignItems: "center",
+    justifyContent: "center",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  noImageText: {
+    marginTop: 12,
+    color: "#6c757d",
+    fontSize: 16,
   },
   loadingContainer: {
     flex: 1,
