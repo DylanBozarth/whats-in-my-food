@@ -1,7 +1,7 @@
 export default {
   expo: {
     name: "whatsinmyfood",
-    slug: "what-is-in-my-food",
+    slug: "whats-in-my-food",
     version: "1.0.0",
     orientation: "portrait",
     icon: "./assets/images/icon.png",
