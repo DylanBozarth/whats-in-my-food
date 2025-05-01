@@ -3,7 +3,7 @@ import { Alert, Modal, View, Text, ActivityIndicator, StyleSheet, Button } from 
 
 
 
-export const showAlert = (title: string, message: string, visible: boolean) => {
+export const showAlert = (title, message, visible) => {
   Alert.alert(
     title,
     message,
@@ -13,7 +13,7 @@ export const showAlert = (title: string, message: string, visible: boolean) => {
 };
 
 
-export const showProcessingDialog = (message: string, visible: boolean) => {
+export const showProcessingDialog = (message, visible) => {
   return (
     <Modal
       transparent={true}
@@ -31,7 +31,7 @@ export const showProcessingDialog = (message: string, visible: boolean) => {
   );
 };
 
-export const dismissLoadingDialog = (setVisible: Function) => {
+export const dismissLoadingDialog = (setVisible) => {
   setVisible(false);
 };
 

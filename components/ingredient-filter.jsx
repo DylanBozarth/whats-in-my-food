@@ -6,15 +6,11 @@ import { Ionicons } from "@expo/vector-icons"
 import { useGlobalState } from "./global_variables"
 import foodCategories from "./food_list"
 
-type IngredientFilterProps = {
-  onClose?: () => void
-}
-
-export default function IngredientFilter({ onClose }: IngredientFilterProps) {
+export default function IngredientFilter({ onClose }) {
   const { lookingForThings, setLookingForThings } = useGlobalState()
   const [searchQuery, setSearchQuery] = useState("")
-  const [activeCategory, setActiveCategory] = useState<string | null>(null)
-  const [selectedIngredients, setSelectedIngredients] = useState<string[]>(lookingForThings || [])
+  const [activeCategory, setActiveCategory] = useState(null)
+  const [selectedIngredients, setSelectedIngredients] = useState(lookingForThings || [])
 
   // Get all categories from foodCategories
   const categories = useMemo(() => {
@@ -25,9 +21,9 @@ export default function IngredientFilter({ onClose }: IngredientFilterProps) {
   const currentIngredients = useMemo(() => {
     if (searchQuery.trim()) {
       // Search across all categories
-      const results: string[] = []
+      const results = []
       Object.values(foodCategories).forEach((categoryItems) => {
-        categoryItems.forEach((item: string) => {
+        categoryItems.forEach((item) => {
           if (item.toLowerCase().includes(searchQuery.toLowerCase())) {
             results.push(item)
           }
@@ -41,7 +37,7 @@ export default function IngredientFilter({ onClose }: IngredientFilterProps) {
     return []
   }, [searchQuery, activeCategory])
 
-  const toggleIngredient = useCallback((ingredient: string) => {
+  const toggleIngredient = useCallback((ingredient) => {
     setSelectedIngredients((prev) => {
       if (prev.includes(ingredient)) {
         return prev.filter((item) => item !== ingredient)
@@ -60,7 +56,7 @@ export default function IngredientFilter({ onClose }: IngredientFilterProps) {
     if (activeCategory && foodCategories[activeCategory]) {
       setSelectedIngredients((prev) => {
         const newSelection = [...prev]
-        foodCategories[activeCategory].forEach((ingredient: string) => {
+        foodCategories[activeCategory].forEach((ingredient) => {
           if (!newSelection.includes(ingredient)) {
             newSelection.push(ingredient)
           }
@@ -76,7 +72,7 @@ export default function IngredientFilter({ onClose }: IngredientFilterProps) {
     }
   }, [activeCategory])
 
-  const renderCategoryItem = ({ item }: { item: string }) => (
+  const renderCategoryItem = ({ item }) => (
     <TouchableOpacity
       style={[styles.categoryItem, activeCategory === item && styles.activeCategoryItem]}
       onPress={() => setActiveCategory(item)}
@@ -87,7 +83,7 @@ export default function IngredientFilter({ onClose }: IngredientFilterProps) {
     </TouchableOpacity>
   )
 
-  const renderIngredientItem = ({ item }: { item: string }) => (
+  const renderIngredientItem = ({ item }) => (
     <TouchableOpacity style={styles.ingredientItem} onPress={() => toggleIngredient(item)}>
       <Text style={styles.ingredientText}>{item.charAt(0).toUpperCase() + item.slice(1)}</Text>
       <View style={[styles.checkbox, selectedIngredients.includes(item) && styles.checkboxSelected]}>

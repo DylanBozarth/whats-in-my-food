@@ -10,11 +10,11 @@ import {useGlobalState} from './global_variables';
 
 
 // LEGACY PAGE ******************************************
-export const MakeApiCalls = (barcode: Number) => {
+export const MakeApiCalls = (barcode) => {
   //const { foundIngredients, setFoundIngredients, lookingForThings, setLookingForThings, lastScanResult, setLastScanResult } = useGlobalState();
-  let resultsFromAPI: String[] = [];
-  let filteredResults: String[] = [];
-  const makeGetRequest = async (barcode: Number) => {
+  let resultsFromAPI = [];
+  let filteredResults = [];
+  const makeGetRequest = async (barcode) => {
     const url = `https://world.openfoodfacts.org/api/v0/product/${barcode}.json`;
 
     try {

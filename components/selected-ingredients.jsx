@@ -6,7 +6,7 @@ import { useState, useEffect } from "react"
 import foodCategories from "./food_list"
 
 // Function to format category names
-const formatCategoryName = (categoryKey: string): string => {
+const formatCategoryName = (categoryKey) => {
   // Handle special cases
   if (categoryKey === "seedOils") return "Seed Oils"
   if (categoryKey === "nonVegan") return "Non-Vegan"
@@ -27,20 +27,20 @@ const formatCategoryName = (categoryKey: string): string => {
 
 export default function SelectedIngredients() {
   const { lookingForThings, setLookingForThings } = useGlobalState()
-  const [groupedIngredients, setGroupedIngredients] = useState<{ [key: string]: string[] }>({})
-  const [individualIngredients, setIndividualIngredients] = useState<string[]>([])
+  const [groupedIngredients, setGroupedIngredients] = useState({})
+  const [individualIngredients, setIndividualIngredients] = useState([])
 
   // Group ingredients into lists when the component mounts or lookingForThings changes
   useEffect(() => {
     if (!lookingForThings || lookingForThings.length === 0) return
 
-    const grouped: { [key: string]: string[] } = {}
-    const individual: string[] = []
+    const grouped = {}
+    const individual = []
 
     // Check if any predefined lists are completely included
     Object.entries(foodCategories).forEach(([categoryKey, categoryItems]) => {
       const allItemsIncluded = categoryItems.every((item) =>
-        lookingForThings.some((ingredient: string) => ingredient.toLowerCase() === item.toLowerCase()),
+        lookingForThings.some((ingredient) => ingredient.toLowerCase() === item.toLowerCase()),
       )
 
       if (allItemsIncluded) {
@@ -49,7 +49,7 @@ export default function SelectedIngredients() {
     })
 
     // Add remaining ingredients that aren't part of a complete list
-    lookingForThings.forEach((ingredient: string) => {
+    lookingForThings.forEach((ingredient) => {
       const isInCompleteList = Object.values(grouped).some((list) =>
         list.some((item) => item.toLowerCase() === ingredient.toLowerCase()),
       )
@@ -63,16 +63,16 @@ export default function SelectedIngredients() {
     setIndividualIngredients(individual)
   }, [lookingForThings])
 
-  const removeIngredient = (ingredient: string) => {
-    setLookingForThings(lookingForThings.filter((item: string) => item !== ingredient))
+  const removeIngredient = (ingredient) => {
+    setLookingForThings(lookingForThings.filter((item) => item !== ingredient))
   }
 
-  const removeList = (categoryKey: string) => {
+  const removeList = (categoryKey) => {
     if (categoryKey in foodCategories) {
-      const listItems = foodCategories[categoryKey as keyof typeof foodCategories];
+      const listItems = foodCategories[categoryKey];
       const newIngredients = lookingForThings.filter(
-        (ingredient: string) =>
-          !listItems.some((item: string) => item.toLowerCase() === ingredient.toLowerCase())
+        (ingredient) =>
+          !listItems.some((item) => item.toLowerCase() === ingredient.toLowerCase())
       );
       setLookingForThings(newIngredients);
     } else {

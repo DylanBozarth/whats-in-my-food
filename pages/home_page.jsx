@@ -1,11 +1,11 @@
 import { useState } from "react"
 import { StyleSheet, View, Text, TouchableOpacity, ScrollView } from "react-native"
 import { Ionicons } from "@expo/vector-icons"
-import IngredientFilterModal from "@/components/ingredient-filter-modal"
-import SelectedIngredients from "@/components/selected-ingredients"
-import { useGlobalState } from "@/components/global_variables"
+import IngredientFilterModal from "../components/ingredient-filter-modal"
+import SelectedIngredients from "../components/selected-ingredients"
+import { useGlobalState } from "../components/global_variables"
 
-export default function Homepage({ navigation }: { navigation: any }) {
+export default function Homepage({ navigation }) {
   const [filterModalVisible, setFilterModalVisible] = useState(false)
   const { lookingForThings } = useGlobalState()
 

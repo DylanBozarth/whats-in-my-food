@@ -1,24 +1,21 @@
+"use client"
+
 import React from 'react';
 import { View, Text, Switch, StyleSheet } from 'react-native';
 import { useGlobalState } from './global_variables';
 
-interface ToggleSwitchProps {
-  passedName: string;
-  displayName: string;
-}
-
-const ToggleSwitch: React.FC<ToggleSwitchProps> = ({ passedName, displayName }) => {
+const ToggleSwitch = ({ passedName, displayName }) => {
   const { lookingForThings, setLookingForThings } = useGlobalState();
 
-  const addOrRemove = (name: string) => {
+  const addOrRemove = (name) => {
     
-    setLookingForThings((prev: any) =>
-      prev.includes(name) ? prev.filter((item: string) => item !== name) : [...prev, name]
+    setLookingForThings((prev) =>
+      prev.includes(name) ? prev.filter((item) => item !== name) : [...prev, name]
     );
     console.log(lookingForThings)
   };
 
-  const isItHighlighted = (name: string) => lookingForThings.includes(name);
+  const isItHighlighted = (name) => lookingForThings.includes(name);
 
   return (
     <View style={styles.container}>

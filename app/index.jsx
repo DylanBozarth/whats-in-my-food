@@ -9,11 +9,11 @@ import {
   SafeAreaView,
 } from 'react-native';
 import HomePage from '../pages/home_page';
-import ResultsPage from '@/pages/results_page';
+import ResultsPage from '../pages/results_page.jsx';
 import {GlobalProvider} from '../components/global_variables';
 import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
-import { StartCamera } from '@/pages/barcode_scanner';
+import { StartCamera } from '../pages/barcode_scanner';
 
 const Tab = createMaterialTopTabNavigator();
 const Stack = createStackNavigator();
@@ -32,8 +32,3 @@ export default function Main() {
   );
 }
 
-
-// scan still happens more than once  X 
-// need to search through the barcode result for found things 
-// then display the problems in the results page 
-// works if the barcode is 0, fix this 

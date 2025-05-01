@@ -1,13 +1,13 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const GlobalContext = createContext<any>(null);
+const GlobalContext = createContext(null);
 
-export const GlobalProvider = ({ children }: { children: ReactNode }) => {
-  const [lookingForThings, setLookingForThings] = useState<string[]>([]);
-  const [foundIngredients, setFoundIngredients] = useState<string[]>([]);
-  const [lastScanResult, setLastScanResult] = useState<string[]>([])
-  const [lastScanBarcode, setLastScanBarcode] = useState<Number>();
+export const GlobalProvider = ( { children }) => {
+  const [lookingForThings, setLookingForThings] = useState([]);
+  const [foundIngredients, setFoundIngredients] = useState([]);
+  const [lastScanResult, setLastScanResult] = useState([])
+  const [lastScanBarcode, setLastScanBarcode] = useState();
 
   const LOOKING_KEY = 'lookingForThings';
   const FOUND_KEY = 'foundIngredients';

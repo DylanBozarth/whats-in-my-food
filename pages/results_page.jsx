@@ -18,14 +18,8 @@ import { useGlobalState } from "../components/global_variables"
 import { Check, X, AlertTriangle, RefreshCw, Image as ImageIcon } from "react-native-feather"
 import axios from "axios"
 
-interface ResultsState {
-  matchedIngredients: string[]
-  safeIngredients: string[]
-  productName: string
-  imageUrl: string | null
-}
 
-const ResultsScreen = ({ route }: any) => {
+const ResultsScreen = (route) => {
   const navigation = useNavigation()
   const { lookingForThings, lastScanResult, setLastScanResult, lastScanBarcode, setLastScanBarcode } = useGlobalState()
 
@@ -33,7 +27,7 @@ const ResultsScreen = ({ route }: any) => {
   const [error, setError] = useState(false)
   const [refreshing, setRefreshing] = useState(false)
   const [imageError, setImageError] = useState(false)
-  const [results, setResults] = useState<ResultsState>({
+  const [results, setResults] = useState({
     matchedIngredients: [],
     safeIngredients: [],
     productName: "Scanned Product",
@@ -41,7 +35,7 @@ const ResultsScreen = ({ route }: any) => {
   })
 
   // Use a ref to track if we've processed data for the CURRENT barcode
-  const processedBarcodeRef = useRef<number | null>(null)
+  const processedBarcodeRef = useRef(null)
 
   // Debug logging
   console.log("Results component rendered with state:", {
@@ -117,8 +111,8 @@ const ResultsScreen = ({ route }: any) => {
           // Split the ingredients text by commas and clean up each ingredient
           ingredients = response.data.product.ingredients_text
             .split(",")
-            .map((ingredient: string) => ingredient.trim())
-            .filter((ingredient: string) => ingredient.length > 0)
+            .map((ingredient) => ingredient.trim())
+            .filter((ingredient) => ingredient.length > 0)
         }
         // If no ingredients_text, try to get from ingredients array
         else if (
@@ -127,8 +121,8 @@ const ResultsScreen = ({ route }: any) => {
           Array.isArray(response.data.product.ingredients)
         ) {
           ingredients = response.data.product.ingredients
-            .map((ing: any) => ing.text || ing.id)
-            .filter((text: string) => text)
+            .map((ing) => ing.text || ing.id)
+            .filter((text) => text)
         }
 
         console.log("Extracted ingredients:", ingredients)
@@ -186,22 +180,22 @@ const ResultsScreen = ({ route }: any) => {
   }, [isLoading, lastScanBarcode])
 
   // Process the data once we have ingredients
-  const processData = (ingredients: string[], productName: string, imageUrl: string | null) => {
+  const processData = (ingredients, productName, imageUrl) => {
     try {
       console.log("Processing ingredients:", ingredients.length)
 
       // Process the ingredients
-      const matched: string[] = []
-      const safe: string[] = []
+      const matched = []
+      const safe = []
 
       // Check which ingredients from lookingForThings are in the ingredients list
       if (lookingForThings && lookingForThings.length > 0) {
         console.log("Processing lookingForThings:", lookingForThings.length)
 
-        lookingForThings.forEach((ingredient: string) => {
+        lookingForThings.forEach((ingredient) => {
           // Check if any of the scanned ingredients contain this ingredient
           // Using lowercase for case-insensitive comparison
-          const found = ingredients.some((itemIngredient: string) =>
+          const found = ingredients.some((itemIngredient) =>
             itemIngredient.toLowerCase().includes(ingredient.toLowerCase()),
           )
 
@@ -409,7 +403,7 @@ const ResultsScreen = ({ route }: any) => {
           <Text style={styles.sectionTitle}>All Ingredients</Text>
           <View style={styles.ingredientsList}>
             {lastScanResult && lastScanResult.length > 0 ? (
-              lastScanResult.map((ingredient: string, index: number) => (
+              lastScanResult.map((ingredient, index) => (
                 <View key={index} style={styles.ingredientItem}>
                   <Text style={styles.ingredientText}>{ingredient}</Text>
                 </View>

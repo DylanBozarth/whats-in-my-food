@@ -1,16 +1,16 @@
 "use client"
 
 import React, { useState, useRef } from "react"
-import { CameraView, type CameraType, useCameraPermissions } from "expo-camera"
+import { CameraView, useCameraPermissions } from "expo-camera"
 import { Button, StyleSheet, Text, TouchableOpacity, View } from "react-native"
 import { useFocusEffect } from "@react-navigation/native"
 import { useGlobalState } from "../components/global_variables"
 
-export const StartCamera = ({ navigation }: { navigation: any }) => {
-  const [facing, setFacing] = useState<CameraType>("back")
+export const StartCamera = ({ navigation }) => {
+  const [facing, setFacing] = useState("back")
   const [permission, requestPermission] = useCameraPermissions()
   const [scanningEnabled, setScanningEnabled] = useState(true)
-  const lastScanned = useRef<number>(0) // Ref to track the last scanned timestamp
+  const lastScanned = useRef(0) // Ref to track the last scanned timestamp
   const { setLastScanBarcode } = useGlobalState()
 
   // Reset function to enable scanning again
@@ -46,7 +46,7 @@ export const StartCamera = ({ navigation }: { navigation: any }) => {
     )
   }
 
-  const handleBarCodeScanned = (barcode: number) => {
+  const handleBarCodeScanned = (barcode) => {
     // Simple debounce to prevent multiple scans
     const now = Date.now()
     if (now - lastScanned.current < 1000 || !scanningEnabled) {
@@ -88,7 +88,7 @@ export const StartCamera = ({ navigation }: { navigation: any }) => {
         facing={facing}
         onBarcodeScanned={
           scanningEnabled
-            ? (data: any) => {
+            ? (data) => {
                 handleBarCodeScanned(data.data)
               }
             : undefined
