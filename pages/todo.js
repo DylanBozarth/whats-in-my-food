@@ -4,6 +4,7 @@ Organize homepage
 add page that says "Scan something" for results page
 Search ingredients has duplicates 
 Add description for each ingredient
+handle non-english results 
 
 
 
