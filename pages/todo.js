@@ -6,7 +6,7 @@ Search ingredients has duplicates
 Add description for each ingredient
 handle non-english results 
 when deleting whole lists it explodes into all the ingredients
- 
+add collapsable to the results 
 
 
 
