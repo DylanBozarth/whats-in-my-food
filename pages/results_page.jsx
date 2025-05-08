@@ -11,13 +11,22 @@ import {
   Alert,
   RefreshControl,
   Image,
+  LayoutAnimation,
+  Platform,
+  UIManager,
 } from "react-native"
 import { useNavigation } from "@react-navigation/native"
 import { useState, useEffect, useRef, useCallback } from "react"
 import { useGlobalState } from "../components/global_variables"
-import { Check, X, AlertTriangle, RefreshCw, Image as ImageIcon } from "react-native-feather"
+import { Check, X, AlertTriangle, RefreshCw, Image as ImageIcon, ChevronDown, ChevronUp } from "react-native-feather"
 import axios from "axios"
 
+// Enable LayoutAnimation for Android
+if (Platform.OS === "android") {
+  if (UIManager.setLayoutAnimationEnabledExperimental) {
+    UIManager.setLayoutAnimationEnabledExperimental(true)
+  }
+}
 
 const ResultsScreen = (route) => {
   const navigation = useNavigation()
@@ -32,6 +41,14 @@ const ResultsScreen = (route) => {
     safeIngredients: [],
     productName: "Scanned Product",
     imageUrl: null,
+    noIngredientsFound: false,
+  })
+
+  // Collapsible sections state
+  const [expandedSections, setExpandedSections] = useState({
+    matched: true,
+    safe: true,
+    all: true,
   })
 
   // Use a ref to track if we've processed data for the CURRENT barcode
@@ -60,9 +77,27 @@ const ResultsScreen = (route) => {
         safeIngredients: [],
         productName: "Scanned Product",
         imageUrl: null,
+        noIngredientsFound: false,
+      })
+      // Reset expanded sections to default
+      setExpandedSections({
+        matched: true,
+        safe: true,
+        all: true,
       })
     }
   }, [lastScanBarcode])
+
+  // Toggle section expansion with animation
+  const toggleSection = (section) => {
+    // Configure the animation
+    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut)
+
+    setExpandedSections((prev) => ({
+      ...prev,
+      [section]: !prev[section],
+    }))
+  }
 
   // Function to fetch product data
   const fetchProductData = async () => {
@@ -120,9 +155,7 @@ const ResultsScreen = (route) => {
           response.data.product.ingredients &&
           Array.isArray(response.data.product.ingredients)
         ) {
-          ingredients = response.data.product.ingredients
-            .map((ing) => ing.text || ing.id)
-            .filter((text) => text)
+          ingredients = response.data.product.ingredients.map((ing) => ing.text || ing.id).filter((text) => text)
         }
 
         console.log("Extracted ingredients:", ingredients)
@@ -183,6 +216,22 @@ const ResultsScreen = (route) => {
   const processData = (ingredients, productName, imageUrl) => {
     try {
       console.log("Processing ingredients:", ingredients.length)
+
+      // Check if ingredients array is empty
+      if (!ingredients || ingredients.length === 0) {
+        console.log("No ingredients found for this product")
+        setIsLoading(false)
+        setRefreshing(false)
+        setError(true)
+        // Set a specific error type for "no ingredients found"
+        setResults({
+          ...results,
+          noIngredientsFound: true,
+          productName: productName,
+          imageUrl: imageUrl,
+        })
+        return
+      }
 
       // Process the ingredients
       const matched = []
@@ -261,6 +310,33 @@ const ResultsScreen = (route) => {
     }
   }, [lastScanBarcode])
 
+  // Collapsible section component
+  const CollapsibleSection = ({ title, children, sectionKey, count }) => {
+    const isExpanded = expandedSections[sectionKey]
+
+    return (
+      <View style={styles.collapsibleContainer}>
+        <TouchableOpacity style={styles.sectionHeader} onPress={() => toggleSection(sectionKey)} activeOpacity={0.7}>
+          <View style={styles.sectionTitleContainer}>
+            <Text style={styles.sectionTitle}>{title}</Text>
+            {count !== undefined && (
+              <View style={styles.countBadge}>
+                <Text style={styles.countText}>{count}</Text>
+              </View>
+            )}
+          </View>
+          {isExpanded ? (
+            <ChevronUp width={20} height={20} color="#495057" />
+          ) : (
+            <ChevronDown width={20} height={20} color="#495057" />
+          )}
+        </TouchableOpacity>
+
+        {isExpanded && <View style={styles.sectionContent}>{children}</View>}
+      </View>
+    )
+  }
+
   // Check if we need to show the "scan something" screen
   if (!lastScanBarcode && !isLoading && !error) {
     return (
@@ -293,13 +369,23 @@ const ResultsScreen = (route) => {
       <SafeAreaView style={styles.container}>
         <View style={styles.errorContainer}>
           <AlertTriangle width={48} height={48} color="#FF4D6D" />
-          <Text style={styles.errorTitle}>Unable to analyze ingredients</Text>
-          <Text style={styles.errorText}>We couldn't process the ingredient data. This might be because:</Text>
-          <View style={styles.errorList}>
-            <Text style={styles.errorListItem}>• No ingredients were detected</Text>
-            <Text style={styles.errorListItem}>• The scan was incomplete</Text>
-            <Text style={styles.errorListItem}>• There was a connection issue</Text>
-          </View>
+          <Text style={styles.errorTitle}>
+            {results.noIngredientsFound ? "No Ingredients Found" : "Unable to analyze ingredients"}
+          </Text>
+          <Text style={styles.errorText}>
+            {results.noIngredientsFound
+              ? `We found the product "${results.productName}" but no ingredients were listed.`
+              : "We couldn't process the ingredient data. This might be because:"}
+          </Text>
+
+          {!results.noIngredientsFound && (
+            <View style={styles.errorList}>
+              <Text style={styles.errorListItem}>• No ingredients were detected</Text>
+              <Text style={styles.errorListItem}>• The scan was incomplete</Text>
+              <Text style={styles.errorListItem}>• There was a connection issue</Text>
+            </View>
+          )}
+
           <TouchableOpacity style={styles.retryButton} onPress={handleRetry}>
             <RefreshCw width={20} height={20} color="#FFFFFF" />
             <Text style={styles.retryButtonText}>Try Again</Text>
@@ -368,50 +454,61 @@ const ResultsScreen = (route) => {
           )}
         </View>
 
-        {/* Matched Ingredients Section */}
+        {/* Matched Ingredients Section - Now Collapsible */}
         {results.matchedIngredients.length > 0 && (
           <View style={styles.matchedContainer}>
-            <Text style={styles.sectionTitle}>Found Ingredients You're Watching For</Text>
-            <View style={styles.ingredientsList}>
-              {results.matchedIngredients.map((ingredient, index) => (
-                <View key={index} style={styles.matchedItem}>
-                  <X width={20} height={20} color="#FF4D6D" />
-                  <Text style={styles.matchedText}>{ingredient}</Text>
-                </View>
-              ))}
-            </View>
+            <CollapsibleSection
+              title="Look out for these"
+              sectionKey="matched"
+              count={results.matchedIngredients.length}
+            >
+              <View style={styles.ingredientsList}>
+                {results.matchedIngredients.map((ingredient, index) => (
+                  <View key={index} style={styles.matchedItem}>
+                    <X width={20} height={20} color="#FF4D6D" />
+                    <Text style={styles.matchedText}>{ingredient}</Text>
+                  </View>
+                ))}
+              </View>
+            </CollapsibleSection>
           </View>
         )}
 
-        {/* Safe Ingredients Section */}
+        {/* Safe Ingredients Section - Now Collapsible */}
         {results.safeIngredients.length > 0 && (
           <View style={styles.safeIngredientsContainer}>
-            <Text style={styles.sectionTitle}>Not Found in This Product</Text>
-            <View style={styles.ingredientsList}>
-              {results.safeIngredients.map((ingredient, index) => (
-                <View key={index} style={styles.safeItem}>
-                  <Check width={20} height={20} color="#4CC9BE" />
-                  <Text style={styles.safeItemText}>{ingredient}</Text>
-                </View>
-              ))}
-            </View>
+            <CollapsibleSection
+              title="Not Found in This Product"
+              sectionKey="safe"
+              count={results.safeIngredients.length}
+            >
+              <View style={styles.ingredientsList}>
+                {results.safeIngredients.map((ingredient, index) => (
+                  <View key={index} style={styles.safeItem}>
+                    <Check width={20} height={20} color="#4CC9BE" />
+                    <Text style={styles.safeItemText}>{ingredient}</Text>
+                  </View>
+                ))}
+              </View>
+            </CollapsibleSection>
           </View>
         )}
 
-        {/* All Ingredients Section */}
+        {/* All Ingredients Section - Now Collapsible */}
         <View style={styles.ingredientsContainer}>
-          <Text style={styles.sectionTitle}>All Ingredients</Text>
-          <View style={styles.ingredientsList}>
-            {lastScanResult && lastScanResult.length > 0 ? (
-              lastScanResult.map((ingredient, index) => (
-                <View key={index} style={styles.ingredientItem}>
-                  <Text style={styles.ingredientText}>{ingredient}</Text>
-                </View>
-              ))
-            ) : (
-              <Text style={styles.noIngredientsText}>No ingredients information available</Text>
-            )}
-          </View>
+          <CollapsibleSection title="All Ingredients" sectionKey="all" count={lastScanResult?.length || 0}>
+            <View style={styles.ingredientsList}>
+              {lastScanResult && lastScanResult.length > 0 ? (
+                lastScanResult.map((ingredient, index) => (
+                  <View key={index} style={styles.ingredientItem}>
+                    <Text style={styles.ingredientText}>{ingredient}</Text>
+                  </View>
+                ))
+              ) : (
+                <Text style={styles.noIngredientsText}>No ingredients information available</Text>
+              )}
+            </View>
+          </CollapsibleSection>
         </View>
 
         <View style={styles.actionsContainer}>
@@ -633,11 +730,39 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 2,
   },
+  // Collapsible section styles
+  collapsibleContainer: {
+    width: "100%",
+  },
+  sectionHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingVertical: 8,
+  },
+  sectionTitleContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
   sectionTitle: {
     fontSize: 18,
     fontWeight: "bold",
     color: "#212529",
-    marginBottom: 16,
+  },
+  countBadge: {
+    backgroundColor: "#e9ecef",
+    borderRadius: 12,
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    marginLeft: 8,
+  },
+  countText: {
+    fontSize: 12,
+    color: "#495057",
+    fontWeight: "500",
+  },
+  sectionContent: {
+    marginTop: 8,
   },
   ingredientsList: {
     marginTop: 8,
