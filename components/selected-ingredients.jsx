@@ -7,7 +7,6 @@ import foodCategories from "./food_list"
 
 // Function to format category names
 const formatCategoryName = (categoryKey) => {
-
   // Default formatting: capitalize first letter of each word
   return categoryKey
     .replace(/([A-Z])/g, " $1") // Add space before capital letters
@@ -59,18 +58,30 @@ export default function SelectedIngredients() {
 
   const removeList = (categoryKey) => {
     if (categoryKey in foodCategories) {
-      const listItems = foodCategories[categoryKey];
-      const newIngredients = lookingForThings.filter(
-        (ingredient) =>
-          !listItems.some((item) => item.toLowerCase() === ingredient.toLowerCase())
-      );
-      setLookingForThings(newIngredients);
+      // Get the list of ingredients to remove
+      const listItems = foodCategories[categoryKey]
+
+      // Convert all items to lowercase for case-insensitive comparison
+      const listItemsLower = listItems.map((item) => item.toLowerCase())
+
+      // Filter out all ingredients that match any item in the list (case-insensitive)
+      const newIngredients = lookingForThings.filter((ingredient) => {
+        const ingredientLower = ingredient.toLowerCase()
+        return !listItemsLower.includes(ingredientLower)
+      })
+
+      // Log for debugging
+      console.log(`Removing list: ${categoryKey}`)
+      console.log(`Items to remove: ${listItems.length}`)
+      console.log(`Before: ${lookingForThings.length} ingredients`)
+      console.log(`After: ${newIngredients.length} ingredients`)
+
+      // Update state with the filtered list
+      setLookingForThings(newIngredients)
     } else {
-      console.error(`Invalid category key: ${categoryKey}`);
+      console.error(`Invalid category key: ${categoryKey}`)
     }
-  };
-  
-  
+  }
 
   const handleClearAll = () => {
     Alert.alert("Clear All Ingredients", "Are you sure you want to remove all ingredients?", [
