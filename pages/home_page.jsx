@@ -34,7 +34,7 @@ export default function Homepage({ navigation }) {
           </Text>
         </View>
 
-        <View style={styles.section}>
+        <View style={styles.bottomSection}>
           <Text style={styles.sectionTitle}>Scan a Product</Text>
           <TouchableOpacity style={styles.scanButton} onPress={() => navigation.navigate("Scan")}>
             <Ionicons name="barcode-outline" size={24} color="#fff" />
@@ -57,6 +57,9 @@ const styles = StyleSheet.create({
   },
   container: {
     padding: 16,
+    flex: 1,
+    position: 'relative', // Ensures absolute elements within it position correctly
+    height: "100%", // Ensures full height
   },
   header: {
     marginBottom: 24,
@@ -78,7 +81,20 @@ const styles = StyleSheet.create({
     elevation: 2,
     width: '100%',
   },
-  
+  bottomSection: {
+    bottom: 16,
+    alignSelf: 'center',
+    backgroundColor: "#fff",
+    borderRadius: 12,
+    padding: 16,
+    marginTop: 10,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
+    width: "90%",
+  },
   sectionHeader: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -122,4 +138,3 @@ const styles = StyleSheet.create({
     marginLeft: 8,
   },
 })
-
