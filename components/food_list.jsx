@@ -1,5 +1,5 @@
 export const foodCategories = {
-  seedOils: [
+  "Seed oils": [
     "vegetable oil",
     "canola oil",
     "sunflower oil",
@@ -27,7 +27,7 @@ export const foodCategories = {
     "cottonseed meal",
     "chia seed gel",
   ],
-  bugs: [
+  "Insect Parts": [
     "crickets",
     "cricket flour",
     "mealworms",
@@ -41,7 +41,7 @@ export const foodCategories = {
     "cricket oil",
     "chitin",
   ],
-  commonAllergens: [
+  "Common allergens": [
     "peanuts",
     "almonds",
     "cashews",
@@ -86,7 +86,7 @@ export const foodCategories = {
     "grape",
     "watermelon",
   ],
-  artificialAdditivesInFood: [
+  "Artificial additives": [
     "red 40",
     "yellow 5",
     "yellow 6",
@@ -118,7 +118,7 @@ export const foodCategories = {
     "gamma-undecalactone",
     "methyl cinnamate",
   ],
-  bannedInEU: [
+  "Banned in Europe": [
     "bha",
     "butylated hydroxyanisole",
     "bht",
@@ -145,7 +145,7 @@ export const foodCategories = {
     "quinines",
     "monosodium glutamate",
   ],
-  nonVegetarian: [
+  "Meat products": [
     "beef",
     "pork",
     "chicken",
@@ -191,7 +191,7 @@ export const foodCategories = {
     "shellac",
     "l-cysteine",
   ],
-  nonVegan: [
+  "Non Vegan": [
     "gelatin",
     "honey",
     "beeswax",
@@ -220,7 +220,7 @@ export const foodCategories = {
     "guanine",
     "squalene",
   ],
-  dairy: [
+  "Dairy": [
     "milk",
     "butter",
     "cheese",
@@ -252,7 +252,7 @@ export const foodCategories = {
     "full fat milk",
     "chocolate milk",
   ],
-  addedSugar: [
+  "Added Sugar": [
     "sugar",
     "high fructose corn syrup",
     "honey",
@@ -269,7 +269,7 @@ export const foodCategories = {
     "sucrose",
     "corn sweetener",
   ],
-  nuts: [
+  "Nuts": [
     "almonds",
     "almond butter",
     "almond extract",
@@ -282,7 +282,7 @@ export const foodCategories = {
     "pistachios",
     "walnuts",
   ],
-  forbiddenPork: [
+  "Pork products": [
     "pork",
     "gelatin",
     "lard",
@@ -292,7 +292,7 @@ export const foodCategories = {
     "prosciutto",
     "pancetta",
   ],
-  haram: [
+  "Islamic Law": [
     "alcohol",
     "ethyl alcohol",
     "crickets",
@@ -300,7 +300,39 @@ export const foodCategories = {
     "pork",
     "bacon",
     "ham",
+    "gelatin",
+    "sausage",
+    "prosciutto",
+    "pancetta",
   ],
+    "Kosher": [
+      "pork",
+      "bacon",
+      "ham",
+      "prosciutto",
+      "pepperoni",
+      "lobster",
+      "crab",
+      "shrimp",
+      "clam",
+      "scallop",
+      "oyster",
+      "catfish",
+      "eel",
+      "rabbit",
+      "horse",
+      "camel",
+      "bat ",
+      "alligator meat",
+      "frog legs",
+      "blood sausage",
+      "black pudding",
+      "cheeseburger",
+      "gelatin",
+      "rennet",
+      "shellfish sauce",
+      "imitation crab",
+    ]
 };
 
 export default foodCategories;

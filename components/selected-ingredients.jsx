@@ -7,16 +7,6 @@ import foodCategories from "./food_list"
 
 // Function to format category names
 const formatCategoryName = (categoryKey) => {
-  // Handle special cases
-  if (categoryKey === "seedOils") return "Seed Oils"
-  if (categoryKey === "nonVegan") return "Non-Vegan"
-  if (categoryKey === "nonVegetarian") return "Non-Vegetarian"
-  if (categoryKey === "bannedInEU") return "Banned in EU"
-  if (categoryKey === "haram") return "Haram"
-  if (categoryKey === "addedSugar") return "Added Sugar"
-  if (categoryKey === "artificialAdditivesInFood") return "Artificial Additives"
-  if (categoryKey === "commonAllergens") return "Common Allergens"
-  if (categoryKey === "forbiddenPork") return "Forbidden Pork"
 
   // Default formatting: capitalize first letter of each word
   return categoryKey
