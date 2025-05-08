@@ -488,7 +488,7 @@ const ResultsScreen = (route) => {
         {results.matchedIngredients.length > 0 && (
           <View style={styles.matchedContainer}>
             <CollapsibleSection
-              title="Found Ingredients You're Watching For"
+              title="You should know about:"
               sectionKey="matched"
               count={results.matchedIngredients.length}
             >
