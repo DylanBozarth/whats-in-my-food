@@ -18,14 +18,44 @@ import {
 import { useNavigation } from "@react-navigation/native"
 import { useState, useEffect, useRef, useCallback } from "react"
 import { useGlobalState } from "../components/global_variables"
-import { Check, X, AlertTriangle, RefreshCw, Image as ImageIcon, ChevronDown, ChevronUp } from "react-native-feather"
+import {
+  Check,
+  X,
+  AlertTriangle,
+  RefreshCw,
+  Image as ImageIcon,
+  ChevronDown,
+  ChevronUp,
+  Tag,
+} from "react-native-feather"
 import axios from "axios"
+import foodCategories from "../components/food_list"
 
 // Enable LayoutAnimation for Android
 if (Platform.OS === "android") {
   if (UIManager.setLayoutAnimationEnabledExperimental) {
     UIManager.setLayoutAnimationEnabledExperimental(true)
   }
+}
+
+// Function to find the category of an ingredient
+const findIngredientCategory = (ingredient) => {
+  // Convert ingredient to lowercase for case-insensitive comparison
+  const ingredientLower = ingredient.toLowerCase()
+
+  // Search through all categories
+  for (const [categoryKey, items] of Object.entries(foodCategories)) {
+    if (items.some((item) => item.toLowerCase() === ingredientLower)) {
+      // Format category name for display
+      return categoryKey
+        .replace(/([A-Z])/g, " $1") // Add space before capital letters
+        .replace(/^./, (str) => str.toUpperCase()) // Capitalize first letter
+        .trim()
+    }
+  }
+
+  // Return "Other" if no category is found
+  return "Other"
 }
 
 const ResultsScreen = (route) => {
@@ -458,17 +488,26 @@ const ResultsScreen = (route) => {
         {results.matchedIngredients.length > 0 && (
           <View style={styles.matchedContainer}>
             <CollapsibleSection
-              title="Look out for these"
+              title="Found Ingredients You're Watching For"
               sectionKey="matched"
               count={results.matchedIngredients.length}
             >
               <View style={styles.ingredientsList}>
-                {results.matchedIngredients.map((ingredient, index) => (
-                  <View key={index} style={styles.matchedItem}>
-                    <X width={20} height={20} color="#FF4D6D" />
-                    <Text style={styles.matchedText}>{ingredient}</Text>
-                  </View>
-                ))}
+                {results.matchedIngredients.map((ingredient, index) => {
+                  const category = findIngredientCategory(ingredient)
+                  return (
+                    <View key={index} style={styles.matchedItem}>
+                      <X width={20} height={20} color="#FF4D6D" />
+                      <View style={styles.ingredientInfoContainer}>
+                        <Text style={styles.matchedText}>{ingredient}</Text>
+                        <View style={styles.categoryContainer}>
+                          <Tag width={12} height={12} color="#FF4D6D" style={styles.categoryIcon} />
+                          <Text style={styles.categoryText}>{category}</Text>
+                        </View>
+                      </View>
+                    </View>
+                  )
+                })}
               </View>
             </CollapsibleSection>
           </View>
@@ -483,12 +522,21 @@ const ResultsScreen = (route) => {
               count={results.safeIngredients.length}
             >
               <View style={styles.ingredientsList}>
-                {results.safeIngredients.map((ingredient, index) => (
-                  <View key={index} style={styles.safeItem}>
-                    <Check width={20} height={20} color="#4CC9BE" />
-                    <Text style={styles.safeItemText}>{ingredient}</Text>
-                  </View>
-                ))}
+                {results.safeIngredients.map((ingredient, index) => {
+                  const category = findIngredientCategory(ingredient)
+                  return (
+                    <View key={index} style={styles.safeItem}>
+                      <Check width={20} height={20} color="#4CC9BE" />
+                      <View style={styles.ingredientInfoContainer}>
+                        <Text style={styles.safeItemText}>{ingredient}</Text>
+                        <View style={styles.categoryContainer}>
+                          <Tag width={12} height={12} color="#4CC9BE" style={styles.categoryIcon} />
+                          <Text style={styles.safeCategoryText}>{category}</Text>
+                        </View>
+                      </View>
+                    </View>
+                  )
+                })}
               </View>
             </CollapsibleSection>
           </View>
@@ -790,13 +838,34 @@ const styles = StyleSheet.create({
     padding: 12,
     marginBottom: 8,
     flexDirection: "row",
-    alignItems: "center",
+    alignItems: "flex-start",
+  },
+  ingredientInfoContainer: {
+    flex: 1,
+    marginLeft: 8,
   },
   matchedText: {
     fontSize: 15,
     color: "#FF4D6D",
-    marginLeft: 8,
     fontWeight: "500",
+  },
+  categoryContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginTop: 4,
+  },
+  categoryIcon: {
+    marginRight: 4,
+  },
+  categoryText: {
+    fontSize: 12,
+    color: "#FF4D6D",
+    opacity: 0.8,
+  },
+  safeCategoryText: {
+    fontSize: 12,
+    color: "#4CC9BE",
+    opacity: 0.8,
   },
   safeItem: {
     backgroundColor: "rgba(76, 201, 190, 0.1)",
@@ -804,12 +873,11 @@ const styles = StyleSheet.create({
     padding: 12,
     marginBottom: 8,
     flexDirection: "row",
-    alignItems: "center",
+    alignItems: "flex-start",
   },
   safeItemText: {
     fontSize: 15,
     color: "#4CC9BE",
-    marginLeft: 8,
     fontWeight: "500",
   },
   actionsContainer: {
