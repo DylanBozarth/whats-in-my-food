@@ -61,7 +61,8 @@ const ResultsScreen = (route) => {
   const navigation = useNavigation()
   const { lookingForThings, lastScanResult, setLastScanResult, lastScanBarcode, setLastScanBarcode } = useGlobalState()
 
-  const [isLoading, setIsLoading] = useState(true)
+  const [isLoading, setIsLoading] = useState(!!lastScanBarcode)
+
   const [errorType, setErrorType] = useState(null) // Can be: "no_ingredients", "scan_failed", "network_error", "parse_error", "unknown"
   const [errorDetails, setErrorDetails] = useState("")
   const [refreshing, setRefreshing] = useState(false)
@@ -95,6 +96,15 @@ const ResultsScreen = (route) => {
     lastScanResultLength: lastScanResult?.length || 0,
     lookingForThingsLength: lookingForThings?.length || 0,
   })
+
+  // Add this useEffect to handle the initial state properly
+  // Initialize loading state correctly when component mounts
+  useEffect(() => {
+    // If there's no barcode to scan, we shouldn't be in a loading state
+    if (!lastScanBarcode) {
+      setIsLoading(false)
+    }
+  }, [])
 
   // Reset state when a new barcode is detected
   useEffect(() => {
