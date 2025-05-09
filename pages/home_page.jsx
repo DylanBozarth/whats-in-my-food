@@ -58,8 +58,8 @@ const styles = StyleSheet.create({
   container: {
     padding: 16,
     flex: 1,
-    position: 'relative', // Ensures absolute elements within it position correctly
-    height: "100%", // Ensures full height
+    position: 'relative',
+    height: "100%",
   },
   header: {
     marginBottom: 24,
@@ -68,6 +68,7 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 28,
     fontWeight: "bold",
+    textAlign: "center"
   },
   section: {
     backgroundColor: "#fff",
