@@ -8,7 +8,6 @@ import {
   TouchableOpacity,
   SafeAreaView,
   ActivityIndicator,
-  Alert,
   RefreshControl,
   Image,
   LayoutAnimation,
@@ -63,7 +62,8 @@ const ResultsScreen = (route) => {
   const { lookingForThings, lastScanResult, setLastScanResult, lastScanBarcode, setLastScanBarcode } = useGlobalState()
 
   const [isLoading, setIsLoading] = useState(true)
-  const [error, setError] = useState(false)
+  const [errorType, setErrorType] = useState(null) // Can be: "no_ingredients", "scan_failed", "network_error", "parse_error", "unknown"
+  const [errorDetails, setErrorDetails] = useState("")
   const [refreshing, setRefreshing] = useState(false)
   const [imageError, setImageError] = useState(false)
   const [results, setResults] = useState({
@@ -87,7 +87,8 @@ const ResultsScreen = (route) => {
   // Debug logging
   console.log("Results component rendered with state:", {
     isLoading,
-    error,
+    errorType,
+    errorDetails,
     refreshing,
     processedBarcode: processedBarcodeRef.current,
     lastScanBarcode,
@@ -100,7 +101,8 @@ const ResultsScreen = (route) => {
     if (lastScanBarcode && lastScanBarcode !== processedBarcodeRef.current) {
       console.log("New barcode detected, resetting state:", lastScanBarcode)
       setIsLoading(true)
-      setError(false)
+      setErrorType(null)
+      setErrorDetails("")
       setImageError(false)
       setResults({
         matchedIngredients: [],
@@ -193,25 +195,52 @@ const ResultsScreen = (route) => {
         // Store the ingredients in global state
         setLastScanResult(ingredients)
 
-        // Process the ingredients using the existing logic
-        processData(ingredients, productName, imageUrl)
+        // Check if we found any ingredients
+        if (!ingredients || ingredients.length === 0) {
+          console.log("No ingredients found for this product")
+          setIsLoading(false)
+          setRefreshing(false)
+          setErrorType("no_ingredients")
+          setResults({
+            ...results,
+            productName: productName,
+            imageUrl: imageUrl,
+          })
+        } else {
+          // Process the ingredients using the existing logic
+          processData(ingredients, productName, imageUrl)
+        }
 
         // Mark this barcode as processed
         processedBarcodeRef.current = lastScanBarcode
-      } else {
-        console.warn("API request failed or product not found")
+      } else if (response.status === 200 && response.data.status === 0) {
+        console.warn("Product not found in database")
         setIsLoading(false)
         setRefreshing(false)
-        setError(true)
+        setErrorType("product_not_found")
+        setErrorDetails("This product was not found in the food database.")
+      } else {
+        console.warn("API request failed with status:", response.status)
+        setIsLoading(false)
+        setRefreshing(false)
+        setErrorType("scan_failed")
+        setErrorDetails(`Server responded with status: ${response.status}`)
       }
     } catch (err) {
-      Alert.alert("Error", "Failed to fetch product data. Please check your connection and try again.", [
-        { text: "OK" },
-      ])
       console.error("Error fetching product data:", err)
       setIsLoading(false)
       setRefreshing(false)
-      setError(true)
+
+      if (err.code === "ECONNABORTED" || err.message.includes("timeout")) {
+        setErrorType("timeout")
+        setErrorDetails("The request timed out. Please check your internet connection and try again.")
+      } else if (err.message.includes("Network Error") || !navigator.onLine) {
+        setErrorType("network_error")
+        setErrorDetails("No internet connection. Please check your network and try again.")
+      } else {
+        setErrorType("unknown")
+        setErrorDetails(err.message || "An unexpected error occurred")
+      }
     }
   }
 
@@ -230,7 +259,8 @@ const ResultsScreen = (route) => {
           console.log("Still loading after timeout, showing error")
           setIsLoading(false)
           setRefreshing(false)
-          setError(true)
+          setErrorType("scan_failed")
+          setErrorDetails("Request timed out while fetching product data.")
         }
       }, 10000) // 10 second timeout
 
@@ -252,11 +282,10 @@ const ResultsScreen = (route) => {
         console.log("No ingredients found for this product")
         setIsLoading(false)
         setRefreshing(false)
-        setError(true)
-        // Set a specific error type for "no ingredients found"
+        setErrorType("no_ingredients")
+        // Set product info
         setResults({
           ...results,
-          noIngredientsFound: true,
           productName: productName,
           imageUrl: imageUrl,
         })
@@ -301,11 +330,11 @@ const ResultsScreen = (route) => {
       setRefreshing(false)
       console.log("Data processed successfully, loading complete")
     } catch (err) {
-      Alert.alert("Error", "Failed to process ingredients data.", [{ text: "OK" }])
       console.error("Error processing ingredients:", err)
       setIsLoading(false)
       setRefreshing(false)
-      setError(true)
+      setErrorType("parse_error")
+      setErrorDetails("Failed to process the ingredients data: " + (err.message || "Unknown error"))
     }
   }
 
@@ -320,7 +349,9 @@ const ResultsScreen = (route) => {
     // Reset processing state
     processedBarcodeRef.current = null
     setIsLoading(true)
-    setError(false)
+    setErrorType(null)
+    setErrorDetails("")
+    setImageError(false)
   }
 
   // Pull to refresh handler
@@ -368,7 +399,7 @@ const ResultsScreen = (route) => {
   }
 
   // Check if we need to show the "scan something" screen
-  if (!lastScanBarcode && !isLoading && !error) {
+  if (!lastScanBarcode && !isLoading && !errorType) {
     return (
       <SafeAreaView style={styles.container}>
         <View style={styles.emptyStateContainer}>
@@ -394,26 +425,80 @@ const ResultsScreen = (route) => {
     )
   }
 
-  if (error) {
+  if (errorType) {
     return (
       <SafeAreaView style={styles.container}>
         <View style={styles.errorContainer}>
-          <AlertTriangle width={48} height={48} color="#FF4D6D" />
-          <Text style={styles.errorTitle}>
-            {results.noIngredientsFound ? "No Ingredients Found" : "Unable to analyze ingredients"}
-          </Text>
-          <Text style={styles.errorText}>
-            {results.noIngredientsFound
-              ? `We found the product "${results.productName}" but no ingredients were listed.`
-              : "We couldn't process the ingredient data. This might be because:"}
-          </Text>
+          {errorType === "no_ingredients" && (
+            <>
+              <AlertTriangle width={48} height={48} color="#FF9800" />
+              <Text style={styles.errorTitle}>No Ingredients Listed</Text>
+              <Text style={styles.errorText}>
+                We found the product "{results.productName}" but no ingredients were listed in the database.
+              </Text>
+              {results.imageUrl && !imageError ? (
+                <View style={styles.errorImageContainer}>
+                  <Image
+                    source={{ uri: results.imageUrl }}
+                    style={styles.errorProductImage}
+                    resizeMode="contain"
+                    onError={() => setImageError(true)}
+                  />
+                </View>
+              ) : null}
+            </>
+          )}
 
-          {!results.noIngredientsFound && (
-            <View style={styles.errorList}>
-              <Text style={styles.errorListItem}>• No ingredients were detected</Text>
-              <Text style={styles.errorListItem}>• The scan was incomplete</Text>
-              <Text style={styles.errorListItem}>• There was a connection issue</Text>
-            </View>
+          {errorType === "product_not_found" && (
+            <>
+              <AlertTriangle width={48} height={48} color="#FF4D6D" />
+              <Text style={styles.errorTitle}>Product Not Found</Text>
+              <Text style={styles.errorText}>
+                This product (barcode: {lastScanBarcode}) was not found in our database.
+              </Text>
+            </>
+          )}
+
+          {errorType === "scan_failed" && (
+            <>
+              <X width={48} height={48} color="#FF4D6D" />
+              <Text style={styles.errorTitle}>Scan Failed</Text>
+              <Text style={styles.errorText}>We couldn't retrieve information for this product. {errorDetails}</Text>
+            </>
+          )}
+
+          {errorType === "network_error" && (
+            <>
+              <AlertTriangle width={48} height={48} color="#FF4D6D" />
+              <Text style={styles.errorTitle}>Network Error</Text>
+              <Text style={styles.errorText}>{errorDetails}</Text>
+            </>
+          )}
+
+          {errorType === "timeout" && (
+            <>
+              <AlertTriangle width={48} height={48} color="#FF9800" />
+              <Text style={styles.errorTitle}>Request Timed Out</Text>
+              <Text style={styles.errorText}>{errorDetails}</Text>
+            </>
+          )}
+
+          {errorType === "parse_error" && (
+            <>
+              <AlertTriangle width={48} height={48} color="#FF4D6D" />
+              <Text style={styles.errorTitle}>Processing Error</Text>
+              <Text style={styles.errorText}>
+                We found the product but couldn't process its ingredients. {errorDetails}
+              </Text>
+            </>
+          )}
+
+          {errorType === "unknown" && (
+            <>
+              <AlertTriangle width={48} height={48} color="#FF4D6D" />
+              <Text style={styles.errorTitle}>Something Went Wrong</Text>
+              <Text style={styles.errorText}>An unexpected error occurred. {errorDetails}</Text>
+            </>
           )}
 
           <TouchableOpacity style={styles.retryButton} onPress={handleRetry}>
@@ -421,7 +506,7 @@ const ResultsScreen = (route) => {
             <Text style={styles.retryButtonText}>Try Again</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.backButton} onPress={handleScanAnother}>
-            <Text style={styles.backButtonText}>Go Back</Text>
+            <Text style={styles.backButtonText}>Scan Another Product</Text>
           </TouchableOpacity>
         </View>
       </SafeAreaView>
@@ -917,6 +1002,18 @@ const styles = StyleSheet.create({
     color: "#495057",
     textAlign: "center",
     marginBottom: 24,
+  },
+  errorImageContainer: {
+    width: "100%",
+    height: 150,
+    marginVertical: 16,
+    borderRadius: 8,
+    overflow: "hidden",
+    backgroundColor: "#f1f3f5",
+  },
+  errorProductImage: {
+    width: "100%",
+    height: "100%",
   },
 })
 
