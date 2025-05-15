@@ -1,3 +1,29 @@
+// Define a mapping of alternate names to their canonical names
+export const alternateNames = {
+  msg: "monosodium glutamate",
+  "sodium glutamate": "monosodium glutamate",
+  "flavor enhancer": "monosodium glutamate",
+  e621: "monosodium glutamate",
+
+  // Add more alternate mappings as needed
+  "veg oil": "vegetable oil",
+  "veggie oil": "vegetable oil",
+
+  hfcs: "high fructose corn syrup",
+  "corn syrup solids": "corn syrup",
+
+  "fd&c red 40": "red 40",
+  "fd&c yellow 5": "yellow 5",
+  "fd&c yellow 6": "yellow 6",
+  "fd&c blue 1": "blue 1",
+
+  peanut: "peanuts",
+  almond: "almonds",
+  walnut: "walnuts",
+
+  // Add as many alternates as you need
+}
+
 export const foodCategories = {
   "Seed oils": [
     "vegetable oil",
@@ -220,7 +246,7 @@ export const foodCategories = {
     "guanine",
     "squalene",
   ],
-  "Dairy": [
+  Dairy: [
     "milk",
     "butter",
     "cheese",
@@ -269,7 +295,7 @@ export const foodCategories = {
     "sucrose",
     "corn sweetener",
   ],
-  "Nuts": [
+  Nuts: [
     "almonds",
     "almond butter",
     "almond extract",
@@ -282,16 +308,7 @@ export const foodCategories = {
     "pistachios",
     "walnuts",
   ],
-  "Pork products": [
-    "pork",
-    "gelatin",
-    "lard",
-    "bacon",
-    "ham",
-    "sausage",
-    "prosciutto",
-    "pancetta",
-  ],
+  "Pork products": ["pork", "gelatin", "lard", "bacon", "ham", "sausage", "prosciutto", "pancetta"],
   "Islamic Law": [
     "alcohol",
     "ethyl alcohol",
@@ -305,34 +322,54 @@ export const foodCategories = {
     "prosciutto",
     "pancetta",
   ],
-    "Kosher": [
-      "pork",
-      "bacon",
-      "ham",
-      "prosciutto",
-      "pepperoni",
-      "lobster",
-      "crab",
-      "shrimp",
-      "clam",
-      "scallop",
-      "oyster",
-      "catfish",
-      "eel",
-      "rabbit",
-      "horse",
-      "camel",
-      "bat ",
-      "alligator meat",
-      "frog legs",
-      "blood sausage",
-      "black pudding",
-      "cheeseburger",
-      "gelatin",
-      "rennet",
-      "shellfish sauce",
-      "imitation crab",
-    ]
-};
+  Kosher: [
+    "pork",
+    "bacon",
+    "ham",
+    "prosciutto",
+    "pepperoni",
+    "lobster",
+    "crab",
+    "shrimp",
+    "clam",
+    "scallop",
+    "oyster",
+    "catfish",
+    "eel",
+    "rabbit",
+    "horse",
+    "camel",
+    "bat ",
+    "alligator meat",
+    "frog legs",
+    "blood sausage",
+    "black pudding",
+    "cheeseburger",
+    "gelatin",
+    "rennet",
+    "shellfish sauce",
+    "imitation crab",
+  ],
+}
 
-export default foodCategories;
+// Helper function to normalize an ingredient name
+export const normalizeIngredient = (ingredient) => {
+  const normalized = ingredient.toLowerCase().trim()
+  return alternateNames[normalized] || normalized
+}
+
+// Helper function to check if an ingredient is in a category
+export const isIngredientInCategory = (ingredient, category) => {
+  const normalizedIngredient = normalizeIngredient(ingredient)
+  return foodCategories[category].some((item) => normalizeIngredient(item) === normalizedIngredient)
+}
+
+// Helper function to find which categories an ingredient belongs to
+export const findIngredientCategories = (ingredient) => {
+  const normalizedIngredient = normalizeIngredient(ingredient)
+  return Object.keys(foodCategories).filter((category) =>
+    foodCategories[category].some((item) => normalizeIngredient(item) === normalizedIngredient),
+  )
+}
+
+export default foodCategories

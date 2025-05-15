@@ -14,7 +14,8 @@ import {
 } from "react-native"
 import { Ionicons } from "@expo/vector-icons"
 import { useGlobalState } from "./global_variables"
-import foodCategories from "./food_list"
+// Import the normalizeIngredient function at the top of the file
+import foodCategories, { alternateNames } from "./food_list"
 
 export default function IngredientFilter({ onClose }) {
   const { lookingForThings, setLookingForThings } = useGlobalState()
@@ -35,15 +36,33 @@ export default function IngredientFilter({ onClose }) {
     return Object.keys(foodCategories).sort()
   }, [])
 
+  // Then modify the currentIngredients useMemo to handle alternate names in search:
+
   // Get current ingredients to display based on active category or search
   const currentIngredients = useMemo(() => {
     if (searchQuery.trim()) {
+      // Normalize the search query
+      const normalizedQuery = searchQuery.toLowerCase().trim()
+
       // Search across all categories
       const results = []
       Object.values(foodCategories).forEach((categoryItems) => {
         categoryItems.forEach((item) => {
-          if (item.toLowerCase().includes(searchQuery.toLowerCase())) {
+          // Check if the item matches the search query
+          if (item.toLowerCase().includes(normalizedQuery)) {
             results.push(item)
+          }
+
+          // Also check if any alternate name for this item matches the search
+          // This allows searching for "MSG" to find "monosodium glutamate"
+          const alternateEntries = Object.entries(alternateNames)
+          for (const [alternate, canonical] of alternateEntries) {
+            if (canonical === item.toLowerCase() && alternate.includes(normalizedQuery)) {
+              if (!results.includes(item)) {
+                results.push(item)
+              }
+              break
+            }
           }
         })
       })

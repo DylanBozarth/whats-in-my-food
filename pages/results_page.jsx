@@ -28,7 +28,7 @@ import {
   Tag,
 } from "react-native-feather"
 import axios from "axios"
-import foodCategories from "../components/food_list"
+import foodCategories, { normalizeIngredient } from "../components/food_list"
 
 // Enable LayoutAnimation for Android
 if (Platform.OS === "android") {
@@ -39,12 +39,13 @@ if (Platform.OS === "android") {
 
 // Function to find the category of an ingredient
 const findIngredientCategory = (ingredient) => {
-  // Convert ingredient to lowercase for case-insensitive comparison
-  const ingredientLower = ingredient.toLowerCase()
+  // Normalize the ingredient to handle alternate names
+  const normalizedIngredient = normalizeIngredient(ingredient)
 
   // Search through all categories
   for (const [categoryKey, items] of Object.entries(foodCategories)) {
-    if (items.some((item) => item.toLowerCase() === ingredientLower)) {
+    // Use normalized comparison for both the ingredient and the items in the category
+    if (items.some((item) => normalizeIngredient(item) === normalizedIngredient)) {
       // Format category name for display
       return categoryKey
         .replace(/([A-Z])/g, " $1") // Add space before capital letters
@@ -311,11 +312,15 @@ const ResultsScreen = (route) => {
         console.log("Processing lookingForThings:", lookingForThings.length)
 
         lookingForThings.forEach((ingredient) => {
+          // Normalize the ingredient we're looking for to handle alternate names
+          const normalizedLookingFor = normalizeIngredient(ingredient)
+
           // Check if any of the scanned ingredients contain this ingredient
-          // Using lowercase for case-insensitive comparison
-          const found = ingredients.some((itemIngredient) =>
-            itemIngredient.toLowerCase().includes(ingredient.toLowerCase()),
-          )
+          // Using normalized comparison for case-insensitive matching and alternate names
+          const found = ingredients.some((itemIngredient) => {
+            const normalizedItemIngredient = normalizeIngredient(itemIngredient)
+            return normalizedItemIngredient.includes(normalizedLookingFor)
+          })
 
           if (found) {
             matched.push(ingredient)
