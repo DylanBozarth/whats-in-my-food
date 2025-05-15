@@ -36,8 +36,6 @@ export default function IngredientFilter({ onClose }) {
     return Object.keys(foodCategories).sort()
   }, [])
 
-  // Then modify the currentIngredients useMemo to handle alternate names in search:
-
   // Get current ingredients to display based on active category or search
   const currentIngredients = useMemo(() => {
     if (searchQuery.trim()) {
@@ -45,12 +43,13 @@ export default function IngredientFilter({ onClose }) {
       const normalizedQuery = searchQuery.toLowerCase().trim()
 
       // Search across all categories
-      const results = []
+      const results = new Set() // Use a Set to avoid duplicates
+
       Object.values(foodCategories).forEach((categoryItems) => {
         categoryItems.forEach((item) => {
           // Check if the item matches the search query
           if (item.toLowerCase().includes(normalizedQuery)) {
-            results.push(item)
+            results.add(item)
           }
 
           // Also check if any alternate name for this item matches the search
@@ -58,15 +57,15 @@ export default function IngredientFilter({ onClose }) {
           const alternateEntries = Object.entries(alternateNames)
           for (const [alternate, canonical] of alternateEntries) {
             if (canonical === item.toLowerCase() && alternate.includes(normalizedQuery)) {
-              if (!results.includes(item)) {
-                results.push(item)
-              }
+              results.add(item)
               break
             }
           }
         })
       })
-      return results.sort()
+
+      // Convert Set back to Array and sort
+      return Array.from(results).sort()
     } else if (activeCategory && foodCategories[activeCategory]) {
       // Show ingredients from active category
       return [...foodCategories[activeCategory]].sort()
@@ -128,7 +127,7 @@ export default function IngredientFilter({ onClose }) {
     </TouchableOpacity>
   )
 
-  const renderIngredientItem = ({ item }) => (
+  const renderIngredientItem = ({ item, index }) => (
     <TouchableOpacity style={styles.ingredientItem} onPress={() => toggleIngredient(item)}>
       <Text style={styles.ingredientText}>{item.charAt(0).toUpperCase() + item.slice(1)}</Text>
       <View style={[styles.checkbox, selectedIngredients.includes(item) && styles.checkboxSelected]}>
@@ -196,7 +195,7 @@ export default function IngredientFilter({ onClose }) {
         <FlatList
           data={currentIngredients}
           renderItem={renderIngredientItem}
-          keyExtractor={(item) => item}
+          keyExtractor={(item, index) => `${item}-${index}`}
           style={styles.ingredientsList}
           initialNumToRender={20}
           maxToRenderPerBatch={20}
