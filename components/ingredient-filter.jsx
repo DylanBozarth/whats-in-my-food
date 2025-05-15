@@ -1,7 +1,17 @@
 "use client"
 
 import { useState, useCallback, useMemo } from "react"
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, FlatList, SafeAreaView, Platform } from "react-native"
+import {
+  View,
+  Text,
+  StyleSheet,
+  TextInput,
+  TouchableOpacity,
+  FlatList,
+  SafeAreaView,
+  Platform,
+  Dimensions,
+} from "react-native"
 import { Ionicons } from "@expo/vector-icons"
 import { useGlobalState } from "./global_variables"
 import foodCategories from "./food_list"
@@ -11,6 +21,14 @@ export default function IngredientFilter({ onClose }) {
   const [searchQuery, setSearchQuery] = useState("")
   const [activeCategory, setActiveCategory] = useState(null)
   const [selectedIngredients, setSelectedIngredients] = useState(lookingForThings || [])
+  const screenWidth = Dimensions.get("window").width
+
+  // Calculate item dimensions
+  const itemWidth = (screenWidth - 48) / 2
+  const itemHeight = 44 // Fixed height for category items
+
+  // Calculate container height to show exactly 3 rows (6 items)
+  const categoryContainerHeight = (itemHeight + 8) * 3 // 3 rows with 8px margin
 
   // Get all categories from foodCategories
   const categories = useMemo(() => {
@@ -74,10 +92,18 @@ export default function IngredientFilter({ onClose }) {
 
   const renderCategoryItem = ({ item }) => (
     <TouchableOpacity
-      style={[styles.categoryItem, activeCategory === item && styles.activeCategoryItem]}
+      style={[
+        styles.categoryItem,
+        activeCategory === item && styles.activeCategoryItem,
+        { width: itemWidth, height: itemHeight },
+      ]}
       onPress={() => setActiveCategory(item)}
     >
-      <Text style={[styles.categoryText, activeCategory === item && styles.activeCategoryText]}>
+      <Text
+        style={[styles.categoryText, activeCategory === item && styles.activeCategoryText]}
+        numberOfLines={1}
+        ellipsizeMode="tail"
+      >
         {item.charAt(0).toUpperCase() + item.slice(1)}
       </Text>
     </TouchableOpacity>
@@ -123,14 +149,16 @@ export default function IngredientFilter({ onClose }) {
 
       <View style={styles.content}>
         {!searchQuery && (
-          <View style={styles.categoriesContainer}>
+          <View style={[styles.categoriesContainer, { height: categoryContainerHeight }]}>
             <FlatList
               data={categories}
               renderItem={renderCategoryItem}
               keyExtractor={(item) => item}
-              horizontal
-              showsHorizontalScrollIndicator={false}
+              horizontal={false}
+              numColumns={2}
+              showsVerticalScrollIndicator={true}
               contentContainerStyle={styles.categoriesList}
+              scrollEnabled={true}
             />
           </View>
         )}
@@ -227,17 +255,20 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     borderBottomWidth: 1,
     borderBottomColor: "#e0e0e0",
+    paddingVertical: 12,
+    // Height is dynamically set in the component
   },
   categoriesList: {
-    paddingHorizontal: 8,
-    paddingVertical: 12,
+    paddingHorizontal: 16,
   },
   categoryItem: {
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    marginHorizontal: 4,
+    margin: 4,
     borderRadius: 16,
     backgroundColor: "#f0f0f0",
+    alignItems: "center",
+    justifyContent: "center",
+    paddingHorizontal: 12,
+    // Width and height are dynamically set in the component
   },
   activeCategoryItem: {
     backgroundColor: "#007AFF",
@@ -245,6 +276,7 @@ const styles = StyleSheet.create({
   categoryText: {
     fontSize: 14,
     color: "#333",
+    textAlign: "center",
   },
   activeCategoryText: {
     color: "#fff",
@@ -319,4 +351,3 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
 })
-
