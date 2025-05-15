@@ -1,8 +1,8 @@
 "use client"
 
-import React, { useState, useRef } from "react"
+import React, { useState, useRef, useEffect } from "react"
 import { CameraView, useCameraPermissions } from "expo-camera"
-import { Button, StyleSheet, Text, TouchableOpacity, View } from "react-native"
+import { Button, StyleSheet, Text, TouchableOpacity, View, Platform, ActivityIndicator } from "react-native"
 import { useFocusEffect } from "@react-navigation/native"
 import { useGlobalState } from "../components/global_variables"
 
@@ -10,8 +10,12 @@ export const StartCamera = ({ navigation }) => {
   const [facing, setFacing] = useState("back")
   const [permission, requestPermission] = useCameraPermissions()
   const [scanningEnabled, setScanningEnabled] = useState(true)
+  const [isCameraReady, setIsCameraReady] = useState(false)
+  const [isVisible, setIsVisible] = useState(false)
   const lastScanned = useRef(0) // Ref to track the last scanned timestamp
   const { setLastScanBarcode } = useGlobalState()
+  const cameraViewRef = useRef(null)
+  const mountTimeoutRef = useRef(null)
 
   // Reset function to enable scanning again
   const resetScannerState = () => {
@@ -21,30 +25,75 @@ export const StartCamera = ({ navigation }) => {
     // DO NOT reset the lastScanBarcode here - that would break the results page
   }
 
+  // Handle camera ready state
+  const onCameraReady = () => {
+    console.log("Camera is ready")
+    setIsCameraReady(true)
+    if (mountTimeoutRef.current) {
+      clearTimeout(mountTimeoutRef.current)
+      mountTimeoutRef.current = null
+    }
+  }
+
+  // Initialize camera with delay for Android
+  const initializeCamera = () => {
+    console.log("Initializing camera...")
+    setIsCameraReady(false)
+
+    // Clear any existing timeout
+    if (mountTimeoutRef.current) {
+      clearTimeout(mountTimeoutRef.current)
+    }
+
+    // Set a timeout to detect if camera fails to initialize
+    mountTimeoutRef.current = setTimeout(() => {
+      if (!isCameraReady) {
+        console.log("Camera initialization timed out, retrying...")
+        setIsVisible(false)
+
+        // Wait a moment and try again
+        setTimeout(() => {
+          setIsVisible(true)
+        }, 500)
+      }
+    }, 3000)
+  }
+
   // Use useFocusEffect to reset scanner when screen is focused
   useFocusEffect(
     React.useCallback(() => {
       console.log("Scanner screen focused via useFocusEffect")
       resetScannerState()
+      setIsVisible(true)
+
+      // For Android, we need to delay camera initialization slightly
+      if (Platform.OS === "android") {
+        setTimeout(() => {
+          initializeCamera()
+        }, 300)
+      } else {
+        initializeCamera()
+      }
 
       return () => {
         console.log("Scanner screen unfocused via useFocusEffect")
+        setIsVisible(false)
+        if (mountTimeoutRef.current) {
+          clearTimeout(mountTimeoutRef.current)
+          mountTimeoutRef.current = null
+        }
       }
     }, []),
   )
 
-  if (!permission) {
-    return <View />
-  }
-
-  if (!permission.granted) {
-    return (
-      <View style={styles.container}>
-        <Text style={styles.message}>We need your permission to show the camera</Text>
-        <Button onPress={requestPermission} title="Grant Permission" />
-      </View>
-    )
-  }
+  // Clean up on unmount
+  useEffect(() => {
+    return () => {
+      if (mountTimeoutRef.current) {
+        clearTimeout(mountTimeoutRef.current)
+      }
+    }
+  }, [])
 
   const handleBarCodeScanned = (barcode) => {
     // Simple debounce to prevent multiple scans
@@ -79,43 +128,83 @@ export const StartCamera = ({ navigation }) => {
   const manualReset = () => {
     console.log("Manual reset triggered")
     resetScannerState()
+    setIsVisible(false)
+    setTimeout(() => {
+      setIsVisible(true)
+      initializeCamera()
+    }, 500)
+  }
+
+  if (!permission) {
+    return (
+      <View style={styles.container}>
+        <ActivityIndicator size="large" color="#4361EE" />
+        <Text style={styles.message}>Requesting camera permission...</Text>
+      </View>
+    )
+  }
+
+  if (!permission.granted) {
+    return (
+      <View style={styles.container}>
+        <Text style={styles.message}>We need your permission to show the camera</Text>
+        <Button onPress={requestPermission} title="Grant Permission" />
+      </View>
+    )
   }
 
   return (
     <View style={styles.container}>
-      <CameraView
-        style={styles.fullscreenCamera}
-        facing={facing}
-        onBarcodeScanned={
-          scanningEnabled
-            ? (data) => {
-                handleBarCodeScanned(data.data)
-              }
-            : undefined
-        }
-      >
-        <View style={styles.overlay}>
-          <View style={styles.scannerStatus}>
-            <Text style={styles.statusText}>Scanner {scanningEnabled ? "Ready" : "Disabled"}</Text>
-          </View>
+      {isVisible && (
+        <CameraView
+          ref={cameraViewRef}
+          style={styles.fullscreenCamera}
+          facing={facing}
+          onCameraReady={onCameraReady}
+          onBarcodeScanned={
+            scanningEnabled && isCameraReady
+              ? (data) => {
+                  handleBarCodeScanned(data.data)
+                }
+              : undefined
+          }
+        >
+          <View style={styles.overlay}>
+            <View style={styles.scannerStatus}>
+              <Text style={styles.statusText}>Scanner {isCameraReady ? "Ready" : "Initializing..."}</Text>
+            </View>
 
-          <View style={styles.scannerGuide}>
-            <Text style={styles.scannerText}>Align barcode within frame</Text>
-          </View>
+            <View style={styles.scannerGuide}>
+              <Text style={styles.scannerText}>Align barcode within frame</Text>
+            </View>
 
-          <View style={styles.buttonContainer}>
-            <TouchableOpacity style={styles.button} onPress={toggleCameraFacing}>
-              <Text style={styles.text}>Flip Camera</Text>
-            </TouchableOpacity>
-
-            {!scanningEnabled && (
-              <TouchableOpacity style={[styles.button, styles.resetButton]} onPress={manualReset}>
-                <Text style={styles.text}>Reset Scanner</Text>
+            <View style={styles.buttonContainer}>
+              <TouchableOpacity style={styles.button} onPress={toggleCameraFacing}>
+                <Text style={styles.text}>Flip Camera</Text>
               </TouchableOpacity>
-            )}
+
+              {!isCameraReady && (
+                <TouchableOpacity style={[styles.button, styles.resetButton]} onPress={manualReset}>
+                  <Text style={styles.text}>Reset Camera</Text>
+                </TouchableOpacity>
+              )}
+
+              {!scanningEnabled && isCameraReady && (
+                <TouchableOpacity style={[styles.button, styles.resetButton]} onPress={resetScannerState}>
+                  <Text style={styles.text}>Reset Scanner</Text>
+                </TouchableOpacity>
+              )}
+            </View>
           </View>
+        </CameraView>
+      )}
+
+      {!isVisible && (
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color="#4361EE" />
+          <Text style={styles.loadingText}>Preparing camera...</Text>
         </View>
-      </CameraView>
+      )}
     </View>
   )
 }
@@ -131,6 +220,14 @@ const styles = StyleSheet.create({
     textAlign: "center",
     paddingBottom: 10,
     color: "#FFFFFF",
+    paddingHorizontal: 20,
+  },
+  errorTitle: {
+    fontSize: 20,
+    fontWeight: "bold",
+    color: "#FFFFFF",
+    marginTop: 16,
+    marginBottom: 8,
   },
   fullscreenCamera: {
     flex: 1,
@@ -188,5 +285,32 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(0, 0, 0, 0.5)",
     padding: 8,
     borderRadius: 4,
+  },
+  retryButton: {
+    backgroundColor: "#4361EE",
+    borderRadius: 12,
+    padding: 16,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: 20,
+    width: "80%",
+  },
+  retryButtonText: {
+    color: "#FFFFFF",
+    fontSize: 16,
+    fontWeight: "600",
+    marginLeft: 8,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#000",
+  },
+  loadingText: {
+    color: "#FFFFFF",
+    fontSize: 16,
+    marginTop: 16,
   },
 })
