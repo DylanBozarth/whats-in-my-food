@@ -111,6 +111,7 @@ export const foodCategories = {
     "apple",
     "grape",
     "watermelon",
+    "natural flavors"
   ],
   "Artificial additives": [
     "red 40",
