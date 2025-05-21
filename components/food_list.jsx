@@ -417,6 +417,7 @@ export const foodCategories = {
     "EDTA",
     "ethylenediaminetetraacetic acid",
     "calcium disodium EDTA",
+    "EDTA",
     "natamycin",
     "nisin",
     "propylene glycol",
