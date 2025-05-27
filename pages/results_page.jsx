@@ -26,9 +26,11 @@ import {
   ChevronDown,
   ChevronUp,
   Tag,
+  Search,
 } from "react-native-feather"
 import axios from "axios"
 import foodCategories, { normalizeIngredient } from "../components/food_list"
+import { findIngredientMatches } from "../components/fuzzy_matching"
 
 // Enable LayoutAnimation for Android
 if (Platform.OS === "android") {
@@ -63,8 +65,7 @@ const ResultsScreen = (route) => {
   const { lookingForThings, lastScanResult, setLastScanResult, lastScanBarcode, setLastScanBarcode } = useGlobalState()
 
   const [isLoading, setIsLoading] = useState(!!lastScanBarcode)
-
-  const [errorType, setErrorType] = useState(null) // Can be: "no_ingredients", "scan_failed", "network_error", "parse_error", "unknown"
+  const [errorType, setErrorType] = useState(null)
   const [errorDetails, setErrorDetails] = useState("")
   const [refreshing, setRefreshing] = useState(false)
   const [imageError, setImageError] = useState(false)
@@ -99,9 +100,7 @@ const ResultsScreen = (route) => {
   })
 
   // Add this useEffect to handle the initial state properly
-  // Initialize loading state correctly when component mounts
   useEffect(() => {
-    // If there's no barcode to scan, we shouldn't be in a loading state
     if (!lastScanBarcode) {
       setIsLoading(false)
     }
@@ -122,7 +121,6 @@ const ResultsScreen = (route) => {
         imageUrl: null,
         noIngredientsFound: false,
       })
-      // Reset expanded sections to default
       setExpandedSections({
         matched: true,
         safe: true,
@@ -133,9 +131,7 @@ const ResultsScreen = (route) => {
 
   // Toggle section expansion with animation
   const toggleSection = (section) => {
-    // Configure the animation
     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut)
-
     setExpandedSections((prev) => ({
       ...prev,
       [section]: !prev[section],
@@ -154,28 +150,20 @@ const ResultsScreen = (route) => {
       if (response.status === 200 && response.data.status === 1) {
         console.log("API request successful")
 
-        // Extract the ingredients from the API response
         let ingredients = []
         let productName = `Product ${lastScanBarcode}`
         let imageUrl = null
 
-        // Get product name if available
         if (response.data.product && response.data.product.product_name) {
           productName = response.data.product.product_name
         }
 
-        // Get product image if available
         if (response.data.product) {
-          // Try to get the front image first
           if (response.data.product.image_front_url) {
             imageUrl = response.data.product.image_front_url
-          }
-          // Fall back to the main image
-          else if (response.data.product.image_url) {
+          } else if (response.data.product.image_url) {
             imageUrl = response.data.product.image_url
-          }
-          // Try other image fields if available
-          else if (response.data.product.selected_images?.front?.display?.url) {
+          } else if (response.data.product.selected_images?.front?.display?.url) {
             imageUrl = response.data.product.selected_images.front.display.url
           } else if (response.data.product.selected_images?.front?.small?.url) {
             imageUrl = response.data.product.selected_images.front.small.url
@@ -184,16 +172,12 @@ const ResultsScreen = (route) => {
 
         console.log("Product image URL:", imageUrl)
 
-        // Check if the product has ingredients_text
         if (response.data.product && response.data.product.ingredients_text) {
-          // Split the ingredients text by commas and clean up each ingredient
           ingredients = response.data.product.ingredients_text
             .split(",")
             .map((ingredient) => ingredient.trim())
             .filter((ingredient) => ingredient.length > 0)
-        }
-        // If no ingredients_text, try to get from ingredients array
-        else if (
+        } else if (
           response.data.product &&
           response.data.product.ingredients &&
           Array.isArray(response.data.product.ingredients)
@@ -202,11 +186,8 @@ const ResultsScreen = (route) => {
         }
 
         console.log("Extracted ingredients:", ingredients)
-
-        // Store the ingredients in global state
         setLastScanResult(ingredients)
 
-        // Check if we found any ingredients
         if (!ingredients || ingredients.length === 0) {
           console.log("No ingredients found for this product")
           setIsLoading(false)
@@ -218,11 +199,9 @@ const ResultsScreen = (route) => {
             imageUrl: imageUrl,
           })
         } else {
-          // Process the ingredients using the existing logic
           processData(ingredients, productName, imageUrl)
         }
 
-        // Mark this barcode as processed
         processedBarcodeRef.current = lastScanBarcode
       } else if (response.status === 200 && response.data.status === 0) {
         console.warn("Product not found in database")
@@ -259,11 +238,9 @@ const ResultsScreen = (route) => {
   useEffect(() => {
     console.log("Results effect running, loading:", isLoading, "barcode:", lastScanBarcode)
 
-    // Only fetch if we have a barcode and haven't processed THIS barcode yet
     if (lastScanBarcode && processedBarcodeRef.current !== lastScanBarcode && isLoading) {
       fetchProductData()
 
-      // Set a timeout to prevent infinite loading
       const timeoutId = setTimeout(() => {
         console.log("Timeout triggered after 10 seconds")
         if (isLoading) {
@@ -273,9 +250,8 @@ const ResultsScreen = (route) => {
           setErrorType("scan_failed")
           setErrorDetails("Request timed out while fetching product data.")
         }
-      }, 10000) // 10 second timeout
+      }, 10000)
 
-      // Clear timeout if component unmounts or if loading completes
       return () => {
         console.log("Clearing timeout")
         clearTimeout(timeoutId)
@@ -283,18 +259,16 @@ const ResultsScreen = (route) => {
     }
   }, [isLoading, lastScanBarcode])
 
-  // Process the data once we have ingredients
+  // Enhanced process data function with fuzzy matching
   const processData = (ingredients, productName, imageUrl) => {
     try {
-      console.log("Processing ingredients:", ingredients.length)
+      console.log("Processing ingredients with fuzzy matching:", ingredients.length)
 
-      // Check if ingredients array is empty
       if (!ingredients || ingredients.length === 0) {
         console.log("No ingredients found for this product")
         setIsLoading(false)
         setRefreshing(false)
         setErrorType("no_ingredients")
-        // Set product info
         setResults({
           ...results,
           productName: productName,
@@ -303,47 +277,57 @@ const ResultsScreen = (route) => {
         return
       }
 
-      // Process the ingredients
-      const matched = []
-      const safe = []
-
-      // Check which ingredients from lookingForThings are in the ingredients list
       if (lookingForThings && lookingForThings.length > 0) {
-        console.log("Processing lookingForThings:", lookingForThings.length)
+        console.log("Processing lookingForThings with enhanced matching:", lookingForThings.length)
 
-        lookingForThings.forEach((ingredient) => {
-          // Normalize the ingredient we're looking for to handle alternate names
-          const normalizedLookingFor = normalizeIngredient(ingredient)
+        // Use the enhanced fuzzy matching
+        const matchingOptions = {
+          exactMatchThreshold: 0.9, // 90% similarity for exact matches
+          partialMatchThreshold: 0.75, // 75% similarity for partial matches
+          enableSubstring: true, // Enable substring matching
+          enableWordOrder: true, // Enable word order flexibility
+        }
 
-          // Check if any of the scanned ingredients contain this ingredient
-          // Using normalized comparison for case-insensitive matching and alternate names
-          const found = ingredients.some((itemIngredient) => {
-            const normalizedItemIngredient = normalizeIngredient(itemIngredient)
-            return normalizedItemIngredient.includes(normalizedLookingFor)
-          })
+        const { matches, safe } = findIngredientMatches(lookingForThings, ingredients, matchingOptions)
 
-          if (found) {
-            matched.push(ingredient)
-          } else {
-            safe.push(ingredient)
-          }
+        console.log("Enhanced matching results:")
+        console.log("Matches found:", matches.length)
+        console.log("Safe ingredients:", safe.length)
+
+        // Log detailed match information
+        matches.forEach((match) => {
+          console.log(
+            `Match: "${match.searchTerm}" found in "${match.foundIn}" (${(match.score * 100).toFixed(1)}% similarity, strategy: ${match.strategy})`,
+          )
         })
 
-        console.log("Matched ingredients:", matched.length)
-        console.log("Safe ingredients:", safe.length)
+        // Convert matches to the format expected by the UI
+        const matchedIngredients = matches.map((match) => ({
+          ingredient: match.searchTerm,
+          foundIn: match.foundIn,
+          score: match.score,
+          strategy: match.strategy,
+        }))
+
+        setResults({
+          matchedIngredients: matchedIngredients,
+          safeIngredients: safe,
+          productName: productName,
+          imageUrl: imageUrl,
+        })
+      } else {
+        // No ingredients to look for
+        setResults({
+          matchedIngredients: [],
+          safeIngredients: [],
+          productName: productName,
+          imageUrl: imageUrl,
+        })
       }
 
-      setResults({
-        matchedIngredients: matched,
-        safeIngredients: safe,
-        productName: productName,
-        imageUrl: imageUrl,
-      })
-
-      // Stop loading
       setIsLoading(false)
       setRefreshing(false)
-      console.log("Data processed successfully, loading complete")
+      console.log("Enhanced data processing complete")
     } catch (err) {
       console.error("Error processing ingredients:", err)
       setIsLoading(false)
@@ -355,13 +339,11 @@ const ResultsScreen = (route) => {
 
   const handleScanAnother = () => {
     console.log("Scan Another button pressed")
-    // Reset the processed barcode ref so we can scan the same item again if needed
     processedBarcodeRef.current = null
     navigation.goBack()
   }
 
   const handleRetry = () => {
-    // Reset processing state
     processedBarcodeRef.current = null
     setIsLoading(true)
     setErrorType(null)
@@ -369,24 +351,20 @@ const ResultsScreen = (route) => {
     setImageError(false)
   }
 
-  // Pull to refresh handler
   const onRefresh = useCallback(() => {
     console.log("Pull to refresh triggered")
     setRefreshing(true)
-    // Reset the processed barcode ref so we can fetch the same barcode again
     processedBarcodeRef.current = null
     setImageError(false)
 
-    // If we have a barcode, fetch the data again
     if (lastScanBarcode) {
       fetchProductData()
     } else {
-      // If no barcode, just stop refreshing
       setRefreshing(false)
     }
   }, [lastScanBarcode])
 
-  // Collapsible section component
+  // Enhanced collapsible section component
   const CollapsibleSection = ({ title, children, sectionKey, count }) => {
     const isExpanded = expandedSections[sectionKey]
 
@@ -434,7 +412,7 @@ const ResultsScreen = (route) => {
       <SafeAreaView style={styles.container}>
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color="#4361EE" style={styles.loadingSpinner} />
-          <Text style={styles.loadingText}>Analyzing ingredients...</Text>
+          <Text style={styles.loadingText}>Analyzing ingredients with smart matching...</Text>
         </View>
       </SafeAreaView>
     )
@@ -544,7 +522,7 @@ const ResultsScreen = (route) => {
         }
       >
         <View style={styles.header}>
-          <Text style={styles.title}>Ingredient Check Results</Text>
+          <Text style={styles.title}>Smart Ingredient Analysis</Text>
           <Text style={styles.subtitle}>{results.productName}</Text>
           <Text style={styles.barcodeText}>Barcode: {lastScanBarcode}</Text>
         </View>
@@ -572,37 +550,69 @@ const ResultsScreen = (route) => {
             <View style={styles.warningContainer}>
               <AlertTriangle width={32} height={32} color="#FF4D6D" />
               <Text style={styles.warningText}>
-                This product contains {results.matchedIngredients.length} ingredient
+                Smart matching found {results.matchedIngredients.length} ingredient
                 {results.matchedIngredients.length !== 1 ? "s" : ""} you're watching for
               </Text>
             </View>
           ) : (
             <View style={styles.safeContainer}>
               <Check width={32} height={32} color="#4CC9BE" />
-              <Text style={styles.safeText}>This product doesn't contain any ingredients you're watching for</Text>
+              <Text style={styles.safeText}>
+                Smart analysis shows this product doesn't contain any ingredients you're watching for
+              </Text>
             </View>
           )}
         </View>
 
-        {/* Matched Ingredients Section - Now Collapsible */}
+        {/* Enhanced Matched Ingredients Section */}
         {results.matchedIngredients.length > 0 && (
           <View style={styles.matchedContainer}>
             <CollapsibleSection
-              title="You should know about:"
+              title="Smart Matches Found:"
               sectionKey="matched"
               count={results.matchedIngredients.length}
             >
               <View style={styles.ingredientsList}>
-                {results.matchedIngredients.map((ingredient, index) => {
-                  const category = findIngredientCategory(ingredient)
+                {results.matchedIngredients.map((match, index) => {
+                  const category = findIngredientCategory(match.ingredient)
+                  const isExactMatch = match.strategy === "substring" || match.score >= 0.95
+
                   return (
-                    <View key={index} style={styles.matchedItem}>
+                    <View key={index} style={styles.enhancedMatchedItem}>
                       <X width={20} height={20} color="#FF4D6D" />
                       <View style={styles.ingredientInfoContainer}>
-                        <Text style={styles.matchedText}>{ingredient}</Text>
+                        <Text style={styles.matchedText}>{match.ingredient}</Text>
+
+                        {/* Show what it matched in the product */}
+                        {match.foundIn && match.foundIn !== match.ingredient && (
+                          <View style={styles.matchDetailsContainer}>
+                            <Search width={12} height={12} color="#FF4D6D" style={styles.matchIcon} />
+                            <Text style={styles.matchDetailsText}>
+                              Found as: "{match.foundIn}"
+                              {match.score < 1.0 && ` (${(match.score * 100).toFixed(0)}% match)`}
+                            </Text>
+                          </View>
+                        )}
+
+                        {/* Match confidence indicator */}
+                        <View
+                          style={[
+                            styles.confidenceBadge,
+                            {
+                              backgroundColor:
+                                match.score === 1.0 ? "#4CC9BE" : match.score >= 0.9 ? "#FF4D6D" : "#FF9800",
+                            },
+                          ]}
+                        >
+                          <Text style={styles.confidenceText}>
+                            {match.score === 1.0 ? "Exact" : match.score >= 0.9 ? "High" : "Fuzzy"}
+                          </Text>
+                        </View>
                         <View style={styles.categoryContainer}>
                           <Tag width={12} height={12} color="#FF4D6D" style={styles.categoryIcon} />
                           <Text style={styles.categoryText}>{category}</Text>
+
+                          {/* Match confidence indicator */}
                         </View>
                       </View>
                     </View>
@@ -613,7 +623,7 @@ const ResultsScreen = (route) => {
           </View>
         )}
 
-        {/* Safe Ingredients Section - Now Collapsible */}
+        {/* Safe Ingredients Section */}
         {results.safeIngredients.length > 0 && (
           <View style={styles.safeIngredientsContainer}>
             <CollapsibleSection
@@ -642,7 +652,7 @@ const ResultsScreen = (route) => {
           </View>
         )}
 
-        {/* All Ingredients Section - Now Collapsible */}
+        {/* All Ingredients Section */}
         <View style={styles.ingredientsContainer}>
           <CollapsibleSection title="All Ingredients" sectionKey="all" count={lastScanResult?.length || 0}>
             <View style={styles.ingredientsList}>
@@ -765,15 +775,6 @@ const styles = StyleSheet.create({
     color: "#495057",
     textAlign: "center",
     marginBottom: 16,
-  },
-  errorList: {
-    alignSelf: "stretch",
-    marginBottom: 24,
-  },
-  errorListItem: {
-    fontSize: 15,
-    color: "#495057",
-    marginBottom: 8,
   },
   retryButton: {
     backgroundColor: "#4361EE",
@@ -932,6 +933,14 @@ const styles = StyleSheet.create({
     textAlign: "center",
     padding: 12,
   },
+  enhancedMatchedItem: {
+    backgroundColor: "rgba(255, 77, 109, 0.1)",
+    borderRadius: 8,
+    padding: 12,
+    marginBottom: 8,
+    flexDirection: "row",
+    alignItems: "flex-start",
+  },
   matchedItem: {
     backgroundColor: "rgba(255, 77, 109, 0.1)",
     borderRadius: 8,
@@ -948,6 +957,21 @@ const styles = StyleSheet.create({
     fontSize: 15,
     color: "#FF4D6D",
     fontWeight: "500",
+  },
+  matchDetailsContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginTop: 4,
+    marginBottom: 4,
+  },
+  matchIcon: {
+    marginRight: 4,
+  },
+  matchDetailsText: {
+    fontSize: 12,
+    color: "#FF4D6D",
+    opacity: 0.8,
+    fontStyle: "italic",
   },
   categoryContainer: {
     flexDirection: "row",
@@ -966,6 +990,17 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: "#4CC9BE",
     opacity: 0.8,
+  },
+  confidenceBadge: {
+    borderRadius: 8,
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    marginLeft: 8,
+  },
+  confidenceText: {
+    fontSize: 10,
+    color: "#FFFFFF",
+    fontWeight: "500",
   },
   safeItem: {
     backgroundColor: "rgba(76, 201, 190, 0.1)",

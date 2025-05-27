@@ -1,29 +1,41 @@
-// Define a mapping of alternate names to their canonical names
-export const alternateNames = {
+// Keep only the most important alternate names that fuzzy matching can't handle
+// These are for completely different names, not just spelling variations
+export const criticalAlternateNames = {
+  // Acronyms and abbreviations that are completely different
   msg: "monosodium glutamate",
-  "sodium glutamate": "monosodium glutamate",
-  "flavor enhancer": "monosodium glutamate",
   e621: "monosodium glutamate",
-
-  // Add more alternate mappings as needed
-  "veg oil": "vegetable oil",
-  "veggie oil": "vegetable oil",
-
   hfcs: "high fructose corn syrup",
-  "corn syrup solids": "corn syrup",
+  bha: "butylated hydroxyanisole",
+  bht: "butylated hydroxytoluene",
+  tbhq: "tertiary butylhydroquinone",
+  edta: "ethylenediaminetetraacetic acid",
 
+  // Color additives with different naming conventions
   "fd&c red 40": "red 40",
   "fd&c yellow 5": "yellow 5",
   "fd&c yellow 6": "yellow 6",
   "fd&c blue 1": "blue 1",
+  "fd&c blue 2": "blue 2",
+  "fd&c green 3": "green 3",
+  "fd&c red 3": "red 3",
 
-  peanut: "peanuts",
-  almond: "almonds",
-  walnut: "walnuts",
+  // E-numbers (European food additive codes)
+  e951: "aspartame",
+  e952: "cyclamate",
+  e102: "tartrazine",
+  e104: "quinoline yellow",
+  e110: "sunset yellow fcf",
+  e129: "allura red ac",
+  e124: "ponceau 4r",
+  e122: "azorubine",
+  e120: "carmine",
+  e904: "shellac",
 
-  // Add as many alternates as you need
+  // Completely different terms
+  "flavor enhancer": "monosodium glutamate",
+  "natural flavors": "natural flavoring",
+  "artificial flavors": "artificial flavoring",
 }
-
 export const foodCategories = {
   "Seed oils": [
     "vegetable oil",
@@ -432,16 +444,30 @@ export const foodCategories = {
   
 }
 
-// Helper function to normalize an ingredient name
+// Enhanced normalization that handles both alternate names and fuzzy matching prep
 export const normalizeIngredient = (ingredient) => {
-  const normalized = ingredient.toLowerCase().trim()
-  return alternateNames[normalized] || normalized
+  let normalized = ingredient.toLowerCase().trim()
+
+  // First check for critical alternate names (exact matches only)
+  if (criticalAlternateNames[normalized]) {
+    normalized = criticalAlternateNames[normalized]
+  }
+
+  // Remove common prefixes/suffixes that don't affect meaning
+  normalized = normalized
+    .replace(/^(natural|artificial)\s+/, "") // Remove "natural" or "artificial" prefix
+    .replace(/\s+(extract|powder|oil|flour)$/, "") // Remove common suffixes
+    .replace(/[^\w\s]/g, "") // Remove punctuation
+    .replace(/\s+/g, " ") // Normalize whitespace
+    .trim()
+
+  return normalized
 }
 
 // Helper function to check if an ingredient is in a category
 export const isIngredientInCategory = (ingredient, category) => {
   const normalizedIngredient = normalizeIngredient(ingredient)
-  return foodCategories[category].some((item) => normalizeIngredient(item) === normalizedIngredient)
+  return foodCategories[category]?.some((item) => normalizeIngredient(item) === normalizedIngredient) || false
 }
 
 // Helper function to find which categories an ingredient belongs to
