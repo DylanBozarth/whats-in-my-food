@@ -662,7 +662,9 @@ const ResultsScreen = route => {
                                 style={styles.matchIcon}
                               />
                               <Text style={styles.matchDetailsText}>
-                                We think this might be: "{match.foundIn}"
+                                Not an exact match: 
+                               {"\n"}
+                                We think this qualify as: "{match.foundIn}"
                                 {/*{match.score < 1.0 && ` (${(match.score * 100).toFixed(0)}% match)`} */}
                               </Text>
                             </View>
