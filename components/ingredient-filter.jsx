@@ -42,26 +42,29 @@ export default function IngredientFilter({ onClose }) {
       // Normalize the search query
       const normalizedQuery = searchQuery.toLowerCase().trim()
 
-      // Search across all categories
+      // Search across all categories when no specific category is selected
       const results = new Set() // Use a Set to avoid duplicates
 
       Object.values(foodCategories).forEach((categoryItems) => {
-        categoryItems.forEach((item) => {
-          // Check if the item matches the search query
-          if (item.toLowerCase().includes(normalizedQuery)) {
-            results.add(item)
-          }
-
-          // Also check if any alternate name for this item matches the search
-          // This allows searching for "MSG" to find "monosodium glutamate"
-          const alternateEntries = Object.entries(alternateNames)
-          for (const [alternate, canonical] of alternateEntries) {
-            if (canonical === item.toLowerCase() && alternate.includes(normalizedQuery)) {
+        if (Array.isArray(categoryItems)) {
+          categoryItems.forEach((item) => {
+            // Check if the item matches the search query
+            if (item && typeof item === "string" && item.toLowerCase().includes(normalizedQuery)) {
               results.add(item)
-              break
             }
-          }
-        })
+
+            // Also check if any alternate name for this item matches the search
+            if (alternateNames && typeof alternateNames === "object") {
+              const alternateEntries = Object.entries(alternateNames)
+              for (const [alternate, canonical] of alternateEntries) {
+                if (canonical === item.toLowerCase() && alternate.includes(normalizedQuery)) {
+                  results.add(item)
+                  break
+                }
+              }
+            }
+          })
+        }
       })
 
       // Convert Set back to Array and sort
