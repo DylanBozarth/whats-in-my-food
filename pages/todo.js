@@ -4,4 +4,8 @@ do research and add more food lists
 add alternate names to trigger the same thing (need more)
 test out partial matches for typos in database 
 E621 =  MSG great example 
+
+
+Add automatic retry when the api stops working for some reason. 
+retrying in 3.2.1. 
 */
