@@ -147,8 +147,8 @@ export const StartCamera = ({ navigation }) => {
   if (!permission.granted) {
     return (
       <View style={styles.container}>
-        <Text style={styles.message}>We need your permission to show the camera</Text>
-        <Button onPress={requestPermission} title="Grant Permission" />
+        <Text style={styles.message}>Please grant camera permission in order to scan barcodes</Text>
+        <Button onPress={requestPermission} title="Continue" />
       </View>
     )
   }
