@@ -139,7 +139,7 @@ export const StartCamera = ({ navigation }) => {
     return (
       <View style={styles.container}>
         <ActivityIndicator size="large" color="#4361EE" />
-        <Text style={styles.message}>Requesting camera permission...</Text>
+        <Text style={styles.message}>Please grant camera permission so that we can scan barcodes.</Text>
       </View>
     )
   }
