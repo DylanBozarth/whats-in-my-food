@@ -221,6 +221,7 @@ const ResultsScreen = route => {
         setRefreshing(false);
         setErrorType('product_not_found');
         setErrorDetails('This product was not found in the food database.');
+        // run second database check here CHEESE
       } else {
         console.warn('API request failed with status:', response.status);
         setIsLoading(false);
