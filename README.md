@@ -1,50 +1,61 @@
-# Welcome to your Expo app 👋
+# What's In My Food
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+A React Native Expo app that helps you scan food products and check ingredients against your dietary preferences.
 
-## Get started
+## Features
 
-1. Install dependencies
+- Barcode scanning using device camera
+- Ingredient analysis with smart fuzzy matching
+- Track ingredients you want to avoid
+- View detailed product information from Open Food Facts database
 
-   ```bash
-   npm install
-   ```
+## Getting Started
 
-2. Start the app
+### Prerequisites
 
-   ```bash
-    npx expo start
-   ```
+- Node.js (v18 or higher)
+- npm or yarn
+- Expo Go app on your mobile device (for testing)
 
-In the output, you'll find options to open the app in a
+### Installation
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+1. Install dependencies:
+\`\`\`bash
+npm install
+\`\`\`
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+2. Start the development server:
+\`\`\`bash
+npm start
+\`\`\`
 
-## Get a fresh project
+3. Scan the QR code with Expo Go (Android) or Camera app (iOS)
 
-When you're ready, run:
+### Building for Production
 
-```bash
-npm run reset-project
-```
+To build for Android or iOS:
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+\`\`\`bash
+# For Android
+npm run android
 
-## Learn more
+# For iOS
+npm run ios
+\`\`\`
 
-To learn more about developing your project with Expo, look at the following resources:
+## Project Structure
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+- `/app` - Main application screens using Expo Router
+- `/components` - Reusable React Native components
+- `/pages` - Screen components (home, scanner, results)
+- `/whatsinmy2/assets` - Images, fonts, and other static assets
 
-## Join the community
+## Technologies Used
 
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+- Expo SDK 52
+- React Native
+- Expo Router
+- Expo Camera
+- React Navigation
+- Axios for API calls
+- Open Food Facts API
