@@ -1,17 +1,8 @@
 "use client"
 
 import { useState, useCallback, useMemo } from "react"
-import {
-  View,
-  Text,
-  StyleSheet,
-  TextInput,
-  TouchableOpacity,
-  FlatList,
-  SafeAreaView,
-  Platform,
-  Dimensions,
-} from "react-native"
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, FlatList, Platform, Dimensions } from "react-native"
+import { SafeAreaView } from "react-native-safe-area-context"
 import { Ionicons } from "@expo/vector-icons"
 import { useGlobalState } from "./global_variables"
 // Import the normalizeIngredient function at the top of the file

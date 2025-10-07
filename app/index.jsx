@@ -1,26 +1,17 @@
-import React, {useState} from 'react';
-import {
-  Image,
-  StyleSheet,
-  Platform,
-  View,
-  Text,
-  Button,
-  SafeAreaView,
-} from 'react-native';
-import HomePage from '../pages/home_page';
-import ResultsPage from '../pages/results_page.jsx';
-import {GlobalProvider} from '../components/global_variables';
-import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
-import { createStackNavigator } from '@react-navigation/stack';
-import { StartCamera } from '../pages/barcode_scanner';
+import { SafeAreaView } from "react-native-safe-area-context"
+import HomePage from "../pages/home-page"
+import ResultsPage from "../pages/results-page.jsx"
+import { GlobalProvider } from "../components/global_variables"
+import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs"
+import { createStackNavigator } from "@react-navigation/stack"
+import { StartCamera } from "../pages/barcode-scanner"
 
-const Tab = createMaterialTopTabNavigator();
-const Stack = createStackNavigator();
+const Tab = createMaterialTopTabNavigator()
+const Stack = createStackNavigator()
 
 export default function Main() {
   return (
-    <SafeAreaView style={{flex: 1}}>
+    <SafeAreaView style={{ flex: 1 }}>
       <GlobalProvider>
         <Tab.Navigator>
           <Tab.Screen name="Home" component={HomePage} />
@@ -29,6 +20,5 @@ export default function Main() {
         </Tab.Navigator>
       </GlobalProvider>
     </SafeAreaView>
-  );
+  )
 }
-

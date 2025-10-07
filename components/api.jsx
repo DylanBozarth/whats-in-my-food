@@ -1,7 +1,7 @@
 import axios from 'axios';
 import {useNavigation} from '@react-navigation/native';
 import keywordLists from './food_list';
-import ResultsPage from '../pages/results_page';
+import ResultsPage from '../pages/results-page';
 import {showAlert} from './show_alert';
 import {useGlobalState} from './global_variables';
 
