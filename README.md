@@ -1,5 +1,7 @@
 # What's In My Food
 
+Hi future dylan 
+
 A React Native Expo app that helps you scan food products and check ingredients against your dietary preferences.
 
 ## Features
@@ -48,7 +50,7 @@ npm run ios
 - `/app` - Main application screens using Expo Router
 - `/components` - Reusable React Native components
 - `/pages` - Screen components (home, scanner, results)
-- `/whatsinmy2/assets` - Images, fonts, and other static assets
+- `/assets` - Images, fonts, and other static assets
 
 ## Technologies Used
 
