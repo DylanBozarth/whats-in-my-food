@@ -468,6 +468,7 @@ const ResultsScreen = (route) => {
               <AlertTriangle width={48} height={48} color="#FF4D6D" />
               <Text style={styles.errorTitle}>Network Error</Text>
               <Text style={styles.errorText}>{errorDetails}</Text>
+              {/* add retry here */}
             </>
           )}
 
