@@ -594,7 +594,7 @@ const ResultsScreen = (route) => {
                             <Text style={styles.matchDetailsText}>
                               Not an exact match:
                               {"\n"}
-                              We think this "{match.foundIn}" is close enough to {match.ingredient}:
+                              We found this: "{match.ingredient}" and this it's close enough to {match.foundIn}
                               {/*{match.score < 1.0 && ` (${(match.score * 100).toFixed(0)}% match)`} */}
                             </Text>
                           </View>
