@@ -1,6 +1,6 @@
 # What's In My Food
 
-Hi future dylan 
+Appache license 2.0
 
 A React Native Expo app that helps you scan food products and check ingredients against your dietary preferences.
 
