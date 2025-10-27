@@ -14,14 +14,15 @@
     "production": {
       "autoIncrement": true,
       "developmentClient": false,
-      "distribution": "store"
+      "distribution": "store",
+      "autoSubmit": true
     }
   },
   "submit": {
-    "ios": {
-      "ascAppId": "6746061572",
-      "appleId": "dylanbozarthdeveloper@gmail.com",
-      "appleTeamId": "AXH972TJDX"
+    "production": {
+      "ios": {
+        "ascAppId": "6746061572"
+      }
     }
   }
 }
