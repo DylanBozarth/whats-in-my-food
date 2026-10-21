@@ -1,5 +1,7 @@
 # What's In My Food
 
+Expo app that allows users to scan food items to avoid selected ingredients. 
+
 Appache license 2.0
 
 A React Native Expo app that helps you scan food products and check ingredients against your dietary preferences.
